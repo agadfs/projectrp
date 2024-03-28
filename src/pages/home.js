@@ -11,50 +11,50 @@ export default function Home() {
   const [userscountonline, setUserscountonline] = useState();
   const [sessions, setSessions] = useState();
   const [title, setTitle] = useState();
+  async function getusers() {
+    try {
+      const response = await axios.get(`${urlrequest}/userscount`);
+      if (response.data) {
+        const count = response.data;
+        setUsersCount(count)
+
+      }
+    } catch (error) {
+      console.error('Error fetch users', error)
+    }
+  }
+  async function getusersonline() {
+    try {
+      const response = await axios.get(`${urlrequest}/userscountonline`);
+      if (response.data > 0) {
+        const count = response.data;
+        setUserscountonline(count)
+
+
+      } else {
+        setUserscountonline(0)
+      }
+
+    } catch (error) {
+      console.error('Error fetch users', error)
+    }
+  }
+  async function getsessions() {
+    try {
+      const response = await axios.get(`${urlrequest}/sessions`);
+      if (response.data) {
+        const data = response.data;
+        setSessions(data)
+
+      }
+    } catch (error) {
+      console.error('Error fetching sessions ', error)
+    }
+  }
   useEffect(() => {
-    async function getusers() {
-      try {
-        const response = await axios.get(`${urlrequest}/userscount`);
-        if (response.data) {
-          const count = response.data;
-          setUsersCount(count)
-
-        }
-      } catch (error) {
-        console.error('Error fetch users', error)
-      }
-    }
-    async function getusersonline() {
-      try {
-        const response = await axios.get(`${urlrequest}/userscountonline`);
-        if (response.data > 0) {
-          const count = response.data;
-          setUserscountonline(count)
-
-
-        } else {
-          setUserscountonline(0)
-        }
-
-      } catch (error) {
-        console.error('Error fetch users', error)
-      }
-    }
-    async function getsessions() {
-      try {
-        const response = await axios.get(`${urlrequest}/sessions`);
-        if (response.data) {
-          const data = response.data;
-          setSessions(data)
-         
-        }
-      } catch (error) {
-        console.error('Error fetching sessions ', error)
-      }
-    }
     getusers();
     getusersonline();
-    getsessions()
+    getsessions();
   }, [])
 
   useEffect(() => {
@@ -65,6 +65,9 @@ export default function Home() {
           // Assuming you're updating the user's activity status in your backend
           await axios.post(`${urlrequest}/heartbeat`, { userId: user.id, lastActiveAt: new Date, });
           console.log('Heartbeat sent');
+          getusers();
+          getusersonline();
+          getsessions();
         } catch (error) {
           console.error('Error sending heartbeat:', error);
         }
@@ -138,25 +141,25 @@ export default function Home() {
       <div className={styles.datashow}>
 
         {user.id ?
-          <div style={{ display: 'flex', border: '1px solid black', padding: '5px', margin:'5px' }}>
+          <div style={{ display: 'flex', border: '1px solid black', padding: '5px', margin: '5px' }}>
             Nome da sessão nova
             <form>
-              <input style={{display:'flex', marginBottom:'10px'}} value={title} onChange={(e) => {
+              <input style={{ display: 'flex', marginBottom: '10px' }} value={title} onChange={(e) => {
                 setTitle(e.target.value)
               }} />
-              <button className={styles.simplebutton} onClick={() =>{ 
-                if(title){
+              <button className={styles.simplebutton} onClick={() => {
+                if (title) {
 
                   createRandomSession()
-                }else{
+                } else {
                   alert('Por favor preencha o nome da sessão')
                 }
-                }}>
+              }}>
                 Create  Session
               </button>
             </form>
           </div> : null}
-          {userscount ? null : <div>Carregando, por favor aguarde, isso pode levar até 1 minuto para inicializar o servidor</div> }
+        {userscount ? null : <div>Carregando, por favor aguarde, isso pode levar até 1 minuto para inicializar o servidor</div>}
         <div>
           Total de usuários: {userscount}
         </div>
