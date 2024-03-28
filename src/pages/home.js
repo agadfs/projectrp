@@ -155,8 +155,8 @@ export default function Home() {
                 Create  Session
               </button>
             </form>
-          </div> : <div>Carregando, por favor aguarde, isso pode levar até 1 minuto para inicializar o servidor</div>}
-
+          </div> : null}
+          {userscount ? null : <div>Carregando, por favor aguarde, isso pode levar até 1 minuto para inicializar o servidor</div> }
         <div>
           Total de usuários: {userscount}
         </div>
