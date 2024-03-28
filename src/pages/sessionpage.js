@@ -510,9 +510,10 @@ export default function SessionPage() {
         </div>
         :
         <div>
-          {user.id === '' ?
+          {user.id ?
 
             <div>
+              
               {!request.includes(user.id) ?
 
                 <button onClick={() => {
