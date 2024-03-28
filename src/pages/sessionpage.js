@@ -510,21 +510,26 @@ export default function SessionPage() {
         </div>
         :
         <div>
+          {user.id === '' ?
 
-          {!request.includes(user.id) ?
             <div>
-              <button onClick={() => {
-                makeRequest()
-              }} >
+              {!request.includes(user.id) ?
 
-                Solicitar entrada
+                <button onClick={() => {
+                  makeRequest()
+                }} >
 
-              </button>
+                  Solicitar entrada
 
-            </div> :
-            <div>
-              Você já solicitou pra entrar
-            </div>}
+                </button>
+
+                :
+                <div>
+                  Você já solicitou pra entrar
+                </div>}
+
+            </div> : <div> Por favor, faça o login para poder interagir com as sessões </div>}
+
 
 
         </div>}
