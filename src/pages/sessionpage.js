@@ -5,10 +5,14 @@ import axios from 'axios';
 import { useAppContext } from '../AppContext';
 
 export default function SessionPage() {
+  const [titulo, setTitulo] = useState('');
   const { sessionid } = useParams();
   const { user, setUser } = useAppContext();
   const [session, setSession] = useState();
   const [players, setPlayers] = useState();
+  const [playersid, setPlayersid] = useState();
+  const [request, setRequest] = useState([]);
+  const [requestNames, setRequestNames] = useState([])
   const [inventory, setInventory] = useState();
   const [map, setMap] = useState();
   const [title, setTitle] = useState();
@@ -23,7 +27,8 @@ export default function SessionPage() {
     url: ''
   });
   const [items, setItems] = useState();
-
+  const [showinfo, setShowInfo] = useState(false);
+  const [allinventories, setAllInventories] = useState()
   async function updateInventory() {
     try {
       const randomItem = items[Math.floor(Math.random() * items.length)];
@@ -73,7 +78,12 @@ export default function SessionPage() {
         Items: [],
 
       };
-      await axios.post(`http://localhost:4000/inventory/create`, randomUser)
+      const response = await axios.post(`http://localhost:4000/inventory/create`, randomUser)
+
+      let invList = [...allinventories]
+      invList.push(response.data._id)
+
+      updateSession({ inventories: invList })
 
       getInventory()
     } catch (error) {
@@ -150,22 +160,48 @@ export default function SessionPage() {
       const response = await axios.get(`http://localhost:4000/sessions/${sessionid}`);
       if (response.data) {
         const data = response.data;
-        setSession(data)
+        setRequest(data.Others);
+        getName(data.Others);
+        if (data.players.includes(user.id)) {
 
-        setTitle(data.title)
-        setMap(data.Maps)
+          setSession(data);
+          setTitle(data.title);
+          setMap(data.Maps);
+          setPlayers(data.players);
+          getPlayers(data.players);
+          setShowInfo(true);
+          setPlayersid(data.players);
+          setAllInventories(data.inventories);
 
-        setPlayers(data.players)
-        getPlayers(data.players)
+
+        } else {
+          console.log("User is not authorized for this session.");
+
+
+        }
       }
     } catch (error) {
       console.error('Error fetching the session: ', error)
     }
   }
+  async function updateSession(newData) {
+
+    try {
+      const response = await axios.post(`http://localhost:4000/sessions/update/${sessionid}`, newData);
+
+      getSession()
+    } catch (error) {
+      console.error('Error fetching the session: ', error)
+    }
+  }
+
   useEffect(() => {
-    getSession()
-    getItems()
-  }, [])
+    if (user.id) {
+
+      getSession()
+      getItems()
+    }
+  }, [user])
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -249,122 +285,249 @@ export default function SessionPage() {
 
 
   };
+  function denyRequest(index) {
 
+    let updatedRequests = [...request];
+
+    updatedRequests.splice(index, 1);
+
+    updateSession({ Others: updatedRequests });
+  }
+  function acceptRequest(index) {
+
+    let updatedRequests = [...request];
+    let updatedPlayers = [...playersid];
+    updatedPlayers.push(updatedRequests[index]);
+    updatedRequests.splice(index, 1);
+    console.log({ Others: updatedRequests, players: updatedPlayers })
+    updateSession({ Others: updatedRequests, players: updatedPlayers });
+
+  }
+  function makeRequest() {
+    let updatedRequests = [...request];
+    updatedRequests.push(user.id);
+    updateSession({ Others: updatedRequests });
+  }
+  async function getName(data) {
+    let playerarray = [];
+
+    try {
+      if (data) {
+        for (let i = 0; i < data.length; i++) {
+
+          const response = await axios.get(`http://localhost:4000/users/${data[i]}`);
+          if (response.data) {
+            const data = response.data;
+            const username = data.username;
+            playerarray.push(username);
+          }
+
+        }
+        setRequestNames(playerarray)
+
+
+
+      }
+    } catch (error) {
+      console.error('Error fetching the session: ', error)
+    }
+  }
   return (
     <div className={styles.body} >
-      <div>
-        ID: {sessionid}
-      </div>
-      <div style={{ marginTop: '10px' }}>
-        Titulo do jogo: {title}
-      </div>
-      <div style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
-        Jogadores:
-        <div style={{ height: '100%', display: 'flex', maxWidth: '300px', gap: '10px', flexWrap: 'wrap', border: '3px solid black', padding: '10px', borderRadius: '5px' }}>
-          {players?.map((player, index) => (
-            <div style={{ padding: '10px', border: '1px solid black', width: 'auto' }} key={index}>
-              {player}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div>
-
-        Inventario do player:
-        {inventory === undefined || inventory.length === 0 ? (
-          <button onClick={() => {
-            createInventory()
-          }} >Criar inventário</button>
-        ) : (
-          <div style={{
-            height: '100%', display: 'flex', maxWidth: '300px', gap: '10px', flexWrap: 'wrap', border: '3px solid black',
-            padding: '10px', borderRadius: '5px', flexDirection: 'column'
-          }}>
-            Seu Id:  {inventory.ownerId} <br />
+      {showinfo === true ?
+        <div>
+          <div>
+            ID: {sessionid}
+          </div>
+          <div style={{ marginTop: '10px' }}>
+            Titulo do jogo: {title}
             <div>
-              Itens:
-              <div style={{ width: '100%', display: 'flex', gap: '20px', flexWrap: 'wrap' }} >
-                {inventory?.Items?.map((item, index) => (
-                  <div style={{ gap: '5px', border: '2px solid green', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
-                    {item?.item?.url ? (
-                      <div style={{display:'flex', justifyContent:'center'}} >
-                        <img src={item?.item?.url} alt="Item Image" style={{ maxWidth: '100px', height: 'auto' }} />
+              <form>
+                <input value={titulo} onChange={(e) => {
+                  setTitulo(e.target.value)
+                }} />
 
-                      </div>
-                    ) : null}
+                <button onClick={() => {
+                  if (titulo && titulo.length > 5 && titulo !== title) {
+                    updateSession({ title: titulo });
+                  }else{
+                    alert('O titulo tem que ser maior que 5 caracteres, e diferente do titulo anterior')
+                  }
+                }} >Mudar nome</button>
 
+              </form>
+            </div>
+          </div>
+          <div style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
+            Jogadores:
+            <div style={{ height: '100%', display: 'flex', maxWidth: '300px', gap: '10px', flexWrap: 'wrap', border: '3px solid black', padding: '10px', borderRadius: '5px' }}>
+              {players?.map((player, index) => (
+                <div style={{
+                  padding: '10px', border: '1px solid black', width: 'auto', borderRadius: '5px',
+                  backgroundColor: index === 0 ? 'red' : 'white',
+                  color: index === 0 ? 'white' : 'black'
+
+
+                }} key={index}>
+
+                  {index === 0 ? "Mestre: " + player : "Jogador: " + player}
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
+              Solicitações para entrar:
+              <div style={{ height: '100%', display: 'flex', maxWidth: '300px', gap: '10px', flexWrap: 'wrap', border: '3px solid black', padding: '10px', borderRadius: '5px' }}>
+                {request && request?.length > 0 && request?.map((player, index) => (
+                  <div style={{ padding: '10px', border: '1px solid black', width: 'auto' }} key={index}>
                     <div>
-                      {item?.item?.name}
+
+                      {requestNames[index]}
+
                     </div>
-                    <div style={{ textWrap: 'nowrap' }} >
-                      {item?.quantity} Unidade(s)
-                    </div>
-                    <button onClick={() => handleDelete(index)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
-                      Deletar
+
+                    <button onClick={() => {
+
+                      acceptRequest(index);
+                    }}>
+                      Aceitar
                     </button>
-                    <div style={{ display: 'flex', gap: '5px' }}>
-                      <button onClick={() => handleUpdateQuantity(index, +1)} style={{ color: 'green', cursor: 'pointer' }}>
-                        +1
-                      </button>
-                      <button onClick={() => handleUpdateQuantity(index, -1)} style={{ color: 'red', cursor: 'pointer' }}>
-                        -1
-                      </button>
-                    </div>
+
+                    <button onClick={() => {
+
+                      denyRequest(index);
+                    }}> Recusar </button>
                   </div>
                 ))}
               </div>
-              <div>
-                <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
-                  if (items.length > 0) {
-
-                    updateInventory()
-                  } else {
-                    alert('Por favor, crie um item primeiro, abaixo')
-                  }
-                }}>Adicionar um item no inventario aleatoriamente</button>
-                <select id="itemSelect" onChange={handleAddItem}>
-                  <option value="">Adicione um item</option>
-                  {items.map((item, index) => (
-                    <option key={index} value={index}>{item.name}</option>
-                  ))}
-                </select>
-              </div>
             </div>
           </div>
-        )}
+          <div>
 
-      </div>
+            Inventario do player:
+            {inventory === undefined || inventory.length === 0 ? (
+              <button onClick={() => {
+                createInventory()
+              }} >Criar inventário</button>
+            ) : (
+              <div style={{
+                height: '100%', display: 'flex', maxWidth: '300px', gap: '10px', flexWrap: 'wrap', border: '3px solid black',
+                padding: '10px', borderRadius: '5px', flexDirection: 'column'
+              }}>
+                Seu Id:  {inventory.ownerId} <br />
+                <div>
+                  Itens:
+                  <div style={{ width: '100%', display: 'flex', gap: '20px', flexWrap: 'wrap' }} >
+                    {inventory?.Items?.map((item, index) => (
+                      <div style={{ gap: '5px', border: '2px solid green', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
+                        {item?.item?.url ? (
+                          <div style={{ display: 'flex', justifyContent: 'center' }} >
+                            <img src={item?.item?.url} alt="Item Image" style={{ maxWidth: '100px', height: 'auto' }} />
 
-      <div>
-        <h2>Adicionar Item</h2>
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="name">Nome:</label><br />
-          <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required /><br />
+                          </div>
+                        ) : null}
 
-          <label htmlFor="description">Descrição:</label><br />
-          <textarea id="description" name="description" value={formData.description} onChange={handleChange} required /><br />
+                        <div>
+                          {item?.item?.name}
+                        </div>
+                        <div style={{ textWrap: 'nowrap' }} >
+                          {item?.quantity} Unidade(s)
+                        </div>
+                        <button onClick={() => handleDelete(index)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
+                          Deletar
+                        </button>
+                        <div style={{ display: 'flex', gap: '5px' }}>
+                          <button onClick={() => handleUpdateQuantity(index, +1)} style={{ color: 'green', cursor: 'pointer' }}>
+                            +1
+                          </button>
+                          <button onClick={() => handleUpdateQuantity(index, -1)} style={{ color: 'red', cursor: 'pointer' }}>
+                            -1
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
+                      if (items.length > 0) {
 
-          <label htmlFor="value">Valor:</label><br />
-          <input type="text" id="value" name="value" value={formData.value} onChange={handleChange} /><br />
+                        updateInventory()
+                      } else {
+                        alert('Por favor, crie um item primeiro, abaixo')
+                      }
+                    }}>Adicionar um item no inventario aleatoriamente</button>
+                    <select id="itemSelect" onChange={handleAddItem}>
+                      <option value="">Adicione um item</option>
+                      {items?.map((item, index) => (
+                        <option key={index} value={index}>{item.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
 
-          <label htmlFor="cantrade">Pode ser negociado:</label><br />
-          <input type="checkbox" id="cantrade" name="cantrade" checked={formData.cantrade} onChange={handleChange} /><br />
+          </div>
+          {user?.id === playersid[0] ?
 
-          <label htmlFor="atk">Ataque:</label><br />
-          <input type="text" id="atk" name="atk" value={formData.atk} onChange={handleChange} /><br />
+            <div>
+              <h2>Adicionar Item</h2>
+              <form onSubmit={handleSubmit}>
+                <label htmlFor="name">Nome:</label><br />
+                <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required /><br />
 
-          <label htmlFor="def">Defesa:</label><br />
-          <input type="text" id="def" name="def" value={formData.def} onChange={handleChange} /><br />
+                <label htmlFor="description">Descrição:</label><br />
+                <textarea id="description" name="description" value={formData.description} onChange={handleChange} required /><br />
 
-          <label htmlFor="others">Outros:</label><br />
-          <textarea id="others" name="others" value={formData.others} onChange={handleChange} /><br />
+                <label htmlFor="value">Valor:</label><br />
+                <input type="text" id="value" name="value" value={formData.value} onChange={handleChange} /><br />
 
-          <label htmlFor="url">Url imagem:</label><br />
-          <textarea id="url" name="url" value={formData.img} onChange={handleChange} /><br />
+                <label htmlFor="cantrade">Pode ser negociado:</label><br />
+                <input type="checkbox" id="cantrade" name="cantrade" checked={formData.cantrade} onChange={handleChange} /><br />
 
-          <button type="submit">Enviar</button>
-        </form>
-      </div>
+                <label htmlFor="atk">Ataque:</label><br />
+                <input type="text" id="atk" name="atk" value={formData.atk} onChange={handleChange} /><br />
+
+                <label htmlFor="def">Defesa:</label><br />
+                <input type="text" id="def" name="def" value={formData.def} onChange={handleChange} /><br />
+
+                <label htmlFor="others">Outros:</label><br />
+                <textarea id="others" name="others" value={formData.others} onChange={handleChange} /><br />
+
+                <label htmlFor="url">Url imagem:</label><br />
+                <textarea id="url" name="url" value={formData.img} onChange={handleChange} /><br />
+
+                <button type="submit">Enviar</button>
+              </form>
+            </div>
+
+
+
+            : null}
+
+
+
+        </div>
+        :
+        <div>
+
+          {!request.includes(user.id) ?
+            <div>
+              <button onClick={() => {
+                makeRequest()
+              }} >
+
+                Solicitar entrada
+
+              </button>
+
+            </div> :
+            <div>
+              Você já solicitou pra entrar
+            </div>}
+
+
+        </div>}
+
     </div>
   )
 }

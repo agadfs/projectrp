@@ -10,6 +10,7 @@ export default function Home() {
   const [userscount, setUsersCount] = useState();
   const [userscountonline, setUserscountonline] = useState();
   const [sessions, setSessions] = useState();
+  const [title, setTitle] = useState();
   useEffect(() => {
     async function getusers() {
       try {
@@ -96,8 +97,8 @@ export default function Home() {
     try {
       // Generate random user data
       const randomSession = {
-        idsession: user.id,
-        title: generateRandomUsername(),
+        idsession: generateRandomId(),
+        title: title,
         players: [user.id],
       };
 
@@ -121,14 +122,40 @@ export default function Home() {
   function generateRandomPassword() {
     return Math.random().toString(36).slice(-8); // Generate a random 8-character password
   }
+  function generateRandomId() {
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let id = '';
+    for (let i = 0; i < 16; i++) {
+      id += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return id;
+  }
 
 
 
   return (
     <div className={styles.body}>
       <div className={styles.datashow}>
-       {/*  <button className={styles.simplebutton} onClick={createRandomUser}>Create Random User</button> */}
-        {user.id ? <div><button className={styles.simplebutton} onClick={createRandomSession}>Create Random Session</button> </div> : null}
+
+        {user.id ?
+          <div style={{ display: 'flex', border: '1px solid black', padding: '5px', margin:'5px' }}>
+            Nome da sessão nova
+            <form>
+              <input style={{display:'flex', marginBottom:'10px'}} value={title} onChange={(e) => {
+                setTitle(e.target.value)
+              }} />
+              <button className={styles.simplebutton} onClick={() =>{ 
+                if(title){
+
+                  createRandomSession()
+                }else{
+                  alert('Por favor preencha o nome da sessão')
+                }
+                }}>
+                Create  Session
+              </button>
+            </form>
+          </div> : null}
 
         <div>
           Total de usuários: {userscount}
@@ -142,8 +169,8 @@ export default function Home() {
       {user.id ?
         <div className={styles.maincontainer}>
           <div className={styles.maincontainertitle}> BEM VINDO AO PROJECTRP</div>
-          {sessions ?  <Sessions sessions={sessions} id={user.id} /> : null}
-         
+          {sessions ? <Sessions sessions={sessions} id={user.id} /> : null}
+
         </div>
         :
         null}
