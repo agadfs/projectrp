@@ -68,7 +68,6 @@ export default function Login() {
     }
   }
   
-
   return (
     <div className={styles.body} >
       {logintype ?

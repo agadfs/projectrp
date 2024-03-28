@@ -7,7 +7,7 @@ import { useAppContext } from '../AppContext';
 export default function SessionPage() {
   const [titulo, setTitulo] = useState('');
   const { sessionid } = useParams();
-  const { user, setUser, urlrequest } = useAppContext();
+  const { user, urlrequest } = useAppContext();
   const [session, setSession] = useState();
   const [players, setPlayers] = useState();
   const [playersid, setPlayersid] = useState();
@@ -29,6 +29,7 @@ export default function SessionPage() {
   const [items, setItems] = useState();
   const [showinfo, setShowInfo] = useState(false);
   const [allinventories, setAllInventories] = useState()
+
   async function updateInventory() {
     try {
       const randomItem = items[Math.floor(Math.random() * items.length)];
@@ -350,7 +351,7 @@ export default function SessionPage() {
                 <button onClick={() => {
                   if (titulo && titulo.length > 5 && titulo !== title) {
                     updateSession({ title: titulo });
-                  }else{
+                  } else {
                     alert('O titulo tem que ser maior que 5 caracteres, e diferente do titulo anterior')
                   }
                 }} >Mudar nome</button>

@@ -6,7 +6,7 @@ import { useAppContext } from '../AppContext';
 import Sessions from '../components/sessions';
 
 export default function Home() {
-  const { user, setUser, urlrequest } = useAppContext();
+  const { user, urlrequest } = useAppContext();
   const [userscount, setUsersCount] = useState();
   const [userscountonline, setUserscountonline] = useState();
   const [sessions, setSessions] = useState();
@@ -77,25 +77,7 @@ export default function Home() {
     }
   }, [user.id]);
 
-  async function createRandomUser() {
-    try {
-      // Generate random user data
-      const randomUser = {
-        username: generateRandomUsername(),
-        email: generateRandomEmail(),
-        password: generateRandomPassword(),
-        isOn: false,
-        lastActiveAt: new Date,
-      };
-
-
-      await axios.post(`${urlrequest}/users`, randomUser);
-
-
-    } catch (error) {
-      console.error('Error creating user:', error);
-    }
-  }
+  
   async function createRandomSession() {
     try {
       // Generate random user data
@@ -113,18 +95,6 @@ export default function Home() {
     }
   }
 
-
-  function generateRandomUsername() {
-    return `user${Math.floor(Math.random() * 1000)}`;
-  }
-
-  function generateRandomEmail() {
-    return `user${Math.floor(Math.random() * 1000)}@example.com`;
-  }
-
-  function generateRandomPassword() {
-    return Math.random().toString(36).slice(-8); // Generate a random 8-character password
-  }
   function generateRandomId() {
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let id = '';
@@ -155,7 +125,7 @@ export default function Home() {
                   alert('Por favor preencha o nome da sessão')
                 }
               }}>
-                Create  Session
+                Criar Sessão
               </button>
             </form>
           </div> : null}
