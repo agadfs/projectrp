@@ -8,9 +8,10 @@ export const AppProvider = ({ children }) => {
     inventory: [], 
     chats: [] 
   });
+  const [urlrequest, seturlrequest] = useState('https://projectrp.onrender.com');
 
   return (
-    <AppContext.Provider value={{ user, setUser }}>
+    <AppContext.Provider value={{ user, setUser, urlrequest, seturlrequest }}>
       {children}
     </AppContext.Provider>
   );

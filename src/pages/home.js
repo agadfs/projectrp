@@ -6,7 +6,7 @@ import { useAppContext } from '../AppContext';
 import Sessions from '../components/sessions';
 
 export default function Home() {
-  const { user, setUser } = useAppContext();
+  const { user, setUser, urlrequest } = useAppContext();
   const [userscount, setUsersCount] = useState();
   const [userscountonline, setUserscountonline] = useState();
   const [sessions, setSessions] = useState();
@@ -14,7 +14,7 @@ export default function Home() {
   useEffect(() => {
     async function getusers() {
       try {
-        const response = await axios.get('http://localhost:4000/userscount');
+        const response = await axios.get(`${urlrequest}/userscount`);
         if (response.data) {
           const count = response.data;
           setUsersCount(count)
@@ -26,7 +26,7 @@ export default function Home() {
     }
     async function getusersonline() {
       try {
-        const response = await axios.get('http://localhost:4000/userscountonline');
+        const response = await axios.get(`${urlrequest}/userscountonline`);
         if (response.data > 0) {
           const count = response.data;
           setUserscountonline(count)
@@ -42,11 +42,11 @@ export default function Home() {
     }
     async function getsessions() {
       try {
-        const response = await axios.get('http://localhost:4000/sessions');
+        const response = await axios.get(`${urlrequest}/sessions`);
         if (response.data) {
           const data = response.data;
           setSessions(data)
-          console.log(data)
+         
         }
       } catch (error) {
         console.error('Error fetching sessions ', error)
@@ -63,7 +63,7 @@ export default function Home() {
         try {
 
           // Assuming you're updating the user's activity status in your backend
-          await axios.post('http://localhost:4000/heartbeat', { userId: user.id, lastActiveAt: new Date, });
+          await axios.post(`${urlrequest}/heartbeat`, { userId: user.id, lastActiveAt: new Date, });
           console.log('Heartbeat sent');
         } catch (error) {
           console.error('Error sending heartbeat:', error);
@@ -86,7 +86,7 @@ export default function Home() {
       };
 
 
-      await axios.post('http://localhost:4000/users', randomUser);
+      await axios.post(`${urlrequest}/users`, randomUser);
 
 
     } catch (error) {
@@ -102,7 +102,7 @@ export default function Home() {
         players: [user.id],
       };
 
-      await axios.post('http://localhost:4000/sessions', randomSession);
+      await axios.post(`${urlrequest}/sessions`, randomSession);
 
 
     } catch (error) {
@@ -155,7 +155,7 @@ export default function Home() {
                 Create  Session
               </button>
             </form>
-          </div> : null}
+          </div> : <div>Carregando, por favor aguarde, isso pode levar até 1 minuto para inicializar o servidor</div>}
 
         <div>
           Total de usuários: {userscount}

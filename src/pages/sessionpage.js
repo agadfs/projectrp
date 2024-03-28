@@ -7,7 +7,7 @@ import { useAppContext } from '../AppContext';
 export default function SessionPage() {
   const [titulo, setTitulo] = useState('');
   const { sessionid } = useParams();
-  const { user, setUser } = useAppContext();
+  const { user, setUser, urlrequest } = useAppContext();
   const [session, setSession] = useState();
   const [players, setPlayers] = useState();
   const [playersid, setPlayersid] = useState();
@@ -49,7 +49,7 @@ export default function SessionPage() {
 
 
 
-      await axios.post(`http://localhost:4000/inventory/updateitems`, { userId: inventory._id, items: inventory.Items })
+      await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: inventory.Items })
       getInventory()
 
     } catch (error) {
@@ -60,7 +60,7 @@ export default function SessionPage() {
 
     try {
 
-      await axios.post(`http://localhost:4000/inventory/updateitems`, { userId: inventory._id, items: newInv })
+      await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: newInv })
       getInventory()
 
     } catch (error) {
@@ -78,7 +78,7 @@ export default function SessionPage() {
         Items: [],
 
       };
-      const response = await axios.post(`http://localhost:4000/inventory/create`, randomUser)
+      const response = await axios.post(`${urlrequest}/inventory/create`, randomUser)
 
       let invList = [...allinventories]
       invList.push(response.data._id)
@@ -94,7 +94,7 @@ export default function SessionPage() {
   }
   async function getItems() {
     try {
-      const response = await axios.get('http://localhost:4000/item');
+      const response = await axios.get(`${urlrequest}/item`);
       if (response.data) {
         const data = response.data;
         setItems(data)
@@ -109,7 +109,7 @@ export default function SessionPage() {
 
       const userId = user.id;
 
-      const response = await axios.get(`http://localhost:4000/inventory/${userId}/${sessionid}`);
+      const response = await axios.get(`${urlrequest}/inventory/${userId}/${sessionid}`);
 
       if (response.data) {
         let playerarray = response.data;
@@ -137,7 +137,7 @@ export default function SessionPage() {
       if (data) {
         for (let i = 0; i < data.length; i++) {
 
-          const response = await axios.get(`http://localhost:4000/users/${data[i]}`);
+          const response = await axios.get(`${urlrequest}/users/${data[i]}`);
           if (response.data) {
             const data = response.data;
             const username = data.username;
@@ -157,7 +157,7 @@ export default function SessionPage() {
   async function getSession() {
 
     try {
-      const response = await axios.get(`http://localhost:4000/sessions/${sessionid}`);
+      const response = await axios.get(`${urlrequest}/sessions/${sessionid}`);
       if (response.data) {
         const data = response.data;
         setRequest(data.Others);
@@ -187,7 +187,7 @@ export default function SessionPage() {
   async function updateSession(newData) {
 
     try {
-      const response = await axios.post(`http://localhost:4000/sessions/update/${sessionid}`, newData);
+      const response = await axios.post(`${urlrequest}/sessions/update/${sessionid}`, newData);
 
       getSession()
     } catch (error) {
@@ -215,7 +215,7 @@ export default function SessionPage() {
     e.preventDefault();
     try {
 
-      const response = await axios.post('http://localhost:4000/item', formData);
+      const response = await axios.post(`${urlrequest}/item`, formData);
 
 
       window.location.reload()
@@ -253,7 +253,7 @@ export default function SessionPage() {
 
 
 
-      await axios.post(`http://localhost:4000/inventory/updateitems`, { userId: inventory._id, items: inventory.Items })
+      await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: inventory.Items })
       getInventory()
 
     } catch (error) {
@@ -315,7 +315,7 @@ export default function SessionPage() {
       if (data) {
         for (let i = 0; i < data.length; i++) {
 
-          const response = await axios.get(`http://localhost:4000/users/${data[i]}`);
+          const response = await axios.get(`${urlrequest}/users/${data[i]}`);
           if (response.data) {
             const data = response.data;
             const username = data.username;

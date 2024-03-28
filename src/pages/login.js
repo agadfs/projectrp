@@ -7,7 +7,7 @@ export default function Login() {
   const [logintype, setLoginType] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const { user, setUser } = useAppContext();
+  const { user, setUser, urlrequest } = useAppContext();
 
   useEffect(() => {
     if(user.id){
@@ -31,7 +31,7 @@ export default function Login() {
       };
 
 
-      await axios.post('http://localhost:4000/users', randomUser)
+      await axios.post(`${urlrequest}/users`, randomUser)
       .then(() => {
         fetchUserData()
       })
@@ -50,7 +50,7 @@ export default function Login() {
         }
       };
   
-      const response = await axios.get('http://localhost:4000/users', queryParams);
+      const response = await axios.get(`${urlrequest}/users`, queryParams);
   
       if (response) {
         
