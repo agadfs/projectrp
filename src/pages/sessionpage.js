@@ -309,6 +309,13 @@ export default function SessionPage() {
     updatedRequests.push(user.id);
     updateSession({ Others: updatedRequests });
   }
+  async function deletesession(){
+    const response = await axios.post(`${urlrequest}/sessions/delete/${sessionid}`);
+
+
+    window.location.href = '/'
+  }
+
   async function getName(data) {
     let playerarray = [];
 
@@ -340,6 +347,11 @@ export default function SessionPage() {
           <div>
             ID: {sessionid}
           </div>
+          <button onClick={() => {
+            deletesession()
+          }}>
+           Deletar sessão
+          </button>
           <div style={{ marginTop: '10px' }}>
             Titulo do jogo: {title}
             <div>

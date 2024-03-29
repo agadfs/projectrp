@@ -45,7 +45,7 @@ export default function Home() {
       if (response.data) {
         const data = response.data;
         setSessions(data)
-
+        console.log(data)
       }
     } catch (error) {
       console.error('Error fetching sessions ', error)
@@ -119,8 +119,13 @@ export default function Home() {
               }} />
               <button className={styles.simplebutton} onClick={() => {
                 if (title) {
+                  const existingSessionWithUser = sessions.find(session => session.players && session.players.length > 0 && session.players[0] === user.id)
+                  if(!existingSessionWithUser){
 
-                  createRandomSession()
+                    createRandomSession()
+                  }else{
+                    alert('Você já tem uma sessão aberta')
+                  }
                 } else {
                   alert('Por favor preencha o nome da sessão')
                 }

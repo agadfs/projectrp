@@ -134,6 +134,21 @@ app.get("/sessions/:sessionId", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+app.get("/sessions/delete/:sessionId", async (req, res) => {
+  try {
+    const sessionId = req.params.sessionId;
+    const session = await Session.findByIdAndDelete(sessionId);
+    
+    if (!session) {
+      return res.status(404).json({ error: "Session not found" });
+    }
+    
+    res.status(200).json(session);
+  } catch (error) {
+    console.error("Error fetching session:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 app.post("/sessions/update/:sessionId", async (req, res) => {
   try {
