@@ -6,11 +6,14 @@ import { useAppContext } from '../AppContext';
 import Sessions from '../components/sessions';
 
 export default function Home() {
+  const [changed, setChanged] = useState(false);
+  const [name, setName] = useState('')
   const { user, urlrequest } = useAppContext();
   const [userscount, setUsersCount] = useState();
   const [userscountonline, setUserscountonline] = useState();
   const [sessions, setSessions] = useState();
-  const [title, setTitle] = useState();
+  const [title, setTitle] = useState('');
+  const [newName, setNewName] = useState('');
   async function getusers() {
     try {
       const response = await axios.get(`${urlrequest}/userscount`);
@@ -45,7 +48,7 @@ export default function Home() {
       if (response.data) {
         const data = response.data;
         setSessions(data)
-        console.log(data)
+
       }
     } catch (error) {
       console.error('Error fetching sessions ', error)
@@ -55,19 +58,50 @@ export default function Home() {
     getusers();
     getusersonline();
     getsessions();
+
   }, [])
+
+  
+
+  async function setname() {
+    const response = await axios.post(`${urlrequest}/users/update/${user.id}`, { username: newName });
+    
+    setName(newName);
+    
+  }
+  async function getname0() {
+    const response = await axios.get(`${urlrequest}/users/${user.id}`);
+    if (response.data) {
+      const data = response.data;
+      const username = data.username;
+      setNewName(username);
+      setName(username);
+     
+    }
+  }
+
+  useEffect(() => {
+    if(changed === true ){
+            
+      setname();
+      setChanged(false);
+    }
+  },[changed])
 
   useEffect(() => {
     if (user.id) {
+      getname0();
       const intervalId = setInterval(async () => {
         try {
 
           // Assuming you're updating the user's activity status in your backend
-          await axios.post(`${urlrequest}/heartbeat`, { userId: user.id, lastActiveAt: new Date, });
-          console.log('Heartbeat sent');
+          await axios.post(`${urlrequest}/heartbeat`, { userId: user.id, lastActiveAt: new Date });
+          
           getusers();
           getusersonline();
           getsessions();
+          setChanged(true);
+          
         } catch (error) {
           console.error('Error sending heartbeat:', error);
         }
@@ -77,7 +111,7 @@ export default function Home() {
     }
   }, [user.id]);
 
-  
+
   async function createRandomSession() {
     try {
       // Generate random user data
@@ -120,10 +154,10 @@ export default function Home() {
               <button className={styles.simplebutton} onClick={() => {
                 if (title) {
                   const existingSessionWithUser = sessions.find(session => session.players && session.players.length > 0 && session.players[0] === user.id)
-                  if(!existingSessionWithUser){
+                  if (!existingSessionWithUser) {
 
                     createRandomSession()
-                  }else{
+                  } else {
                     alert('Você já tem uma sessão aberta')
                   }
                 } else {
@@ -139,13 +173,14 @@ export default function Home() {
           Total de usuários: {userscount}
         </div>
         <div>
-          Usuários online: {userscountonline}
+          Usuários online procurando sessão: {userscountonline}
         </div>
       </div>
 
 
       {user.id ?
         <div className={styles.maincontainer}>
+          <div> SEU NOME: <input value={newName} onChange={(e) => { setNewName(e.target.value)}} /> Espere o nome a seguir,estar igual ao que você quer: {name}</div>
           <div className={styles.maincontainertitle}> BEM VINDO AO PROJECTRP</div>
           {sessions ? <Sessions sessions={sessions} id={user.id} /> : null}
 

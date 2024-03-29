@@ -5,17 +5,21 @@ import axios from 'axios';
 import { useAppContext } from '../AppContext';
 
 export default function SessionPage() {
+  const [tileselected, setTileSelected] = useState('');
+  const [count, setCount] = useState(0);
+  const [draggedItem, setDraggedItem] = useState(null);
+  const gridItems = Array.from({ length: 4096 }); /* 64 x 64 */
   const [titulo, setTitulo] = useState('');
   const { sessionid } = useParams();
   const { user, urlrequest } = useAppContext();
-  const [session, setSession] = useState();
-  const [players, setPlayers] = useState();
-  const [playersid, setPlayersid] = useState();
+  const [session, setSession] = useState('');
+  const [players, setPlayers] = useState([]);
+  const [playersid, setPlayersid] = useState('');
   const [request, setRequest] = useState([]);
   const [requestNames, setRequestNames] = useState([])
-  const [inventory, setInventory] = useState();
-  const [map, setMap] = useState();
-  const [title, setTitle] = useState();
+  const [inventory, setInventory] = useState('');
+  const [map, setMap] = useState('');
+  const [title, setTitle] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -28,8 +32,25 @@ export default function SessionPage() {
   });
   const [items, setItems] = useState();
   const [showinfo, setShowInfo] = useState(false);
-  const [allinventories, setAllInventories] = useState()
+  const [allinventories, setAllInventories] = useState();
+  const [playerlocation, setPlayerLocation] = useState([
+    { name: 'Test', position: 0, id: '' },
+    { name: 'Test 2', position: 2, id: '' },
 
+  ]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (user.id) {
+        getSession()
+      }else{
+        console.log(user)
+        console.log(user.id)
+      }
+      setCount(prevCount => prevCount + 1);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [user]);
   async function updateInventory() {
     try {
       const randomItem = items[Math.floor(Math.random() * items.length)];
@@ -140,13 +161,25 @@ export default function SessionPage() {
 
           const response = await axios.get(`${urlrequest}/users/${data[i]}`);
           if (response.data) {
-            const data = response.data;
-            const username = data.username;
+            const datares = response.data;
+            const username = datares.username;
             playerarray.push(username);
           }
 
         }
-        setPlayers(playerarray)
+
+        if (playersid) {
+
+          if (JSON.stringify(data) !== JSON.stringify(playersid)) {
+            setPlayers(playerarray)
+          }else{
+            
+            console.log('alo')
+          }
+        } else {
+          setPlayers(playerarray)
+        }
+
 
 
 
@@ -168,11 +201,13 @@ export default function SessionPage() {
           setSession(data);
           setTitle(data.title);
           setMap(data.Maps);
-          setPlayers(data.players);
+         
           getPlayers(data.players);
           setShowInfo(true);
           setPlayersid(data.players);
           setAllInventories(data.inventories);
+          setPlayerLocation(data.PlayersPos);
+
 
 
         } else {
@@ -185,6 +220,8 @@ export default function SessionPage() {
       console.error('Error fetching the session: ', error)
     }
   }
+
+
   async function updateSession(newData) {
 
     try {
@@ -309,8 +346,8 @@ export default function SessionPage() {
     updatedRequests.push(user.id);
     updateSession({ Others: updatedRequests });
   }
-  async function deletesession(){
-    const response = await axios.post(`${urlrequest}/sessions/delete/${sessionid}`);
+  async function deletesession() {
+    const response = await axios.get(`${urlrequest}/sessions/delete/${sessionid}`);
 
 
     window.location.href = '/'
@@ -340,17 +377,48 @@ export default function SessionPage() {
       console.error('Error fetching the session: ', error)
     }
   }
+
+  const handleDragStart = (e, position) => {
+    e.dataTransfer.setData('position', position);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, targetIndex) => {
+    const newPosition = parseInt(e.dataTransfer.getData('position'));
+    const updatedPlayerLocations = [...playerlocation];
+    const draggedPlayerIndex = updatedPlayerLocations.findIndex(player => player.position === newPosition);
+
+    if (draggedPlayerIndex !== -1) {
+      updatedPlayerLocations[draggedPlayerIndex].position = targetIndex;
+    }
+    console.log(newPosition)
+    setPlayerLocation(updatedPlayerLocations);
+    updateSession({ PlayersPos: updatedPlayerLocations });
+  };
+  function addplayerpos() {
+    let playerspositions = [...playerlocation]
+    const index = playersid.indexOf(user.id);
+    const nameuser = players[index];
+
+    playerspositions.push({ name: nameuser, position: parseInt(tileselected), id: user.id })
+    updateSession({ PlayersPos: playerspositions });
+  }
   return (
     <div className={styles.body} >
+
       {showinfo === true ?
-        <div>
+
+        <div className={styles.infobody}>
           <div>
             ID: {sessionid}
           </div>
           <button onClick={() => {
             deletesession()
           }}>
-           Deletar sessão
+            Deletar sessão
           </button>
           <div style={{ marginTop: '10px' }}>
             Titulo do jogo: {title}
@@ -481,7 +549,6 @@ export default function SessionPage() {
 
           </div>
           {user?.id === playersid[0] ?
-
             <div>
               <h2>Adicionar Item</h2>
               <form onSubmit={handleSubmit}>
@@ -512,40 +579,87 @@ export default function SessionPage() {
                 <button type="submit">Enviar</button>
               </form>
             </div>
-
-
-
             : null}
-
-
-
         </div>
         :
         <div>
           {user.id ?
-
             <div>
-              
               {!request.includes(user.id) ?
-
                 <button onClick={() => {
                   makeRequest()
                 }} >
-
                   Solicitar entrada
-
                 </button>
-
                 :
                 <div>
                   Você já solicitou pra entrar
                 </div>}
-
             </div> : <div> Por favor, faça o login para poder interagir com as sessões </div>}
-
-
-
         </div>}
+      {showinfo === true ?
+        <div className={styles.mapbody}>
+          <div className={styles.maptitle}>
+            <div style={{ marginRight: '50px' }}>
+              <div>
+                Escolha o tile e clique para adicionar você (Não pode ter nenhum jogador ou npc em cima)
+                <div>
+                  <form>
+                    <input value={tileselected} onChange={(e) => {
+                      setTileSelected(e.target.value)
+
+                    }} />
+                    <button onClick={() => {
+                      addplayerpos()
+
+                    }} > Adicionar </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            Mapa de {map}
+          </div>
+          <div className={styles.mapcontainer}>
+            <div className={styles.mapgrid} style={{ position: 'relative' }}>
+              {gridItems.map((_, index) => (
+                <div
+                  key={index}
+                  className={styles.gridItem}
+                  style={{
+                    // Set background image for each grid item
+                    backgroundImage: `url('/path/to/your/background/image.jpg')`
+                  }}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, index)}
+                >
+                  Tile {index}
+                </div>
+              ))}
+              {playerlocation.map((player, index) => (
+                <div
+                  key={index}
+                  className={styles.gridPlayer}
+                  style={{
+                    backgroundImage: `url('/path/to/player/image.jpg')`, // Assuming you have a player image
+                    position: 'absolute',
+                    top: `calc(${Math.floor(player.position / 64)} * (100% / 64))`,
+                    left: `calc(${player.position % 64} * (100% / 64))`,
+                    width: '60px', // Adjust as needed
+                    height: '60px', // Adjust as needed
+                  }}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, player.position)}
+
+                >
+                  {player.name}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+
+        : null}
 
     </div>
   )

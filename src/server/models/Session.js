@@ -23,6 +23,10 @@ const sessionSchema = new mongoose.Schema({
     type: Array,
     required: false
   },
+ PlayersPos: {
+    type: Array,
+    required: false
+  },
   Npcs: { 
     type:Array,
     required:false

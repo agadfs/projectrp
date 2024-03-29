@@ -1,4 +1,82 @@
 .body{
   margin-top: 100px;
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+.infobody{
+  width: 25%;
+  max-width: 500px;
+  min-width: 300px;
+  height: 100%;
+  border:1px solid purple;
   
+}
+.mapbody{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  border:1px solid black;
+  margin-inline: 5px;
+  overflow: scroll;
+  max-height: 750px;
+  z-index: 2;
+}
+.maptitle{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-bottom: 1px solid gray;
+  
+}
+
+.mapcontainer{
+  display: flex;
+
+  height: 100%;
+  width: 100%;
+  
+  
+}
+.mapgrid {
+ 
+  display: grid;
+  grid-template-columns: repeat(64, 1fr); 
+  grid-template-rows: repeat(64, 1fr); 
+  gap: 1px; 
+  z-index: 1;
+}
+
+.gridItem {
+  width: 60px; 
+  height: 60px; 
+  background-size: cover; 
+  border:1px solid yellow;
+  font-size: 10px;
+  justify-content: end;
+  align-items: end;
+  display: flex;
+  
+}
+.gridPlayer {
+  width: 60px; 
+  height: 60px; 
+  background-size: cover; 
+  border:1px solid red;
+  font-size: 12px;
+}
+.overlay {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 60px; 
+  height: 60px;  
+  background-color: rgba(0, 0, 0, 0.5); 
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px; 
 }
