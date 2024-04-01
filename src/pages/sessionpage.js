@@ -5,7 +5,11 @@ import axios from 'axios';
 import { useAppContext } from '../AppContext';
 
 export default function SessionPage() {
+  const [urlselectedmap, setUrlSelectedMap] = useState('');
+  const [nameselectedmap, setNameSelectedMap] = useState('');
+  const [imageWidth, setImageWidth] = useState(null);
   const [tileselected, setTileSelected] = useState('');
+  const [nameselected, setNameSelected] = useState('');
   const [count, setCount] = useState(0);
   const [draggedItem, setDraggedItem] = useState(null);
   const gridItems = Array.from({ length: 4096 }); /* 64 x 64 */
@@ -19,6 +23,7 @@ export default function SessionPage() {
   const [requestNames, setRequestNames] = useState([])
   const [inventory, setInventory] = useState('');
   const [map, setMap] = useState('');
+  const [mapsarray, setMapsArray] = useState([]);
   const [title, setTitle] = useState('');
   const [formData, setFormData] = useState({
     name: '',
@@ -38,16 +43,16 @@ export default function SessionPage() {
     { name: 'Test 2', position: 2, id: '' },
 
   ]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (user.id) {
         getSession()
-      }else{
-        console.log(user)
-        console.log(user.id)
+      } else {
+
       }
       setCount(prevCount => prevCount + 1);
-    }, 5000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [user]);
@@ -172,17 +177,13 @@ export default function SessionPage() {
 
           if (JSON.stringify(data) !== JSON.stringify(playersid)) {
             setPlayers(playerarray)
-          }else{
-            
-            console.log('alo')
+          } else {
+
+
           }
         } else {
           setPlayers(playerarray)
         }
-
-
-
-
       }
     } catch (error) {
       console.error('Error fetching the session: ', error)
@@ -200,8 +201,8 @@ export default function SessionPage() {
 
           setSession(data);
           setTitle(data.title);
-          setMap(data.Maps);
-         
+          setMapsArray(data.Maps);
+          setMap(data.Maps[0]);
           getPlayers(data.players);
           setShowInfo(true);
           setPlayersid(data.players);
@@ -406,6 +407,45 @@ export default function SessionPage() {
     playerspositions.push({ name: nameuser, position: parseInt(tileselected), id: user.id })
     updateSession({ PlayersPos: playerspositions });
   }
+  function addnpcpos() {
+    let playerspositions = [...playerlocation]
+    const index = playersid.indexOf(user.id);
+    const nameuser = players[index];
+
+    playerspositions.push({ name: nameselected, position: parseInt(tileselected), id: user.id })
+    setNameSelected('')
+    updateSession({ PlayersPos: playerspositions });
+  }
+  function addmap() {
+    let mapsdata = [...mapsarray]
+    mapsdata.push({ name: nameselectedmap, url: urlselectedmap, id: user.id })
+    updateSession({ Maps: mapsdata });
+  }
+  function updateMap(index) {
+
+    const newArray = [...mapsarray];
+
+    const selectedMap = newArray.splice(index, 1)[0];
+
+    newArray.unshift(selectedMap);
+
+    updateSession({ Maps: newArray });
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
+
+  }
+  const image = new Image();
+
+  image.src = map.url;
+  image.onload = function() {
+    // Calcula a largura da imagem que seja divisível por 60
+    const width = Math.ceil(image.width / 60) * 120;
+
+    // Define a largura da imagem no estado
+    setImageWidth(width);
+    console.log(width)
+  };
   return (
     <div className={styles.body} >
 
@@ -415,29 +455,33 @@ export default function SessionPage() {
           <div>
             ID: {sessionid}
           </div>
-          <button onClick={() => {
-            deletesession()
-          }}>
-            Deletar sessão
-          </button>
+          {user?.id === playersid[0] ? <div>
+            <button onClick={() => {
+              deletesession()
+            }}>
+              Deletar sessão
+            </button>
+          </div> : null}
           <div style={{ marginTop: '10px' }}>
             Titulo do jogo: {title}
-            <div>
-              <form>
-                <input value={titulo} onChange={(e) => {
-                  setTitulo(e.target.value)
-                }} />
 
-                <button onClick={() => {
-                  if (titulo && titulo.length > 5 && titulo !== title) {
-                    updateSession({ title: titulo });
-                  } else {
-                    alert('O titulo tem que ser maior que 5 caracteres, e diferente do titulo anterior')
-                  }
-                }} >Mudar nome</button>
+            {user?.id === playersid[0] ?
+              <div>
+                <form>
+                  <input value={titulo} onChange={(e) => {
+                    setTitulo(e.target.value)
+                  }} />
 
-              </form>
-            </div>
+                  <button onClick={() => {
+                    if (titulo && titulo.length > 5 && titulo !== title) {
+                      updateSession({ title: titulo });
+                    } else {
+                      alert('O titulo tem que ser maior que 5 caracteres, e diferente do titulo anterior')
+                    }
+                  }} >Mudar nome</button>
+
+                </form>
+              </div> : null}
           </div>
           <div style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
             Jogadores:
@@ -455,32 +499,33 @@ export default function SessionPage() {
                 </div>
               ))}
             </div>
-            <div style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
-              Solicitações para entrar:
-              <div style={{ height: '100%', display: 'flex', maxWidth: '300px', gap: '10px', flexWrap: 'wrap', border: '3px solid black', padding: '10px', borderRadius: '5px' }}>
-                {request && request?.length > 0 && request?.map((player, index) => (
-                  <div style={{ padding: '10px', border: '1px solid black', width: 'auto' }} key={index}>
-                    <div>
+            {user?.id === playersid[0] ?
+              <div style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
+                Solicitações para entrar:
+                <div style={{ height: '100%', display: 'flex', maxWidth: '300px', gap: '10px', flexWrap: 'wrap', border: '3px solid black', padding: '10px', borderRadius: '5px' }}>
+                  {request && request?.length > 0 && request?.map((player, index) => (
+                    <div style={{ padding: '10px', border: '1px solid black', width: 'auto' }} key={index}>
+                      <div>
 
-                      {requestNames[index]}
+                        {requestNames[index]}
 
+                      </div>
+
+                      <button onClick={() => {
+
+                        acceptRequest(index);
+                      }}>
+                        Aceitar
+                      </button>
+
+                      <button onClick={() => {
+
+                        denyRequest(index);
+                      }}> Recusar </button>
                     </div>
-
-                    <button onClick={() => {
-
-                      acceptRequest(index);
-                    }}>
-                      Aceitar
-                    </button>
-
-                    <button onClick={() => {
-
-                      denyRequest(index);
-                    }}> Recusar </button>
-                  </div>
-                ))}
-              </div>
-            </div>
+                  ))}
+                </div>
+              </div> : null}
           </div>
           <div>
 
@@ -601,32 +646,119 @@ export default function SessionPage() {
         <div className={styles.mapbody}>
           <div className={styles.maptitle}>
             <div style={{ marginRight: '50px' }}>
-              <div>
-                Escolha o tile e clique para adicionar você (Não pode ter nenhum jogador ou npc em cima)
+              {playerlocation?.find(obj => obj.name === players[playersid?.indexOf(user?.id)]) || user?.id !== playersid[0] ?
+
                 <div>
-                  <form>
-                    <input value={tileselected} onChange={(e) => {
-                      setTileSelected(e.target.value)
+                  {user?.id !== playersid[0] ?
+                    <div>
+                      Você já criou seu personagem
+                      <span style={{ fontWeight: 'bold', fontSize: '20px' }} >  {players[playersid?.indexOf(user.id)]} </span>,
+                      ele se encontra no tile: {
+                        playerlocation.find(obj => obj.name === players[playersid.indexOf(user.id)]) ?
+                          playerlocation.find(obj => obj.name === players[playersid.indexOf(user.id)]).position
+                          : null
+                      }
 
-                    }} />
-                    <button onClick={() => {
-                      addplayerpos()
+                    </div> :
+                    <div>
+                      Você é o  <span style={{ fontWeight: 'bold', fontSize: '20px' }} >  MESTRE </span>, crie NPC's aqui:
 
-                    }} > Adicionar </button>
-                  </form>
-                </div>
-              </div>
+                      <div>
+                        <form>
+                          Nome:
+                          <input value={nameselected} onChange={(e) => {
+                            setNameSelected(e.target.value)
+
+                          }} />
+                          Tile que o NPC irá aparecer
+                          <input type='number' value={tileselected} onChange={(e) => {
+                            setTileSelected(e.target.value)
+
+                          }} />
+                          <button onClick={() => {
+                            addnpcpos()
+
+                          }} > Adicionar NPC </button>
+                        </form>
+                      </div>
+
+                    </div>}
+
+
+                </div> :
+                <div>
+                  Escolha o tile e clique para adicionar você (Não pode ter nenhum jogador ou npc em cima)
+                  <div>
+                    <form>
+                      <input type='number' value={tileselected} onChange={(e) => {
+                        setTileSelected(e.target.value)
+
+                      }} />
+                      <button onClick={() => {
+                        addplayerpos()
+
+                      }} > Adicionar </button>
+                    </form>
+                  </div>
+                </div>}
+
+
             </div>
-            Mapa de {map}
+            <div>
+
+              Mapa de {map.name}
+
+              {user?.id === playersid[0] ?
+                <div>
+                  Escolha um mapa:
+                  {Array.isArray(mapsarray) && mapsarray.length > 0 && (
+                    <select onChange={(e) => {
+                      updateMap(e.target.selectedIndex)
+                    }}>
+                      {mapsarray.map((map, index) => (
+                        <option key={index} value={{ name: map.name, url: map.url }}>
+                          {map.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                  <div>
+                    <form>
+                      Nome:
+                      <input value={nameselectedmap} onChange={(e) => {
+                        setNameSelectedMap(e.target.value)
+
+                      }} />
+                      Url da foto do mapa:
+                      <input value={urlselectedmap} onChange={(e) => {
+                        setUrlSelectedMap(e.target.value)
+
+                      }} />
+                      <button onClick={() => {
+                        addmap()
+
+                      }} > Adicionar Mapa </button>
+                    </form>
+                  </div>
+
+                </div> : null}
+
+
+
+            </div>
+
+
+
+
           </div>
-          <div className={styles.mapcontainer}>
+          <div style={{ backgroundImage: `url('${map.url}')`, backgroundSize: imageWidth ? `${imageWidth}px ${imageWidth}px` : 'auto', backgroundRepeat: 'no-repeat' }} className={styles.mapcontainer}>
             <div className={styles.mapgrid} style={{ position: 'relative' }}>
               {gridItems.map((_, index) => (
                 <div
                   key={index}
                   className={styles.gridItem}
                   style={{
-                    // Set background image for each grid item
+
                     backgroundImage: `url('/path/to/your/background/image.jpg')`
                   }}
                   onDragOver={handleDragOver}
@@ -636,22 +768,51 @@ export default function SessionPage() {
                 </div>
               ))}
               {playerlocation.map((player, index) => (
-                <div
-                  key={index}
-                  className={styles.gridPlayer}
-                  style={{
-                    backgroundImage: `url('/path/to/player/image.jpg')`, // Assuming you have a player image
-                    position: 'absolute',
-                    top: `calc(${Math.floor(player.position / 64)} * (100% / 64))`,
-                    left: `calc(${player.position % 64} * (100% / 64))`,
-                    width: '60px', // Adjust as needed
-                    height: '60px', // Adjust as needed
-                  }}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, player.position)}
+                <div key={index}>
 
-                >
-                  {player.name}
+                  {player.id === user.id ?
+                    <div
+
+                      className={styles.gridPlayer}
+                      style={{
+                        backgroundImage: `url('/path/to/player/image.jpg')`, // Assuming you have a player image
+                        position: 'absolute',
+                        top: `calc(${Math.floor(player.position / 64)} * (100% / 64))`,
+                        left: `calc(${player.position % 64} * (100% / 64))`,
+                        width: '60px', // Adjust as needed
+                        height: '60px', // Adjust as needed
+                        border: player.id === user.id ? '1px solid red' : '1px solid blue',
+
+                      }}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, player.position)}
+
+                    >
+                      {player.name}
+                    </div>
+                    :
+                    <div
+
+                      className={styles.gridPlayer}
+                      style={{
+                        backgroundImage: `url('/path/to/player/image.jpg')`, // Assuming you have a player image
+                        position: 'absolute',
+                        top: `calc(${Math.floor(player.position / 64)} * (100% / 64))`,
+                        left: `calc(${player.position % 64} * (100% / 64))`,
+                        width: '60px', // Adjust as needed
+                        height: '60px', // Adjust as needed
+                        border: player.id === user.id ? '1px solid red' : '1px solid blue',
+
+                      }}
+
+                      onDragStart={(e) => handleDragStart(e, player.position)}
+
+                    >
+                      {player.name}
+                    </div>}
+
+
+
                 </div>
               ))}
             </div>
