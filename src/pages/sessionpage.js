@@ -467,7 +467,7 @@ export default function SessionPage() {
       const isValid = await checkImageUrlValidity(url).then(width => {
         setImageWidth(width);
       });
-      setIsUrlValid(isValid);
+      setIsUrlValid(true);
     } catch (error) {
       setIsUrlValid(false);
     }
