@@ -3,6 +3,7 @@
   display: flex;
   width: 100%;
   height: 100%;
+  
 }
 .infobody{
   width: 25%;
@@ -10,9 +11,11 @@
   min-width: 300px;
   height: 100%;
   border:1px solid purple;
+  padding:5px;
   
 }
 .mapbody{
+  padding:5px;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -36,18 +39,21 @@
   align-items: center;
   justify-content: center;
   padding: 10px;
-  border-bottom: 1px solid gray;
+  
+  position: fixed;
+  top:20px;
   
 }
 
 .mapcontainer{
   display: flex;
-
+  
   height: 100%;
   width: 100%;
   
   
 }
+
 .mapgrid {
  
   display: grid;

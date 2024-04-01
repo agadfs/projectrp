@@ -21,7 +21,7 @@ export default function Navbar() {
       <div>{user.id ?
         <div>
           <div> 
-          id: {user.id}
+          Seu id: {user.id}
           </div>
           <button onClick={()=> {
              setUser({id:''})

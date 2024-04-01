@@ -61,13 +61,13 @@ export default function Home() {
 
   }, [])
 
-  
+
 
   async function setname() {
     const response = await axios.post(`${urlrequest}/users/update/${user.id}`, { username: newName });
-    
+
     setName(newName);
-    
+
   }
   async function getname0() {
     const response = await axios.get(`${urlrequest}/users/${user.id}`);
@@ -76,17 +76,17 @@ export default function Home() {
       const username = data.username;
       setNewName(username);
       setName(username);
-     
+
     }
   }
 
   useEffect(() => {
-    if(changed === true ){
-            
+    if (changed === true) {
+
       setname();
       setChanged(false);
     }
-  },[changed])
+  }, [changed])
 
   useEffect(() => {
     if (user.id) {
@@ -96,12 +96,12 @@ export default function Home() {
 
           // Assuming you're updating the user's activity status in your backend
           await axios.post(`${urlrequest}/heartbeat`, { userId: user.id, lastActiveAt: new Date });
-          
+
           getusers();
           getusersonline();
           getsessions();
           setChanged(true);
-          
+
         } catch (error) {
           console.error('Error sending heartbeat:', error);
         }
@@ -147,23 +147,26 @@ export default function Home() {
         {user.id ?
           <div style={{ display: 'flex', border: '1px solid black', padding: '5px', margin: '5px' }}>
             Nome da sessão nova
-            <form>
-              <input style={{ display: 'flex', marginBottom: '10px' }} value={title} onChange={(e) => {
+            <form onSubmit={(e) => {
+              if (title) {
+                const existingSessionWithUser = sessions.find(session => session.players && session.players.length > 0 && session.players[0] === user.id)
+                if (!existingSessionWithUser) {
+
+                  createRandomSession()
+                } else {
+                  alert('Você já tem uma sessão aberta')
+                }
+              } else {
+                alert('Por favor preencha o nome da sessão')
+              }
+              e.preventDefault();
+            }} >
+              <input 
+
+              style={{ display: 'flex', marginBottom: '10px' }} value={title} onChange={(e) => {
                 setTitle(e.target.value)
               }} />
-              <button className={styles.simplebutton} onClick={() => {
-                if (title) {
-                  const existingSessionWithUser = sessions.find(session => session.players && session.players.length > 0 && session.players[0] === user.id)
-                  if (!existingSessionWithUser) {
-
-                    createRandomSession()
-                  } else {
-                    alert('Você já tem uma sessão aberta')
-                  }
-                } else {
-                  alert('Por favor preencha o nome da sessão')
-                }
-              }}>
+              <button className={styles.simplebutton} >
                 Criar Sessão
               </button>
             </form>
@@ -180,7 +183,7 @@ export default function Home() {
 
       {user.id ?
         <div className={styles.maincontainer}>
-          <div> SEU NOME: <input value={newName} onChange={(e) => { setNewName(e.target.value)}} /> Espere o nome a seguir,estar igual ao que você quer: {name}</div>
+          <div> SEU NOME: <input value={newName} onChange={(e) => { setNewName(e.target.value) }} /> Espere o nome a seguir,estar igual ao que você quer: {name}</div>
           <div className={styles.maincontainertitle}> BEM VINDO AO PROJECTRP</div>
           {sessions ? <Sessions sessions={sessions} id={user.id} /> : null}
 
