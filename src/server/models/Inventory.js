@@ -16,7 +16,7 @@ const InventorySchema = new mongoose.Schema({
    
   },
   Stats: {
-    type: Array,
+    type: Object,
     required: false,
    
   }

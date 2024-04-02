@@ -108,6 +108,9 @@ export default function SessionPage() {
         ownerId: user.id,
         gameId: sessionid,
         Items: [],
+        Stats: {
+          
+        }
 
       };
       const response = await axios.post(`${urlrequest}/inventory/create`, randomUser)
@@ -584,6 +587,24 @@ export default function SessionPage() {
               }}>
                 Seu Id:  {inventory.ownerId} <br />
                 <div>
+                  <h3>Seus Atributos</h3>
+                  {inventory.stats ?  <div>
+                    <div>
+                      <p>
+                      Seu level: {inventory.stats[0]}
+                      </p>
+                    </div>
+                    <div>
+                      <p>
+
+                      </p>
+                    </div>
+
+                  </div> : null}
+                 
+
+                </div>
+                <div>
                   Itens:
                   <div style={{ width: '100%', display: 'flex', gap: '20px', flexWrap: 'wrap' }} >
                     {inventory?.Items?.map((item, index) => (
@@ -596,7 +617,7 @@ export default function SessionPage() {
                         ) : null}
 
                         <div>
-                          {item?.item?.name}
+                          {item?.item?.name} <span>({item?.quantity} Unidade(s))</span>
                         </div>
                         {item?.item?.canequip ?
                           <div>
@@ -607,13 +628,17 @@ export default function SessionPage() {
                               DEF: {item?.item?.atk}
                             </div>
                           </div> : null}
+                        {item?.item?.cantrade ?
+                          <div>
+                            <div>
+                              VALOR: {item?.item?.value} peças de bronze
+                            </div>
+
+                          </div> : null}
 
 
 
 
-                        <div style={{ textWrap: 'nowrap' }} >
-                          {item?.quantity} Unidade(s)
-                        </div>
                         <button onClick={() => handleDelete(index)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
                           Deletar
                         </button>
@@ -680,9 +705,9 @@ export default function SessionPage() {
                     <label htmlFor="def">Defesa:</label><br />
                     <input type="text" id="def" name="def" value={formData.def} onChange={handleChange} /><br />
 
-                      <p>Caso o equipamento tenha debuff ou buff, escreva o nome e em seguida o valor, por exemplo:
-                        'slow-1' ou 'speed+2' ou 'sabedoria+4' ou 'destreza-1'. ESCREVA SEM ASPAS
-                      </p>
+                    <p>Caso o equipamento tenha debuff ou buff, escreva o nome e em seguida o valor, por exemplo:
+                      'slow-1' ou 'speed+2' ou 'sabedoria+4' ou 'destreza-1'. ESCREVA SEM ASPAS
+                    </p>
 
                     <label htmlFor="buff1">Buff ou Debuff 1 :</label><br />
                     <input type="text" id="buff1" name="buff1" value={formData.buff1} onChange={handleChange} /><br />
@@ -692,7 +717,7 @@ export default function SessionPage() {
 
                     <label htmlFor="buff2">Buff ou Debuff 3:</label><br />
                     <input type="text" id="buff2" name="buff2" value={formData.buff2} onChange={handleChange} /><br />
-                    
+
                   </div> : null}
 
                 <label htmlFor="url">Url imagem:</label><br />
