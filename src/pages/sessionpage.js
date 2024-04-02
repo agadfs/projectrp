@@ -3,7 +3,8 @@ import styles from './sessionpage.module.css'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAppContext } from '../AppContext';
-import { LinearProgress } from '@mui/material';
+import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
+import ShieldIcon from '@mui/icons-material/Shield';
 
 export default function SessionPage() {
   const [scale, setScale] = useState(1);
@@ -36,7 +37,8 @@ export default function SessionPage() {
     others: '',
     atk: '',
     def: '',
-    url: ''
+    url: '',
+    typewear: ''
   });
   const [items, setItems] = useState();
   const [showinfo, setShowInfo] = useState(false);
@@ -93,20 +95,7 @@ export default function SessionPage() {
     return () => clearInterval(interval);
   }, [user]);
 
-  useEffect(() => {
 
-    const interval2 = setInterval(() => {
-      if (user.id) {
-        handleUpdateStats(statsuser)
-
-      } else {
-
-      }
-
-    }, 4000);
-
-    return () => clearInterval(interval2);
-  }, [user, statsuser]);
   async function updateInventory() {
     try {
       const randomItem = items[Math.floor(Math.random() * items?.length)];
@@ -140,6 +129,21 @@ export default function SessionPage() {
 
       await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: newInv })
       getInventory()
+
+    } catch (error) {
+      console.error('Error updating inventory:', error);
+    }
+  }
+  async function deleteInventoryItem2(newInv, updateddata) {
+
+    try {
+
+
+      await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: newInv })
+      handleUpdateStats(updateddata);
+      console.log(newInv)
+
+
 
     } catch (error) {
       console.error('Error updating inventory:', error);
@@ -367,16 +371,28 @@ export default function SessionPage() {
     statsnew.maxMana = (statsnew.level * 5) + (statsnew.intelligence * 10) + (statsnew.wisdom * 2) + (statsnew.charisma * 2) + 10;
     statsnew.atk = (statsnew.level * 1) + (statsnew.strength * 0.2) + (statsnew.dexterity * 0.3) + 1;
     stats.def = (statsnew.level * 1) + (statsnew.strength * 0.3) + (statsnew.dexterity * 0.2) + (statsnew.constitution * 1) + 1;
+    const equipmentSlots = ['earing', 'head', 'lefthand', 'righthand', 'chest', 'ringleft', 'ringright', 'pants', 'othersleft', 'othersright', 'shoes'];
+    equipmentSlots.forEach(slot => {
+
+      if (typeof statsnew[slot] === 'object') {
+
+        statsnew.atk += !isNaN(parseInt(statsnew[slot].atk)) ? parseInt(statsnew[slot].atk) : 0;
+        statsnew.def += !isNaN(parseInt(statsnew[slot].def)) ? parseInt(statsnew[slot].def) : 0;
+      }
+    });
     statsnew.atk = Math.round(statsnew.atk);
     statsnew.def = Math.round(statsnew.def);
 
     try {
 
-      const response = await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: inventory.Items, Stats: statsnew })
+      const response = await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, Stats: statsnew })
+
+      if (response.data) {
 
 
+        getInventory()
+      }
 
-      getInventory()
 
     } catch (error) {
       console.error('Error updating inventory:', error);
@@ -386,6 +402,35 @@ export default function SessionPage() {
     const selectedId = event.target.value;
     handleAdd(selectedId)
   }
+  function handleAddItem2(event) {
+    const selectedId = event;
+    handleAdd(selectedId)
+  }
+  const handleUpdateQuantity2 = (index, quantityChange, updateddata) => {
+    const updatedItems = inventory.Items.map((item, itemIndex) => {
+      if (itemIndex === index) {
+        const newQuantity = item.quantity + quantityChange;
+
+        if (newQuantity <= 0) {
+          return null;
+        } else {
+
+          return {
+            ...item,
+            quantity: newQuantity
+          };
+        }
+      }
+      return item;
+    }).filter(item => item !== null);
+    setInventory({ ...inventory, Items: updatedItems })
+
+    deleteInventoryItem2(updatedItems, updateddata);
+
+
+
+  };
+
   const handleUpdateQuantity = (index, quantityChange) => {
     const updatedItems = inventory.Items.map((item, itemIndex) => {
       if (itemIndex === index) {
@@ -403,6 +448,7 @@ export default function SessionPage() {
       }
       return item;
     }).filter(item => item !== null);
+    setInventory({ ...inventory, Items: updatedItems })
 
     deleteInventoryItem(updatedItems);
 
@@ -799,70 +845,447 @@ export default function SessionPage() {
                 {inventory.Stats ?
                   <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
                     <div style={{ display: 'flex', gap: '20px' }} >
-                    {statsuser.earing?.atk ? <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        
-                        <div> 
-                        atk: {statsuser.earing?.atk}
+                      {statsuser.earing?.atk ?
+                        <div onClick={() => {
+                          const updatedUser = { ...statsuser };
+                          const index = items.findIndex(item => item.name === statsuser.earing?.name);
+                          if (index !== -1) {
 
-                        </div>
-                        <div> 
-                        def: {statsuser.earing?.def}
+                            updatedUser.earing = '';
+                            handleUpdateStats(updatedUser);
+                            handleAddItem2(index);
 
-                        </div>
-                        <div> 
-                       brinco
 
-                        </div>
-                       
-                      </div>: <div style={{width:'50px', height:'50px', backgroundColor:'black', color:'white', display:'flex', justifyContent:'center'}} > Brinco </div>}
+                          } else {
+                            console.log('Item not found!');
+                          }
+
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                          <img src={statsuser?.earing?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                            <div  >
+                              <CloseFullscreenIcon />{statsuser.earing?.atk}
+                            </div>
+                            <div>
+                              <ShieldIcon />{statsuser.earing?.def}
+                            </div>
+
+                          </div>
+                          <div style={{ display: 'flex', alignSelf: 'center' }} >
+                            brinco
+                          </div>
+                        </div> :
+                        <div style={{
+                          width: '50px', height: '50px', backgroundColor: 'black',
+                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        }} >
+                          Brinco </div>}
+
+
+                      {statsuser.head?.atk ?
+                        <div onClick={() => {
+                          const updatedUser = { ...statsuser };
+                          const index = items.findIndex(item => item.name === statsuser.head?.name);
+                          if (index !== -1) {
+
+                            updatedUser.head = '';
+                            handleUpdateStats(updatedUser);
+                            handleAddItem2(index);
+
+
+                          } else {
+                            console.log('Item not found!');
+                          }
+
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                          <img src={statsuser?.head?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                            <div  >
+                              <CloseFullscreenIcon />{statsuser.head?.atk}
+                            </div>
+                            <div>
+                              <ShieldIcon />{statsuser.head?.def}
+                            </div>
+
+                          </div>
+                          <div style={{ display: 'flex', alignSelf: 'center' }} >
+                            Capacete
+                          </div>
+                        </div> :
+                        <div style={{
+                          width: '50px', height: '50px', backgroundColor: 'black',
+                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        }} >
+                          Capacete </div>}
+
+                    </div>
+                    <div style={{ display: 'flex', gap: '20px' }} >
+
+                      {statsuser.lefthand?.atk ?
+                        <div onClick={() => {
+                          const updatedUser = { ...statsuser };
+                          const index = items.findIndex(item => item.name === statsuser.lefthand?.name);
+                          if (index !== -1) {
+
+                            updatedUser.lefthand = '';
+                            handleUpdateStats(updatedUser);
+                            handleAddItem2(index);
+
+
+                          } else {
+                            console.log('Item not found!');
+                          }
+
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                          <img src={statsuser?.lefthand?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                            <div  >
+                              <CloseFullscreenIcon />{statsuser.lefthand?.atk}
+                            </div>
+                            <div>
+                              <ShieldIcon />{statsuser.lefthand?.def}
+                            </div>
+
+                          </div>
+                          <div style={{ display: 'flex', alignSelf: 'center' }} >
+                            Mão esquerda
+                          </div>
+                        </div> :
+                        <div style={{
+                          width: '50px', height: '50px', backgroundColor: 'black',
+                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        }} >
+                          Mão esquerda </div>}
+
+
+                      {statsuser.chest?.atk ?
+                        <div onClick={() => {
+                          const updatedUser = { ...statsuser };
+                          const index = items.findIndex(item => item.name === statsuser.chest?.name);
+                          if (index !== -1) {
+
+                            updatedUser.chest = '';
+                            handleUpdateStats(updatedUser);
+                            handleAddItem2(index);
+
+
+                          } else {
+                            console.log('Item not found!');
+                          }
+
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                          <img src={statsuser?.chest?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                            <div  >
+                              <CloseFullscreenIcon />{statsuser.chest?.atk}
+                            </div>
+                            <div>
+                              <ShieldIcon />{statsuser.chest?.def}
+                            </div>
+
+                          </div>
+                          <div style={{ display: 'flex', alignSelf: 'center' }} >
+                            Tronco
+                          </div>
+                        </div> :
+                        <div style={{
+                          width: '50px', height: '50px', backgroundColor: 'black',
+                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        }} >
+                          Tronco </div>}
+
+
+
+                      {statsuser.righthand?.atk ?
+                        <div onClick={() => {
+                          const updatedUser = { ...statsuser };
+                          const index = items.findIndex(item => item.name === statsuser.righthand?.name);
+                          if (index !== -1) {
+
+                            updatedUser.righthand = '';
+                            handleUpdateStats(updatedUser);
+                            handleAddItem2(index);
+
+
+                          } else {
+                            console.log('Item not found!');
+                          }
+
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                          <img src={statsuser?.righthand?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                            <div  >
+                              <CloseFullscreenIcon />{statsuser.righthand?.atk}
+                            </div>
+                            <div>
+                              <ShieldIcon />{statsuser.righthand?.def}
+                            </div>
+
+                          </div>
+                          <div style={{ display: 'flex', alignSelf: 'center' }} >
+                            Mão direita
+                          </div>
+                        </div> :
+                        <div style={{
+                          width: '50px', height: '50px', backgroundColor: 'black',
+                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        }} >
+                          Mão direita </div>}
+                    </div>
+                    <div style={{ display: 'flex', gap: '20px' }} >
+
+                      {statsuser.ringleft?.atk ?
+                        <div onClick={() => {
+                          const updatedUser = { ...statsuser };
+                          const index = items.findIndex(item => item.name === statsuser.ringleft?.name);
+                          if (index !== -1) {
+
+                            updatedUser.ringleft = '';
+                            handleUpdateStats(updatedUser);
+                            handleAddItem2(index);
+
+
+                          } else {
+                            console.log('Item not found!');
+                          }
+
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                          <img src={statsuser?.ringleft?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                            <div  >
+                              <CloseFullscreenIcon />{statsuser.ringleft?.atk}
+                            </div>
+                            <div>
+                              <ShieldIcon />{statsuser.ringleft?.def}
+                            </div>
+
+                          </div>
+                          <div style={{ display: 'flex', alignSelf: 'center' }} >
+                            Anel esquerdo
+                          </div>
+                        </div> :
+                        <div style={{
+                          width: '50px', height: '50px', backgroundColor: 'black',
+                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        }} >
+                          Anel esquerdo </div>}
+
+
+
+                      {statsuser.pants?.atk ?
+                        <div onClick={() => {
+                          const updatedUser = { ...statsuser };
+                          const index = items.findIndex(item => item.name === statsuser.pants?.name);
+                          if (index !== -1) {
+
+                            updatedUser.ringleft = '';
+                            handleUpdateStats(updatedUser);
+                            handleAddItem2(index);
+
+
+                          } else {
+                            console.log('Item not found!');
+                          }
+
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                          <img src={statsuser?.pants?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                            <div  >
+                              <CloseFullscreenIcon />{statsuser.pants?.atk}
+                            </div>
+                            <div>
+                              <ShieldIcon />{statsuser.pants?.def}
+                            </div>
+
+                          </div>
+                          <div style={{ display: 'flex', alignSelf: 'center' }} >
+                            Calça
+                          </div>
+                        </div> :
+                        <div style={{
+                          width: '50px', height: '50px', backgroundColor: 'black',
+                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        }} >
+                          Calça </div>}
+
+
+
+
+
+                      {statsuser.ringright?.atk ?
+                        <div onClick={() => {
+                          const updatedUser = { ...statsuser };
+                          const index = items.findIndex(item => item.name === statsuser.ringright?.name);
+                          if (index !== -1) {
+
+                            updatedUser.ringright = '';
+                            handleUpdateStats(updatedUser);
+                            handleAddItem2(index);
+
+
+                          } else {
+                            console.log('Item not found!');
+                          }
+
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                          <img src={statsuser?.ringright?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                            <div  >
+                              <CloseFullscreenIcon />{statsuser.ringright?.atk}
+                            </div>
+                            <div>
+                              <ShieldIcon />{statsuser.ringright?.def}
+                            </div>
+
+                          </div>
+                          <div style={{ display: 'flex', alignSelf: 'center' }} >
+                            Anel direito
+                          </div>
+                        </div> :
+                        <div style={{
+                          width: '50px', height: '50px', backgroundColor: 'black',
+                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        }} >
+                          Anel direito </div>}
+                    </div>
+                    <div style={{ display: 'flex', gap: '20px' }} >
+
+                      {statsuser.othersleft?.atk ?
+                        <div onClick={() => {
+                          const updatedUser = { ...statsuser };
+                          const index = items.findIndex(item => item.name === statsuser.othersleft?.name);
+                          if (index !== -1) {
+
+                            updatedUser.othersleft = '';
+                            handleUpdateStats(updatedUser);
+                            handleAddItem2(index);
+
+
+                          } else {
+                            console.log('Item not found!');
+                          }
+
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                          <img src={statsuser?.othersleft?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                            <div  >
+                              <CloseFullscreenIcon />{statsuser.othersleft?.atk}
+                            </div>
+                            <div>
+                              <ShieldIcon />{statsuser.othersleft?.def}
+                            </div>
+
+                          </div>
+                          <div style={{ display: 'flex', alignSelf: 'center' }} >
+                          Utensilios esquerdo
+                          </div>
+                        </div> :
+                        <div style={{
+                          width: '50px', height: '50px', backgroundColor: 'black',
+                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        }} >
+                          Utensilios esquerdo </div>}
+
+
+
                       
-                      <div>
-                        {statsuser.earing?.atk}
-                        {statsuser.earing?.def}
-                        capacete
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '20px' }} >
-                      <div>
-                        Mão esquerda
-                      </div>
-                      <div>
-                        Tronco
-                      </div>
-                      <div>
-                        Mão direita
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '20px' }} >
-                      <div>
-                        Anel esquerdo
-                      </div>
-                      <div>
-                        Calça
-                      </div>
-                      <div>
-                        Anel direito
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '20px' }} >
-                      <div>
-                        Artefato
-                      </div>
-                      <div>
-                        Sapato
-                      </div>
-                      <div>
-                        Utencilios
-                      </div>
+                          {statsuser.shoes?.atk ?
+                        <div onClick={() => {
+                          const updatedUser = { ...statsuser };
+                          const index = items.findIndex(item => item.name === statsuser.shoes?.name);
+                          if (index !== -1) {
+
+                            updatedUser.shoes = '';
+                            handleUpdateStats(updatedUser);
+                            handleAddItem2(index);
+
+
+                          } else {
+                            console.log('Item not found!');
+                          }
+
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                          <img src={statsuser?.shoes?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                            <div  >
+                              <CloseFullscreenIcon />{statsuser.shoes?.atk}
+                            </div>
+                            <div>
+                              <ShieldIcon />{statsuser.shoes?.def}
+                            </div>
+
+                          </div>
+                          <div style={{ display: 'flex', alignSelf: 'center' }} >
+                          Sapato
+                          </div>
+                        </div> :
+                        <div style={{
+                          width: '50px', height: '50px', backgroundColor: 'black',
+                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        }} >
+                          Sapato </div>}
+
+
+                      {statsuser.othersright?.atk ?
+                        <div onClick={() => {
+                          const updatedUser = { ...statsuser };
+                          const index = items.findIndex(item => item.name === statsuser.othersright?.name);
+                          if (index !== -1) {
+
+                            updatedUser.othersright = '';
+                            handleUpdateStats(updatedUser);
+                            handleAddItem2(index);
+
+
+                          } else {
+                            console.log('Item not found!');
+                          }
+
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                          <img src={statsuser?.othersright?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                            <div  >
+                              <CloseFullscreenIcon />{statsuser.othersright?.atk}
+                            </div>
+                            <div>
+                              <ShieldIcon />{statsuser.othersright?.def}
+                            </div>
+
+                          </div>
+                          <div style={{ display: 'flex', alignSelf: 'center' }} >
+                          Utensilios direito
+                          </div>
+                        </div> :
+                        <div style={{
+                          width: '50px', height: '50px', backgroundColor: 'black',
+                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        }} >
+                          Utensilios direito </div>}
                     </div>
                   </div> : null}
                 <div>
                   Itens:
                   <div style={{ width: '100%', display: 'flex', gap: '20px', flexWrap: 'wrap' }} >
                     {inventory?.Items?.map((item, index) => (
-                      <div style={{ gap: '5px', border: '2px solid green', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
+                      <div
+                        style={{ gap: '5px', border: '2px solid green', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
                         {item?.item?.url ? (
-                          <div style={{ display: 'flex', justifyContent: 'center' }} >
+                          <div onClick={() => {
+                            if (item?.item?.canequip) {
+                              const types = item?.item?.typewear;
+                              const updatedUser = { ...statsuser };
+                              if (updatedUser[types]) {
+                                alert('Desequipe primeiro o item!')
+                              } else {
+                                updatedUser[types] = inventory?.Items[index].item;
+
+                                handleUpdateQuantity2(index, -1, updatedUser);
+
+
+
+                              }
+                            }
+                          }} style={{ display: 'flex', justifyContent: 'center' }} >
                             <img src={item?.item?.url} alt="Item Image" style={{ maxWidth: '100px', height: 'auto' }} />
 
                           </div>
@@ -874,10 +1297,13 @@ export default function SessionPage() {
                         {item?.item?.canequip ?
                           <div>
                             <div>
-                              ATK: {item?.item?.def}
+                              Tipo de equipavel: {item?.item?.typewear}
                             </div>
                             <div>
-                              DEF: {item?.item?.atk}
+                              <CloseFullscreenIcon /> {item?.item?.atk}
+                            </div>
+                            <div style={{ display: 'flex', alignContent: 'center' }} >
+                              <ShieldIcon /> {item?.item?.def}
                             </div>
                           </div> : null}
                         {item?.item?.cantrade ?
@@ -950,6 +1376,21 @@ export default function SessionPage() {
                 <input type="checkbox" id="canequip" name="canequip" checked={formData.canequip} onChange={handleChange} /><br />
                 {formData.canequip ?
                   <div>
+                    <label htmlFor="typewear">Onde é equipavel:</label><br />
+                    <select id="typewear" name="typewear" value={formData.typewear} onChange={handleChange}>
+                      <option value="">Selecione uma opção</option>
+                      <option value="earing">Earring</option>
+                      <option value="head">Head</option>
+                      <option value="lefthand">Left Hand</option>
+                      <option value="righthand">Right Hand</option>
+                      <option value="chest">Chest</option>
+                      <option value="ringleft">Ring Left</option>
+                      <option value="ringright">Ring Right</option>
+                      <option value="pants">Pants</option>
+                      <option value="othersleft">Others Left</option>
+                      <option value="othersright">Others Right</option>
+                      <option value="shoes">Shoes</option>
+                    </select>
 
                     <label htmlFor="atk">Ataque:</label><br />
                     <input type="text" id="atk" name="atk" value={formData.atk} onChange={handleChange} /><br />
