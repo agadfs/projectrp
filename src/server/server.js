@@ -262,11 +262,10 @@ app.get("/item", async (req, res) => {
 
 app.post('/inventory/updateitems', async (req, res) => {
   try {
-    const { userId, items } = req.body; 
+    const { userId, items, Stats } = req.body; 
     
-    console.log(userId)
-    console.log(items)
-    const user = await Inventory.findByIdAndUpdate(userId, { Items: items });
+   
+    const user = await Inventory.findByIdAndUpdate(userId, { Items: items, Stats: Stats });
 
     res.status(201).json(user);
   } catch (error) {

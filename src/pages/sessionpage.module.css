@@ -130,3 +130,169 @@
   -webkit-transition: .2s; /* 0.2 seconds transition on hover */
   transition: .2s;
 }
+input[id="barm"] { 
+  margin: auto;
+  -webkit-appearance: none;
+  position: relative;
+  overflow: hidden;
+  height: 10px;
+  width: 200px;
+  cursor: pointer;
+  border-radius: 0; /* iOS */
+  border:5px solid black;
+}
+
+input[id="barm"]::-webkit-slider-runnable-track {
+  background: black;
+  cursor: default;
+}
+
+input[id="barm"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; /* 1 */
+  height:40px;
+  background: dodgerblue;
+  box-shadow: -200px 0 0 200px dodgerblue; 
+  
+ 
+  
+}
+
+input[id="barm"]::-moz-range-track {
+  height: 40px;
+  background: #ddd;
+  
+}
+
+input[id="barm"]::-moz-range-thumb {
+  background: #fff;
+  height: 40px;
+  width: 20px; /* 1 */
+  border: 3px solid #999; /* 1 */
+  border-radius: 0 !important;
+  box-shadow: -200px 0 0 200px dodgerblue;
+  box-sizing: border-box;
+  
+}
+
+input[id="barm"]::-ms-fill-lower { 
+  background: dodgerblue;
+}
+
+input[id="barm"]::-ms-thumb { 
+
+  display: none !important;
+}
+
+input[id="barm"]::-ms-ticks-after { 
+  display: none; 
+}
+
+input[id="barm"]::-ms-ticks-before { 
+  display: none; 
+}
+
+input[id="barm"]::-ms-track { 
+  background: #ddd;
+  color: transparent;
+  height: 40px;
+  border: none;
+  
+}
+
+input[id="barm"]::-ms-tooltip { 
+  display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+input[id="barh"] { 
+  margin: auto;
+  -webkit-appearance: none;
+  position: relative;
+  overflow: hidden;
+  height: 10px;
+  width: 200px;
+  cursor: pointer;
+  border-radius: 0; /* iOS */
+  border:5px solid black;
+}
+
+input[id="barh"]::-webkit-slider-runnable-track {
+  background: black;
+  cursor: default;
+}
+
+input[id="barh"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; /* 1 */
+  height:40px;
+  background: red;
+  box-shadow: -200px 0 0 200px red; 
+  
+ 
+  
+}
+
+input[id="barh"]::-moz-range-track {
+  height: 40px;
+  background: #ddd;
+  
+}
+
+input[id="barh"]::-moz-range-thumb {
+  background: #fff;
+  height: 40px;
+  width: 20px; /* 1 */
+  border: 3px solid #999; /* 1 */
+  border-radius: 0 !important;
+  box-shadow: -200px 0 0 200px dodgerblue;
+  box-sizing: border-box;
+  
+}
+
+input[id="barh"]::-ms-fill-lower { 
+  background: dodgerblue;
+}
+
+input[id="barh"]::-ms-thumb { 
+
+  display: none !important;
+}
+
+input[id="barh"]::-ms-ticks-after { 
+  display: none; 
+}
+
+input[id="barh"]::-ms-ticks-before { 
+  display: none; 
+}
+
+input[id="barh"]::-ms-track { 
+  background: #ddd;
+  color: transparent;
+  height: 40px;
+  border: none;
+  
+}
+
+input[id="barh"]::-ms-tooltip { 
+  display: none;
+}
+
+
+

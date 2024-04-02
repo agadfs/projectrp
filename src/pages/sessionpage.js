@@ -3,6 +3,7 @@ import styles from './sessionpage.module.css'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAppContext } from '../AppContext';
+import { LinearProgress } from '@mui/material';
 
 export default function SessionPage() {
   const [scale, setScale] = useState(1);
@@ -13,7 +14,7 @@ export default function SessionPage() {
   const [imageWidth, setImageWidth] = useState(null);
   const [tileselected, setTileSelected] = useState('');
   const [nameselected, setNameSelected] = useState('');
-  const [count, setCount] = useState(0);
+
   const [draggedItem, setDraggedItem] = useState(null);
   const gridItems = Array.from({ length: 4096 }); /* 64 x 64 */
   const [titulo, setTitulo] = useState('');
@@ -47,6 +48,21 @@ export default function SessionPage() {
 
   ]);
   const [imgprev, setImgPrev] = useState('');
+  const [statsuser, setStatsUser] = useState(
+    {level: 0,
+    experience: 0,
+    health: 0,
+    maxHealth: 0,
+    mana: 0,
+    maxMana: 0,
+    strength: 0,
+    dexterity: 0,
+    constitution: 0,
+    intelligence: 0,
+    wisdom: 0,
+    charisma: 0})
+
+    
 
   useEffect(() => {
 
@@ -56,14 +72,28 @@ export default function SessionPage() {
       } else {
 
       }
-      setCount(prevCount => prevCount + 1);
+     
     }, 1000);
 
     return () => clearInterval(interval);
   }, [user]);
+  useEffect(() => {
+
+    const interval2 = setInterval(() => {
+      if (user.id) {
+        handleUpdateStats()
+        
+      } else {
+
+      }
+     
+    }, 4000);
+
+    return () => clearInterval(interval2);
+  }, [user]);
   async function updateInventory() {
     try {
-      const randomItem = items[Math.floor(Math.random() * items.length)];
+      const randomItem = items[Math.floor(Math.random() * items?.length)];
       const newItem = {
         item: randomItem,
         quantity: 1
@@ -80,8 +110,8 @@ export default function SessionPage() {
       }
 
 
-
-      await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: inventory.Items })
+      
+      await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: inventory.Items})
       getInventory()
 
     } catch (error) {
@@ -109,7 +139,19 @@ export default function SessionPage() {
         gameId: sessionid,
         Items: [],
         Stats: {
-          
+          level: 0,
+          experience: 0,
+          health: 0,
+          maxHealth: 0,
+          mana: 0,
+          maxMana: 0,
+          strength: 0,
+          dexterity: 0,
+          constitution: 0,
+          intelligence: 0,
+          wisdom: 0,
+          charisma: 0,
+
         }
 
       };
@@ -151,7 +193,7 @@ export default function SessionPage() {
         if (playerarray.length > 0) {
           playerarray = playerarray[0];
           setInventory(playerarray);
-
+          setStatsUser(playerarray.Stats)
         } else {
           console.log('Inventory not found')
         }
@@ -212,15 +254,11 @@ export default function SessionPage() {
           setMapsArray(data.Maps);
           setMap(data.Maps[0]);
           setScale(data.Maps[0]?.scale);
-
           getPlayers(data.players);
           setShowInfo(true);
           setPlayersid(data.players);
           setAllInventories(data.inventories);
           setPlayerLocation(data.PlayersPos);
-
-
-
 
         } else {
           console.log("User is not authorized for this session.");
@@ -310,10 +348,30 @@ export default function SessionPage() {
       console.error('Error updating inventory:', error);
     }
   };
+  async function handleUpdateStats() {
+
+    
+    
+    try {
+      let statsnew ={...statsuser};
+      statsnew.level = Math.floor((Math.sqrt(1 + 8 * statsnew.experience / 1000) - 1) / 2) + 1;
+
+      
+      const response = await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: inventory.Items, Stats: statsnew })
+
+      console.log(response.data.Stats)
+      
+      getInventory()
+
+    } catch (error) {
+      console.error('Error updating inventory:', error);
+    }
+  };
   function handleAddItem(event) {
     const selectedId = event.target.value;
     handleAdd(selectedId)
-  } const handleUpdateQuantity = (index, quantityChange) => {
+  } 
+  const handleUpdateQuantity = (index, quantityChange) => {
     const updatedItems = inventory.Items.map((item, itemIndex) => {
       if (itemIndex === index) {
         const newQuantity = item.quantity + quantityChange;
@@ -588,11 +646,28 @@ export default function SessionPage() {
                 Seu Id:  {inventory.ownerId} <br />
                 <div>
                   <h3>Seus Atributos</h3>
-                  {inventory.stats ?  <div>
-                    <div>
+                  {inventory.Stats ? 
+                  <div style={{display:'flex', flexDirection:'row'}} >
+                    <div style={{display:'flex', flexDirection:'column'}}>
                       <p>
-                      Seu level: {inventory.stats[0]}
+                        Seu level: {Math.floor((Math.sqrt(1 + 8 * statsuser.experience / 1000) - 1) / 2) + 1}
                       </p>
+                      <p>
+                       Experiência: {statsuser.experience}
+                      </p>
+                      <p>
+                       Sua vida atual e máxima: {statsuser.health}/{statsuser.maxHealth}
+
+                       <input type="range" id='barh'  min="0" max={statsuser.maxHealth} value={statsuser.health} readOnly />
+
+                      </p>
+                      <p>
+                       Sua mana atual e máxima: {statsuser.mana}/{statsuser.maxMana}
+                      
+                       <input type="range" id='barm'  min="0" max={statsuser.maxMana} value={statsuser.mana} readOnly />
+                       
+                      </p>
+                     
                     </div>
                     <div>
                       <p>
@@ -601,7 +676,7 @@ export default function SessionPage() {
                     </div>
 
                   </div> : null}
-                 
+
 
                 </div>
                 <div>
