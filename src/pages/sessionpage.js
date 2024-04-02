@@ -14,7 +14,6 @@ export default function SessionPage() {
   const [imageWidth, setImageWidth] = useState(null);
   const [tileselected, setTileSelected] = useState('');
   const [nameselected, setNameSelected] = useState('');
-
   const [draggedItem, setDraggedItem] = useState(null);
   const gridItems = Array.from({ length: 4096 }); /* 64 x 64 */
   const [titulo, setTitulo] = useState('');
@@ -49,20 +48,36 @@ export default function SessionPage() {
   ]);
   const [imgprev, setImgPrev] = useState('');
   const [statsuser, setStatsUser] = useState(
-    {level: 0,
-    experience: 0,
-    health: 0,
-    maxHealth: 0,
-    mana: 0,
-    maxMana: 0,
-    strength: 0,
-    dexterity: 0,
-    constitution: 0,
-    intelligence: 0,
-    wisdom: 0,
-    charisma: 0})
+    {
+      level: 0,
+      experience: 0,
+      health: 0,
+      maxHealth: 0,
+      mana: 0,
+      maxMana: 0,
+      strength: 0,
+      dexterity: 0,
+      constitution: 0,
+      intelligence: 0,
+      wisdom: 0,
+      charisma: 0,
+      atk: 0,
+      def: 0,
+      earing: '',
+      head: '',
+      lefthand: '',
+      righthand: '',
+      chest: '',
+      ringleft: '',
+      ringright: '',
+      pants: '',
+      othersleft: '',
+      othersright: '',
+      shoes: ''
 
-    
+    })
+
+
 
   useEffect(() => {
 
@@ -72,25 +87,26 @@ export default function SessionPage() {
       } else {
 
       }
-     
+
     }, 1000);
 
     return () => clearInterval(interval);
   }, [user]);
+
   useEffect(() => {
 
     const interval2 = setInterval(() => {
       if (user.id) {
-        handleUpdateStats()
-        
+        handleUpdateStats(statsuser)
+
       } else {
 
       }
-     
+
     }, 4000);
 
     return () => clearInterval(interval2);
-  }, [user]);
+  }, [user, statsuser]);
   async function updateInventory() {
     try {
       const randomItem = items[Math.floor(Math.random() * items?.length)];
@@ -110,8 +126,8 @@ export default function SessionPage() {
       }
 
 
-      
-      await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: inventory.Items})
+
+      await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: inventory.Items })
       getInventory()
 
     } catch (error) {
@@ -202,11 +218,7 @@ export default function SessionPage() {
       console.error('Error getting any inventory: ', error);
     }
   }
-  useEffect(() => {
-    if (user.id) {
-      getInventory()
-    }
-  }, [user])
+
   async function getPlayers(data) {
     let playerarray = [];
 
@@ -285,7 +297,7 @@ export default function SessionPage() {
 
   useEffect(() => {
     if (user.id) {
-
+      getInventory()
       getSession()
       getItems()
     }
@@ -348,19 +360,22 @@ export default function SessionPage() {
       console.error('Error updating inventory:', error);
     }
   };
-  async function handleUpdateStats() {
+  async function handleUpdateStats(stats) {
+    let statsnew = stats;
+    statsnew.level = Math.floor((Math.sqrt(1 + 8 * statsnew.experience / 1000) - 1) / 2) + 1;
+    statsnew.maxHealth = (statsnew.level * 5) + (statsnew.strength * 10) + (statsnew.dexterity * 2) + (statsnew.constitution * 2) + 10;
+    statsnew.maxMana = (statsnew.level * 5) + (statsnew.intelligence * 10) + (statsnew.wisdom * 2) + (statsnew.charisma * 2) + 10;
+    statsnew.atk = (statsnew.level * 1) + (statsnew.strength * 0.2) + (statsnew.dexterity * 0.3) + 1;
+    stats.def = (statsnew.level * 1) + (statsnew.strength * 0.3) + (statsnew.dexterity * 0.2) + (statsnew.constitution * 1) + 1;
+    statsnew.atk = Math.round(statsnew.atk);
+    statsnew.def = Math.round(statsnew.def);
 
-    
-    
     try {
-      let statsnew ={...statsuser};
-      statsnew.level = Math.floor((Math.sqrt(1 + 8 * statsnew.experience / 1000) - 1) / 2) + 1;
 
-      
       const response = await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: inventory.Items, Stats: statsnew })
 
-      console.log(response.data.Stats)
-      
+
+
       getInventory()
 
     } catch (error) {
@@ -370,7 +385,7 @@ export default function SessionPage() {
   function handleAddItem(event) {
     const selectedId = event.target.value;
     handleAdd(selectedId)
-  } 
+  }
   const handleUpdateQuantity = (index, quantityChange) => {
     const updatedItems = inventory.Items.map((item, itemIndex) => {
       if (itemIndex === index) {
@@ -644,41 +659,203 @@ export default function SessionPage() {
                 padding: '10px', borderRadius: '5px', flexDirection: 'column'
               }}>
                 Seu Id:  {inventory.ownerId} <br />
-                <div>
+                <div style={{ display: 'flex', flexDirection: 'column', padding: '0' }} >
                   <h3>Seus Atributos</h3>
-                  {inventory.Stats ? 
-                  <div style={{display:'flex', flexDirection:'row'}} >
-                    <div style={{display:'flex', flexDirection:'column'}}>
-                      <p>
-                        Seu level: {Math.floor((Math.sqrt(1 + 8 * statsuser.experience / 1000) - 1) / 2) + 1}
-                      </p>
-                      <p>
-                       Experiência: {statsuser.experience}
-                      </p>
-                      <p>
-                       Sua vida atual e máxima: {statsuser.health}/{statsuser.maxHealth}
+                  {inventory.Stats ?
+                    <div style={{ display: 'flex', flexDirection: 'row' }} >
+                      <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                        <div>
+                          Seu level: {statsuser.level}
+                        </div>
+                        <div>
+                          Experiência: {statsuser.experience}
+                        </div>
+                        <div>
+                          Vida atual e máxima: {statsuser.health}/{statsuser.maxHealth}
 
-                       <input type="range" id='barh'  min="0" max={statsuser.maxHealth} value={statsuser.health} readOnly />
+                          <input style={{ width: '100%', maxWidth: '150px' }} type="range" id='barh' min="0" max={statsuser.maxHealth} value={statsuser.health} readOnly />
 
-                      </p>
-                      <p>
-                       Sua mana atual e máxima: {statsuser.mana}/{statsuser.maxMana}
-                      
-                       <input type="range" id='barm'  min="0" max={statsuser.maxMana} value={statsuser.mana} readOnly />
-                       
-                      </p>
-                     
-                    </div>
-                    <div>
-                      <p>
+                        </div>
+                        <div>
+                          Mana atual e máxima: {statsuser.mana}/{statsuser.maxMana}
+                          <input style={{ width: '100%', maxWidth: '150px' }} type="range" id='barm' min="0" max={statsuser.maxMana} value={statsuser.mana} readOnly />
+                        </div>
 
-                      </p>
-                    </div>
+                      </div>
+                      <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                          Força:
+                          <input
+                            style={{ width: '10%' }}
+                            value={statsuser.strength} onChange={(e) => {
 
-                  </div> : null}
+                              const updatedUser = { ...statsuser };
+
+
+                              updatedUser.strength = parseInt(e.target.value, 10) || 0;
+
+
+                              setStatsUser(updatedUser);
+                            }} />
+                        </div>
+                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                          Destreza:
+                          <input
+                            style={{ width: '10%' }}
+                            value={statsuser.dexterity}
+                            onChange={(e) => {
+                              const updatedUser = { ...statsuser };
+                              updatedUser.dexterity = parseInt(e.target.value, 10) || 0;
+                              setStatsUser(updatedUser);
+                            }}
+                          />
+
+                        </div>
+                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                          Constituição:
+                          <input
+                            style={{ width: '10%' }}
+                            value={statsuser.constitution}
+                            onChange={(e) => {
+                              const updatedUser = { ...statsuser };
+                              updatedUser.constitution = parseInt(e.target.value, 10) || 0;
+                              setStatsUser(updatedUser);
+                            }}
+                          />
+
+                        </div>
+                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                          Inteligência:
+                          <input
+                            style={{ width: '10%' }}
+                            value={statsuser.intelligence}
+                            onChange={(e) => {
+                              const updatedUser = { ...statsuser };
+                              updatedUser.intelligence = parseInt(e.target.value, 10) || 0;
+                              setStatsUser(updatedUser);
+                            }}
+                          />
+
+                        </div>
+                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                          Sabedoria:
+                          <input
+                            style={{ width: '10%' }}
+                            value={statsuser.wisdom}
+                            onChange={(e) => {
+                              const updatedUser = { ...statsuser };
+                              updatedUser.wisdom = parseInt(e.target.value, 10) || 0;
+                              setStatsUser(updatedUser);
+                            }}
+                          />
+
+                        </div>
+                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                          Carisma:
+                          <input
+                            style={{ width: '10%' }}
+                            value={statsuser.charisma}
+                            onChange={(e) => {
+                              const updatedUser = { ...statsuser };
+                              updatedUser.charisma = parseInt(e.target.value, 10) || 0;
+                              setStatsUser(updatedUser);
+                            }}
+                          />
+
+                        </div>
+                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                          Atk:
+                          <input
+                            style={{ width: '10%' }}
+                            value={statsuser.atk}
+                            onChange={(e) => {
+                              const updatedUser = { ...statsuser };
+                              updatedUser.atk = parseInt(e.target.value, 10) || 0;
+                              setStatsUser(updatedUser);
+                            }}
+                          />
+
+                        </div>
+                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                          Def:
+                          <input
+                            style={{ width: '10%' }}
+                            value={statsuser.def}
+                            onChange={(e) => {
+                              const updatedUser = { ...statsuser };
+                              updatedUser.def = parseInt(e.target.value, 10) || 0;
+                              setStatsUser(updatedUser);
+                            }}
+                          />
+
+                        </div>
+                      </div>
+
+
+                    </div> : null}
 
 
                 </div>
+                {inventory.Stats ?
+                  <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
+                    <div style={{ display: 'flex', gap: '20px' }} >
+                    {statsuser.earing?.atk ? <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        
+                        <div> 
+                        atk: {statsuser.earing?.atk}
+
+                        </div>
+                        <div> 
+                        def: {statsuser.earing?.def}
+
+                        </div>
+                        <div> 
+                       brinco
+
+                        </div>
+                       
+                      </div>: <div style={{width:'50px', height:'50px', backgroundColor:'black', color:'white', display:'flex', justifyContent:'center'}} > Brinco </div>}
+                      
+                      <div>
+                        {statsuser.earing?.atk}
+                        {statsuser.earing?.def}
+                        capacete
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '20px' }} >
+                      <div>
+                        Mão esquerda
+                      </div>
+                      <div>
+                        Tronco
+                      </div>
+                      <div>
+                        Mão direita
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '20px' }} >
+                      <div>
+                        Anel esquerdo
+                      </div>
+                      <div>
+                        Calça
+                      </div>
+                      <div>
+                        Anel direito
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '20px' }} >
+                      <div>
+                        Artefato
+                      </div>
+                      <div>
+                        Sapato
+                      </div>
+                      <div>
+                        Utencilios
+                      </div>
+                    </div>
+                  </div> : null}
                 <div>
                   Itens:
                   <div style={{ width: '100%', display: 'flex', gap: '20px', flexWrap: 'wrap' }} >

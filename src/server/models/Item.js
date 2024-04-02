@@ -24,6 +24,10 @@ const ItemSchema = new mongoose.Schema({
     type: Boolean,
     required: false,
   },
+  typewear: {
+    type: String,
+    required: false,
+  },
   atk: {
     type: String,
     required: false,
