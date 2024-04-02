@@ -6,6 +6,7 @@ import { useAppContext } from '../AppContext';
 
 export default function SessionPage() {
   const [scale, setScale] = useState(1);
+  const [newscale, setNewScale] = useState(1);
   const [isUrlValid, setIsUrlValid] = useState(false);
   const [urlselectedmap, setUrlSelectedMap] = useState('');
   const [nameselectedmap, setNameSelectedMap] = useState('');
@@ -48,8 +49,7 @@ export default function SessionPage() {
   const [imgprev, setImgPrev] = useState('');
 
   useEffect(() => {
-    const sca = localStorage.getItem('ScaleImage')
-    setScale(sca);
+
     const interval = setInterval(() => {
       if (user.id) {
         getSession()
@@ -208,11 +208,14 @@ export default function SessionPage() {
           setTitle(data.title);
           setMapsArray(data.Maps);
           setMap(data.Maps[0]);
+          setScale(data.Maps[0]?.scale);
+
           getPlayers(data.players);
           setShowInfo(true);
           setPlayersid(data.players);
           setAllInventories(data.inventories);
           setPlayerLocation(data.PlayersPos);
+
 
 
 
@@ -343,7 +346,7 @@ export default function SessionPage() {
     let updatedPlayers = [...playersid];
     updatedPlayers.push(updatedRequests[index]);
     updatedRequests.splice(index, 1);
-    console.log({ Others: updatedRequests, players: updatedPlayers })
+
     updateSession({ Others: updatedRequests, players: updatedPlayers });
 
   }
@@ -400,7 +403,7 @@ export default function SessionPage() {
     if (draggedPlayerIndex !== -1) {
       updatedPlayerLocations[draggedPlayerIndex].position = targetIndex;
     }
-    console.log(newPosition)
+
     setPlayerLocation(updatedPlayerLocations);
     updateSession({ PlayersPos: updatedPlayerLocations });
   };
@@ -423,9 +426,22 @@ export default function SessionPage() {
   }
   function addmap() {
     let mapsdata = [...mapsarray]
-    mapsdata.push({ name: nameselectedmap, url: urlselectedmap, id: user.id })
-    updateSession({ Maps: mapsdata });
-    console.log(mapsdata)
+    mapsdata.push({ name: nameselectedmap, url: urlselectedmap, id: user.id, scale: newscale })
+    updateSession({ Maps: mapsdata }).then(() => {
+      window.location.reload()
+    });
+
+  }
+  function removemap(name) {
+    let mapsdata = [...mapsarray];
+    const index = mapsdata.findIndex(map => map.name === name);
+    if (index !== -1) {
+      mapsdata.splice(index, 1);
+      updateSession({ Maps: mapsdata });
+    } else {
+      console.log("Map not found");
+    }
+
   }
   function updateMap(index) {
 
@@ -450,7 +466,7 @@ export default function SessionPage() {
 
     // Define a largura da imagem no estado
     setImageWidth(width);
-    console.log(width)
+
   };
   const checkImageUrlValidity = (url) => {
     return new Promise((resolve, reject) => {
@@ -582,6 +598,19 @@ export default function SessionPage() {
                         <div>
                           {item?.item?.name}
                         </div>
+                        {item?.item?.canequip ?
+                          <div>
+                            <div>
+                              ATK: {item?.item?.def}
+                            </div>
+                            <div>
+                              DEF: {item?.item?.atk}
+                            </div>
+                          </div> : null}
+
+
+
+
                         <div style={{ textWrap: 'nowrap' }} >
                           {item?.quantity} Unidade(s)
                         </div>
@@ -630,20 +659,41 @@ export default function SessionPage() {
                 <label htmlFor="description">Descrição:</label><br />
                 <textarea id="description" name="description" value={formData.description} onChange={handleChange} required /><br />
 
-                <label htmlFor="value">Valor:</label><br />
-                <input type="text" id="value" name="value" value={formData.value} onChange={handleChange} /><br />
-
                 <label htmlFor="cantrade">Pode ser negociado:</label><br />
                 <input type="checkbox" id="cantrade" name="cantrade" checked={formData.cantrade} onChange={handleChange} /><br />
 
-                <label htmlFor="atk">Ataque:</label><br />
-                <input type="text" id="atk" name="atk" value={formData.atk} onChange={handleChange} /><br />
+                {formData.cantrade ?
+                  <div>
 
-                <label htmlFor="def">Defesa:</label><br />
-                <input type="text" id="def" name="def" value={formData.def} onChange={handleChange} /><br />
 
-                <label htmlFor="others">Outros:</label><br />
-                <textarea id="others" name="others" value={formData.others} onChange={handleChange} /><br />
+                    <label htmlFor="value">Valor:</label><br />
+                    <input type="text" id="value" name="value" value={formData.value} onChange={handleChange} /><br /></div> : null}
+
+                <label htmlFor="canequip">Pode ser equipado:</label><br />
+                <input type="checkbox" id="canequip" name="canequip" checked={formData.canequip} onChange={handleChange} /><br />
+                {formData.canequip ?
+                  <div>
+
+                    <label htmlFor="atk">Ataque:</label><br />
+                    <input type="text" id="atk" name="atk" value={formData.atk} onChange={handleChange} /><br />
+
+                    <label htmlFor="def">Defesa:</label><br />
+                    <input type="text" id="def" name="def" value={formData.def} onChange={handleChange} /><br />
+
+                      <p>Caso o equipamento tenha debuff ou buff, escreva o nome e em seguida o valor, por exemplo:
+                        'slow-1' ou 'speed+2' ou 'sabedoria+4' ou 'destreza-1'. ESCREVA SEM ASPAS
+                      </p>
+
+                    <label htmlFor="buff1">Buff ou Debuff 1 :</label><br />
+                    <input type="text" id="buff1" name="buff1" value={formData.buff1} onChange={handleChange} /><br />
+
+                    <label htmlFor="buff2">Buff ou Debuff 2:</label><br />
+                    <input type="text" id="buff2" name="buff2" value={formData.buff2} onChange={handleChange} /><br />
+
+                    <label htmlFor="buff2">Buff ou Debuff 3:</label><br />
+                    <input type="text" id="buff2" name="buff2" value={formData.buff2} onChange={handleChange} /><br />
+                    
+                  </div> : null}
 
                 <label htmlFor="url">Url imagem:</label><br />
                 <textarea id="url" name="url" value={formData.img} onChange={handleChange} /><br />
@@ -674,7 +724,7 @@ export default function SessionPage() {
         <div className={styles.mapbody}>
           <div className={styles.maptitle}>
             <div style={{ marginRight: '50px' }}>
-              {playerlocation?.find(obj => obj.name === players[playersid?.indexOf(user?.id)]) ?
+              {playerlocation?.find(obj => obj.name === players[playersid?.indexOf(user?.id)]) && user?.id !== playersid[0] ?
                 <div>
 
                   Você já criou seu personagem
@@ -684,56 +734,62 @@ export default function SessionPage() {
                       playerlocation.find(obj => obj.name === players[playersid.indexOf(user.id)]).position
                       : null
                   }
-                  
-                </div> : 
+
+                </div>
+                :
                 <div>
-                    {user?.id === playersid[0] ?
+                  {user?.id === playersid[0] ?
+                    <div>
+                      Você é o <span style={{ fontWeight: 'bold', fontSize: '20px' }} >  MESTRE </span>
+
+                      <div style={{ margin: '5px', border: '1px solid black', padding: '5px' }} >
+                        <span style={{ fontWeight: 'bold', fontSize: '20px' }} > Crie NPC'S aqui </span>
+                        <form>
+                          Nome:
+                          <input value={nameselected} onChange={(e) => {
+                            setNameSelected(e.target.value)
+
+                          }} />
+                          Tile que o NPC irá aparecer
+                          <input type='number' value={tileselected} onChange={(e) => {
+                            setTileSelected(e.target.value)
+
+                          }} />
+                          <button onClick={() => {
+                            addnpcpos()
+
+                          }} > Adicionar NPC </button>
+                        </form>
+                        &nbsp;
+                        <button onClick={() => {
+                          updateSession({ PlayersPos: [] })
+
+                        }} > Limpar mapa de npc e player </button>
+                      </div>
+                    </div>
+                    :
+                    <div>
                       <div>
-                        Você é o <span style={{ fontWeight: 'bold', fontSize: '20px' }} >  MESTRE </span>
-
-                        <div style={{ margin: '5px', border: '1px solid black', padding: '5px' }} >
-                          <span style={{ fontWeight: 'bold', fontSize: '20px' }} > Crie NPC'S aqui </span>
+                        Escolha o tile e clique para adicionar você (Não pode ter nenhum jogador ou npc em cima)
+                        <div>
                           <form>
-                            Nome:
-                            <input value={nameselected} onChange={(e) => {
-                              setNameSelected(e.target.value)
-
-                            }} />
-                            Tile que o NPC irá aparecer
                             <input type='number' value={tileselected} onChange={(e) => {
                               setTileSelected(e.target.value)
 
                             }} />
                             <button onClick={() => {
-                              addnpcpos()
+                              addplayerpos()
 
-                            }} > Adicionar NPC </button>
+                            }} > Adicionar </button>
                           </form>
                         </div>
                       </div>
-                      :
-                      <div>
-                        <div>
-                          Escolha o tile e clique para adicionar você (Não pode ter nenhum jogador ou npc em cima)
-                          <div>
-                            <form>
-                              <input type='number' value={tileselected} onChange={(e) => {
-                                setTileSelected(e.target.value)
-
-                              }} />
-                              <button onClick={() => {
-                                addplayerpos()
-
-                              }} > Adicionar </button>
-                            </form>
-                          </div>
-                        </div>
 
 
-                      </div>}
+                    </div>}
 
 
-                  </div>
+                </div>
               }
 
 
@@ -746,42 +802,88 @@ export default function SessionPage() {
                 <div style={{ margin: '5px', border: '1px solid black', padding: '5px' }} >
                   Escolha um mapa:
                   {Array.isArray(mapsarray) && mapsarray.length > 0 && (
-                    <select onChange={(e) => {
-                      updateMap(e.target.selectedIndex)
-                    }}>
-                      {mapsarray.map((map, index) => (
-                        <option key={index} value={{ name: map.name, url: map.url }}>
-                          {map.name}
-                        </option>
-                      ))}
-                    </select>
+                    <div style={{ display: 'flex' }} >
+
+
+
+
+
+                      <select style={{ marginRight: '10px' }} onChange={(e) => {
+                        updateMap(e.target.selectedIndex)
+                      }}>
+                        {mapsarray.map((map, index) => (
+                          <option key={index} value={{ name: map.name, url: map.url }}>
+                            {map.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button onClick={() => {
+                        removemap(map?.name)
+                      }} > Deletar Mapa Atual</button>
+                      &nbsp;
+                      <div> Escala do mapa: {scale}
+                      </div>
+                      <div>
+                      </div>
+                    </div>
                   )}
-                  &nbsp;&nbsp;
-                  Escala do mapa: 
-                  <input style={{width:'auto'}} value={scale} onChange={(e) => {
-                     setScale(e.target.value)
-                     localStorage.setItem('ScaleImage', e.target.value)
-                    }}/>
+
+
                   <div style={{ marginTop: '2px' }} >
                     <span style={{ fontWeight: 'bold', fontSize: '20px' }}>Crie um mapa novo</span>
-                    <form onSubmit={(e) => {
+                    <form style={{ display: 'flex' }} onSubmit={(e) => {
                       e.preventDefault()
-                      if(isUrlValid){
+                      if (isUrlValid) {
                         addmap()
-                      }else{
+                      } else {
                         alert('Link não é valido')
                       }
                     }}>
-                      Nome:
-                      <input value={nameselectedmap} onChange={(e) => {
-                        setNameSelectedMap(e.target.value)
+                      <div>
 
-                      }} />
-                      Url da foto do mapa:
-                      <input value={urlselectedmap} onChange={(e) => {
-                        setUrlSelectedMap(e.target.value)
-                        handleUrlChange(e.target.value)
-                      }} />
+                        Nome:
+                        <input value={nameselectedmap} onChange={(e) => {
+                          setNameSelectedMap(e.target.value)
+
+                        }} />
+                      </div>
+                      <div>
+
+                        Url da foto do mapa:
+                        <input value={urlselectedmap} onChange={(e) => {
+                          setUrlSelectedMap(e.target.value)
+                          handleUrlChange(e.target.value)
+                        }} />
+                      </div>
+                      <div style={{}} >
+                        Escala do mapa:
+                        <input
+
+                          value={newscale}
+                          onChange={(e) => {
+                            setNewScale(e.target.value);
+
+                          }}
+                        />
+                        <div>
+                          <input
+                            step="0.01"
+                            type="range"
+                            min="0.1"
+                            max="3"
+                            value={newscale}
+                            onChange={(e) => {
+                              setNewScale(e.target.value);
+
+                            }}
+                            className={styles.slider}
+
+                          />
+
+
+                        </div>
+
+                      </div>
                       <button disabled={!isUrlValid} > Adicionar Mapa </button>
                     </form>
                   </div>
@@ -796,7 +898,7 @@ export default function SessionPage() {
 
 
           </div>
-          <div style={{backgroundImage: imgprev ? `url('${imgprev}')`: `url('${map?.url}')`, backgroundSize: imageWidth ? `${imageWidth * parseFloat(scale)}px ${imageWidth * parseFloat(scale)}px` : `auto`, backgroundRepeat: 'no-repeat' }} className={styles.mapcontainer}>
+          <div style={{ backgroundImage: imgprev ? `url('${imgprev}')` : `url('${map?.url}')`, backgroundSize: (nameselectedmap ? `${imageWidth * parseFloat(newscale)}px ${imageWidth * parseFloat(newscale)}px` : `${imageWidth * parseFloat(scale)}px ${imageWidth * parseFloat(scale)}px`), backgroundRepeat: 'no-repeat' }} className={styles.mapcontainer}>
             <div className={styles.mapgrid} style={{ position: 'relative' }}>
               {gridItems.map((_, index) => (
                 <div

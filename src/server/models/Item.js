@@ -10,18 +10,18 @@ const ItemSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  value: {
-    type: String,
-    required: false,
-   
-  },
   cantrade: {
     type: Boolean,
     required: false,
    
   },
-  others: {
+  value: {
     type: String,
+    required: false,
+   
+  },
+  canequip: {
+    type: Boolean,
     required: false,
   },
   atk: {
@@ -32,10 +32,14 @@ const ItemSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  others: {
+    type: String,
+    required: false,
+  },
   url: {
     type: String,
     required: false,
-  }
+  },
   
 },{ collection: 'Item' });
 
