@@ -14,6 +14,11 @@ const InventorySchema = new mongoose.Schema({
     type: Array,
     required: false,
    
+  },
+  Stats: {
+    type: Array,
+    required: false,
+   
   }
   
 },{ collection: 'Inventory' });
