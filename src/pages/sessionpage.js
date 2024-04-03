@@ -7,6 +7,8 @@ import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import ShieldIcon from '@mui/icons-material/Shield';
 
 export default function SessionPage() {
+  const [showGrid, setShowGrid] = useState(false);
+  const [showTile, setShowTile] = useState(false);
   const [takedmg, setTakeDmg] = useState(0);
   const [takemana, setTakeMana] = useState(0);
   const [scale, setScale] = useState(1);
@@ -736,7 +738,7 @@ export default function SessionPage() {
               }} >Criar inventário</button>
             ) : (
               <div style={{
-                height: '100%', display: 'flex', maxWidth: '300px', gap: '10px', flexWrap: 'wrap', border: '3px solid black',
+                height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap', border: '3px solid black',
                 padding: '10px', borderRadius: '5px', flexDirection: 'column'
               }}>
                 Seu Id:  {inventory.ownerId} <br />
@@ -799,7 +801,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
                           Força:
                           <input
-                            style={{ width: '10%' }}
+                            style={{ width: '10%', minWidth: '15px' }}
                             value={statsuser.strength} onChange={(e) => {
 
                               const updatedUser = { ...statsuser };
@@ -815,7 +817,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
                           Destreza:
                           <input
-                            style={{ width: '10%' }}
+                            style={{ width: '10%', minWidth: '15px' }}
                             value={statsuser.dexterity}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -829,7 +831,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
                           Constituição:
                           <input
-                            style={{ width: '10%' }}
+                            style={{ width: '10%', minWidth: '15px' }}
                             value={statsuser.constitution}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -843,7 +845,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
                           Inteligência:
                           <input
-                            style={{ width: '10%' }}
+                            style={{ width: '10%', minWidth: '15px' }}
                             value={statsuser.intelligence}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -857,7 +859,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
                           Sabedoria:
                           <input
-                            style={{ width: '10%' }}
+                            style={{ width: '10%', minWidth: '15px' }}
                             value={statsuser.wisdom}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -871,7 +873,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
                           Carisma:
                           <input
-                            style={{ width: '10%' }}
+                            style={{ width: '10%', minWidth: '15px' }}
                             value={statsuser.charisma}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -885,7 +887,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
                           Atk:
                           <input
-                            style={{ width: '10%' }}
+                            style={{ width: '10%', minWidth: '15px' }}
                             value={statsuser.atk}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -899,7 +901,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
                           Def:
                           <input
-                            style={{ width: '10%' }}
+                            style={{ width: '10%', minWidth: '15px' }}
                             value={statsuser.def}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -937,7 +939,7 @@ export default function SessionPage() {
                   <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
                     <div style={{ display: 'flex', gap: '20px' }} >
                       {statsuser.earing?.atk ?
-                        <div onClick={() => {
+                        <div className={styles.slots}  onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.earing?.name);
                           if (index !== -1) {
@@ -951,7 +953,7 @@ export default function SessionPage() {
                             console.log('Item not found!');
                           }
 
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
                           <img src={statsuser?.earing?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -966,15 +968,15 @@ export default function SessionPage() {
                             brinco
                           </div>
                         </div> :
-                        <div style={{
-                          width: '50px', height: '50px', backgroundColor: 'black',
-                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        <div  className={styles.slots} style={{
+                          width: '50px', height: '50px',
+                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Brinco </div>}
 
 
                       {statsuser.head?.atk ?
-                        <div onClick={() => {
+                        <div className={styles.slots} onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.head?.name);
                           if (index !== -1) {
@@ -988,7 +990,7 @@ export default function SessionPage() {
                             console.log('Item not found!');
                           }
 
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
                           <img src={statsuser?.head?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1003,9 +1005,9 @@ export default function SessionPage() {
                             Capacete
                           </div>
                         </div> :
-                        <div style={{
-                          width: '50px', height: '50px', backgroundColor: 'black',
-                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        <div className={styles.slots} style={{
+                          width: '50px', height: '50px',
+                         display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Capacete </div>}
 
@@ -1013,7 +1015,7 @@ export default function SessionPage() {
                     <div style={{ display: 'flex', gap: '20px' }} >
 
                       {statsuser.lefthand?.atk ?
-                        <div onClick={() => {
+                        <div className={styles.slots} onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.lefthand?.name);
                           if (index !== -1) {
@@ -1027,7 +1029,7 @@ export default function SessionPage() {
                             console.log('Item not found!');
                           }
 
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
                           <img src={statsuser?.lefthand?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1042,15 +1044,15 @@ export default function SessionPage() {
                             Mão esquerda
                           </div>
                         </div> :
-                        <div style={{
-                          width: '50px', height: '50px', backgroundColor: 'black',
-                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        <div className={styles.slots} style={{
+                          width: '50px', height: '50px', 
+                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Mão esquerda </div>}
 
 
                       {statsuser.chest?.atk ?
-                        <div onClick={() => {
+                        <div className={styles.slots}  onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.chest?.name);
                           if (index !== -1) {
@@ -1064,7 +1066,7 @@ export default function SessionPage() {
                             console.log('Item not found!');
                           }
 
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
                           <img src={statsuser?.chest?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1079,16 +1081,16 @@ export default function SessionPage() {
                             Tronco
                           </div>
                         </div> :
-                        <div style={{
-                          width: '50px', height: '50px', backgroundColor: 'black',
-                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        <div className={styles.slots} style={{
+                          width: '50px', height: '50px',
+                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Tronco </div>}
 
 
 
                       {statsuser.righthand?.atk ?
-                        <div onClick={() => {
+                        <div className={styles.slots} onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.righthand?.name);
                           if (index !== -1) {
@@ -1102,7 +1104,7 @@ export default function SessionPage() {
                             console.log('Item not found!');
                           }
 
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
                           <img src={statsuser?.righthand?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1117,16 +1119,16 @@ export default function SessionPage() {
                             Mão direita
                           </div>
                         </div> :
-                        <div style={{
-                          width: '50px', height: '50px', backgroundColor: 'black',
-                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        <div className={styles.slots} style={{
+                          width: '50px', height: '50px',
+                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Mão direita </div>}
                     </div>
                     <div style={{ display: 'flex', gap: '20px' }} >
 
                       {statsuser.ringleft?.atk ?
-                        <div onClick={() => {
+                        <div className={styles.slots} onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.ringleft?.name);
                           if (index !== -1) {
@@ -1140,7 +1142,7 @@ export default function SessionPage() {
                             console.log('Item not found!');
                           }
 
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
                           <img src={statsuser?.ringleft?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1155,16 +1157,16 @@ export default function SessionPage() {
                             Anel esquerdo
                           </div>
                         </div> :
-                        <div style={{
-                          width: '50px', height: '50px', backgroundColor: 'black',
-                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        <div className={styles.slots} style={{
+                          width: '50px', height: '50px',
+                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Anel esquerdo </div>}
 
 
 
                       {statsuser.pants?.atk ?
-                        <div onClick={() => {
+                        <div className={styles.slots} onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.pants?.name);
                           if (index !== -1) {
@@ -1178,7 +1180,7 @@ export default function SessionPage() {
                             console.log('Item not found!');
                           }
 
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
                           <img src={statsuser?.pants?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1193,9 +1195,9 @@ export default function SessionPage() {
                             Calça
                           </div>
                         </div> :
-                        <div style={{
-                          width: '50px', height: '50px', backgroundColor: 'black',
-                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        <div className={styles.slots} style={{
+                          width: '50px', height: '50px',
+                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Calça </div>}
 
@@ -1204,7 +1206,7 @@ export default function SessionPage() {
 
 
                       {statsuser.ringright?.atk ?
-                        <div onClick={() => {
+                        <div className={styles.slots} onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.ringright?.name);
                           if (index !== -1) {
@@ -1218,7 +1220,7 @@ export default function SessionPage() {
                             console.log('Item not found!');
                           }
 
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
                           <img src={statsuser?.ringright?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1233,16 +1235,16 @@ export default function SessionPage() {
                             Anel direito
                           </div>
                         </div> :
-                        <div style={{
-                          width: '50px', height: '50px', backgroundColor: 'black',
-                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        <div className={styles.slots} style={{
+                          width: '50px', height: '50px',
+                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Anel direito </div>}
                     </div>
                     <div style={{ display: 'flex', gap: '20px' }} >
 
                       {statsuser.othersleft?.atk ?
-                        <div onClick={() => {
+                        <div className={styles.slots} onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.othersleft?.name);
                           if (index !== -1) {
@@ -1256,7 +1258,7 @@ export default function SessionPage() {
                             console.log('Item not found!');
                           }
 
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
                           <img src={statsuser?.othersleft?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1271,9 +1273,9 @@ export default function SessionPage() {
                             Utensilios esquerdo
                           </div>
                         </div> :
-                        <div style={{
-                          width: '50px', height: '50px', backgroundColor: 'black',
-                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        <div className={styles.slots} style={{
+                          width: '50px', height: '50px',
+                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Utensilios esquerdo </div>}
 
@@ -1281,7 +1283,7 @@ export default function SessionPage() {
 
 
                       {statsuser.shoes?.atk ?
-                        <div onClick={() => {
+                        <div className={styles.slots} onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.shoes?.name);
                           if (index !== -1) {
@@ -1295,7 +1297,7 @@ export default function SessionPage() {
                             console.log('Item not found!');
                           }
 
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column'}}>
                           <img src={statsuser?.shoes?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1310,15 +1312,15 @@ export default function SessionPage() {
                             Sapato
                           </div>
                         </div> :
-                        <div style={{
-                          width: '50px', height: '50px', backgroundColor: 'black',
-                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        <div className={styles.slots} style={{
+                          width: '50px', height: '50px',
+                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Sapato </div>}
 
 
                       {statsuser.othersright?.atk ?
-                        <div onClick={() => {
+                        <div className={styles.slots} onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.othersright?.name);
                           if (index !== -1) {
@@ -1332,7 +1334,7 @@ export default function SessionPage() {
                             console.log('Item not found!');
                           }
 
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column', border: '1px solid black' }}>
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
                           <img src={statsuser?.othersright?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1347,110 +1349,14 @@ export default function SessionPage() {
                             Utensilios direito
                           </div>
                         </div> :
-                        <div style={{
-                          width: '50px', height: '50px', backgroundColor: 'black',
-                          color: 'white', display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                        <div className={styles.slots} style={{
+                          width: '50px', height: '50px',
+                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Utensilios direito </div>}
                     </div>
                   </div> : null}
-                <div>
-                  Itens:
-                  <div style={{ width: '100%', display: 'flex', gap: '20px', flexWrap: 'wrap' }} >
-                    {inventory?.Items?.map((item, index) => (
-                      <div
-                        style={{ gap: '5px', border: '2px solid green', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
-                        {item?.item?.url ? (
-                          <div onClick={() => {
-                            if (item?.item?.canequip) {
-                              const types = item?.item?.typewear;
-                              const updatedUser = { ...statsuser };
-                              if (updatedUser[types]) {
-                                alert('Desequipe primeiro o item!')
-                              } else {
-                                updatedUser[types] = inventory?.Items[index].item;
 
-                                handleUpdateQuantity2(index, -1, updatedUser);
-
-
-
-                              }
-                            }
-                          }} style={{ display: 'flex', justifyContent: 'center' }} >
-                            <img src={item?.item?.url} alt="Item Image" style={{ maxWidth: '100px', height: 'auto' }} />
-
-                          </div>
-                        ) : null}
-
-                        <div>
-                          {item?.item?.name} (<span style={{ fontWeight: 'bold', fontSize: '22px' }}  >{item?.quantity} </span>Unidade(s))
-                        </div>
-                        {item?.item?.canequip ?
-                          <div>
-                            <div>
-                              <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                                {item?.item?.typewear}
-                              </span>
-
-                            </div>
-                            <div>
-                              <CloseFullscreenIcon />  <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                              {item?.item?.atk}
-                              </span> de ATK
-                            </div>
-                            <div  >
-                              <ShieldIcon /> <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                              {item?.item?.def}
-                              </span> de DEF
-                            </div>
-                          </div> : null}
-                        {item?.item?.cantrade ?
-                          <div>
-                            <div>
-                              VALOR:  &nbsp;
-                              
-                              <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                              {item?.item?.value}
-                              </span>
-                               &nbsp; Peças de bronze
-                            </div>
-
-                          </div> : null}
-
-
-
-
-                        <button onClick={() => handleDelete(index)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
-                          Deletar
-                        </button>
-                        <div style={{ display: 'flex', gap: '5px' }}>
-                          <button onClick={() => handleUpdateQuantity(index, +1)} style={{ color: 'green', cursor: 'pointer' }}>
-                            +1
-                          </button>
-                          <button onClick={() => handleUpdateQuantity(index, -1)} style={{ color: 'red', cursor: 'pointer' }}>
-                            -1
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div>
-                    <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
-                      if (items.length > 0) {
-
-                        updateInventory()
-                      } else {
-                        alert('Por favor, crie um item primeiro, abaixo')
-                      }
-                    }}>Adicionar um item no inventario aleatoriamente</button>
-                    <select id="itemSelect" onChange={handleAddItem}>
-                      <option value="">Adicione um item</option>
-                      {items?.map((item, index) => (
-                        <option key={index} value={index}>{item.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
               </div>
             )}
 
@@ -1578,7 +1484,7 @@ export default function SessionPage() {
                           <div >
 
                             Tile que o NPC irá aparecer
-                            <input style={{ width: '10%' }} type='number' value={tileselected} onChange={(e) => {
+                            <input style={{ width: '10%', minWidth: '15px' }} type='number' value={tileselected} onChange={(e) => {
                               setTileSelected(e.target.value)
 
                             }} />
@@ -1627,7 +1533,12 @@ export default function SessionPage() {
             <div>
 
               Mapa de <span style={{ fontWeight: 'bold', fontSize: '20px' }} > {map?.name} </span>
-
+              <button onClick={() => {
+                setShowGrid(!showGrid)
+              }}>Mostrar quadriculados do mapa</button>
+              <button onClick={() => {
+                setShowTile(!showTile)
+              }} >Mostrar numero dos tiles</button>
               {user?.id === playersid[0] ?
                 <div style={{ margin: '5px', border: '1px solid black', padding: '5px' }} >
                   Escolha um mapa:
@@ -1730,7 +1641,8 @@ export default function SessionPage() {
                   key={index}
                   className={styles.gridItem}
                   style={{
-
+                    color: showTile ? 'rgba(236, 233, 233, 0.718)' : 'rgba(236, 233, 233, 0)',
+                    border: showGrid ? '1px solid rgba(236, 233, 233, 0.718)' : 'none',
                     backgroundImage: `url('/path/to/your/background/image.jpg')`
                   }}
                   onDragOver={handleDragOver}
@@ -1789,10 +1701,109 @@ export default function SessionPage() {
               ))}
             </div>
           </div>
+          <div style={{ position: 'absolute', top: '1000px', maxWidth: '800px' }} >
+            Itens na bolsa:
+            <div style={{ width: '100%', display: 'flex', gap: '5px', flexWrap: 'wrap' }} >
+              {inventory?.Items?.map((item, index) => (
+                <div
+                  style={{ maxWidth: '200px', gap: '5px', border: '2px solid green', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
+                  {item?.item?.url ? (
+                    <div onClick={() => {
+                      if (item?.item?.canequip) {
+                        const types = item?.item?.typewear;
+                        const updatedUser = { ...statsuser };
+                        if (updatedUser[types]) {
+                          alert('Desequipe primeiro o item!')
+                        } else {
+                          updatedUser[types] = inventory?.Items[index].item;
+
+                          handleUpdateQuantity2(index, -1, updatedUser);
+
+
+
+                        }
+                      }
+                    }} style={{ display: 'flex', justifyContent: 'center' }} >
+                      <img src={item?.item?.url} alt="Item Image" style={{ maxWidth: '100px', height: 'auto' }} />
+
+                    </div>
+                  ) : null}
+
+                  <div>
+                    {item?.item?.name} (<span style={{ fontWeight: 'bold', fontSize: '22px' }}  >{item?.quantity} </span>Unidade(s))
+                  </div>
+                  {item?.item?.canequip ?
+                    <div>
+                      <div>
+                        <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                          {item?.item?.typewear}
+                        </span>
+
+                      </div>
+                      <div>
+                        <CloseFullscreenIcon />  <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                          {item?.item?.atk}
+                        </span> de ATK
+                      </div>
+                      <div  >
+                        <ShieldIcon /> <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                          {item?.item?.def}
+                        </span> de DEF
+                      </div>
+                    </div> : null}
+                  {item?.item?.cantrade ?
+                    <div>
+                      <div>
+                        VALOR:  &nbsp;
+
+                        <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                          {item?.item?.value}
+                        </span>
+                        &nbsp; Peças de bronze
+                      </div>
+
+                    </div> : null}
+
+
+
+
+                  <button onClick={() => handleDelete(index)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
+                    Deletar
+                  </button>
+                  <div style={{ display: 'flex', gap: '5px' }}>
+                    <button onClick={() => handleUpdateQuantity(index, +1)} style={{ color: 'green', cursor: 'pointer' }}>
+                      +1
+                    </button>
+                    <button onClick={() => handleUpdateQuantity(index, -1)} style={{ color: 'red', cursor: 'pointer' }}>
+                      -1
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div>
+              <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
+                if (items.length > 0) {
+
+                  updateInventory()
+                } else {
+                  alert('Por favor, crie um item primeiro, abaixo')
+                }
+              }}>Adicionar um item no inventario aleatoriamente</button>
+              <select id="itemSelect" onChange={handleAddItem}>
+                <option value="">Adicione um item</option>
+                {items?.map((item, index) => (
+                  <option key={index} value={index}>{item.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
         </div>
 
 
         : null}
+
 
     </div>
   )

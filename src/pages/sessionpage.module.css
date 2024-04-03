@@ -7,10 +7,11 @@
 }
 .infobody{
   width: 25%;
-  max-width: 500px;
-  min-width: 300px;
+  max-width: 600px;
+  min-width: 400px;
   height: 100%;
-  border:1px solid purple;
+  border:2px solid rgb(17, 147, 151);
+  border-radius: 5px;
   padding:5px;
   
 }
@@ -20,8 +21,10 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  border:1px solid black;
+  border:2px solid rgb(17, 147, 151);
+  border-radius: 5px;
   margin-inline: 5px;
+  background-color: black;
   overflow: scroll;
   max-height: 750px;
   max-width: 1500px;
@@ -69,8 +72,8 @@
   width: 58px; 
   height: 58px; 
   background-size: cover; 
-  border:1px solid rgba(41, 41, 41, 0.116);
-  color: rgba(145, 145, 145, 0.205);
+  border:1px solid rgba(236, 233, 233, 0.418);
+  color: rgba(236, 233, 233, 0.418);
   font-size: 10px;
   justify-content: end;
   align-items: end;
@@ -295,6 +298,13 @@ input[id="barh"]::-ms-track {
 input[id="barh"]::-ms-tooltip { 
   display: none;
 }
-
+.slots{
+  border:4px solid rgb(180, 133, 46);
+  padding:5px;
+  box-shadow:0 0 5px 5px rgb(0, 0, 0);
+  border-radius: 5px;
+  background-color: rgb(233, 214, 178);
+  
+}
 
 
