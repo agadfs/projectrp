@@ -191,7 +191,10 @@ export default function SessionPage() {
   }
   async function getItems() {
     try {
-      const response = await axios.get(`${urlrequest}/item`);
+      const response = await axios.get(`${urlrequest}/item`,{headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }});
       if (response.data) {
         const data = response.data;
         setItems(data)
@@ -206,7 +209,10 @@ export default function SessionPage() {
 
       const userId = user.id;
 
-      const response = await axios.get(`${urlrequest}/inventory/${userId}/${sessionid}`);
+      const response = await axios.get(`${urlrequest}/inventory/${userId}/${sessionid}`,{headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }});
 
       if (response.data) {
         let playerarray = response.data;
@@ -230,7 +236,10 @@ export default function SessionPage() {
       if (data) {
         for (let i = 0; i < data.length; i++) {
 
-          const response = await axios.get(`${urlrequest}/users/${data[i]}`);
+          const response = await axios.get(`${urlrequest}/users/${data[i]}`,{headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          }});
           if (response.data) {
             const datares = response.data;
             const username = datares.username;
@@ -258,7 +267,10 @@ export default function SessionPage() {
   async function getSession() {
 
     try {
-      const response = await axios.get(`${urlrequest}/sessions/${sessionid}`);
+      const response = await axios.get(`${urlrequest}/sessions/${sessionid}`,{headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }});
       if (response.data) {
         const data = response.data;
         setRequest(data.Others);
@@ -478,7 +490,10 @@ export default function SessionPage() {
     updateSession({ Others: updatedRequests });
   }
   async function deletesession() {
-    const response = await axios.get(`${urlrequest}/sessions/delete/${sessionid}`);
+    const response = await axios.get(`${urlrequest}/sessions/delete/${sessionid}`,{headers: {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    }});
 
 
     window.location.href = '/'
@@ -491,7 +506,10 @@ export default function SessionPage() {
       if (data) {
         for (let i = 0; i < data.length; i++) {
 
-          const response = await axios.get(`${urlrequest}/users/${data[i]}`);
+          const response = await axios.get(`${urlrequest}/users/${data[i]}`,{headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          }});
           if (response.data) {
             const data = response.data;
             const username = data.username;

@@ -8,8 +8,8 @@ export const AppProvider = ({ children }) => {
     inventory: [], 
     chats: [] 
   });
-  /* https://projectrp.onrender.com */  /* http://localhost:4000 */
-  const [urlrequest, seturlrequest] = useState('https://projectrp.onrender.com');
+ 
+  const [urlrequest, seturlrequest] = useState(process.env.REACT_APP_API_URL);
 
   return (
     <AppContext.Provider value={{ user, setUser, urlrequest, seturlrequest }}>

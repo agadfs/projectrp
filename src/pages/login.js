@@ -47,6 +47,10 @@ export default function Login() {
         params: {
           email: email,
           password: password
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
         }
       };
   

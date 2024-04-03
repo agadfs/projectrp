@@ -16,7 +16,10 @@ export default function Home() {
   const [newName, setNewName] = useState('');
   async function getusers() {
     try {
-      const response = await axios.get(`${urlrequest}/userscount`);
+      const response = await axios.get(`${urlrequest}/userscount`,{headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }});
       if (response.data) {
         const count = response.data;
         setUsersCount(count)
@@ -28,7 +31,10 @@ export default function Home() {
   }
   async function getusersonline() {
     try {
-      const response = await axios.get(`${urlrequest}/userscountonline`);
+      const response = await axios.get(`${urlrequest}/userscountonline`,{headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }});
       if (response.data > 0) {
         const count = response.data;
         setUserscountonline(count)
@@ -44,10 +50,14 @@ export default function Home() {
   }
   async function getsessions() {
     try {
-      const response = await axios.get(`${urlrequest}/sessions`);
+      const response = await axios.get(`${urlrequest}/sessions`, {headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }});
       if (response.data) {
         const data = response.data;
         setSessions(data)
+        console.log(response.data)
 
       }
     } catch (error) {
@@ -70,7 +80,10 @@ export default function Home() {
 
   }
   async function getname0() {
-    const response = await axios.get(`${urlrequest}/users/${user.id}`);
+    const response = await axios.get(`${urlrequest}/users/${user.id}`,{headers: {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    }});
     if (response.data) {
       const data = response.data;
       const username = data.username;
