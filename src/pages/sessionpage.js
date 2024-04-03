@@ -730,9 +730,9 @@ export default function SessionPage() {
                 </div>
               </div> : null}
           </div>
-          <div>
+          <div >
 
-            Inventario do player:
+           
             {inventory === undefined || inventory.length === 0 ? (
               <button onClick={() => {
                 createInventory()
@@ -742,7 +742,7 @@ export default function SessionPage() {
                 height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap', border: '3px solid black',
                 padding: '10px', borderRadius: '5px', flexDirection: 'column'
               }}>
-                Seu Id:  {inventory.ownerId} <br />
+                
                 <div style={{ display: 'flex', flexDirection: 'column', padding: '0' }} >
                   <h3>Seus Atributos</h3>
                   {inventory.Stats ?
@@ -1619,16 +1619,8 @@ export default function SessionPage() {
                       <button disabled={!isUrlValid} > Adicionar Mapa </button>
                     </form>
                   </div>
-
                 </div> : null}
-
-
-
             </div>
-
-
-
-
           </div>
           <div style={{ backgroundImage: imgprev ? `url('${imgprev}')` : `url('${map?.url}')`, backgroundSize: (nameselectedmap ? `${imageWidth * parseFloat(newscale)}px ${imageWidth * parseFloat(newscale)}px` : `${imageWidth * parseFloat(scale)}px ${imageWidth * parseFloat(scale)}px`), backgroundRepeat: 'no-repeat' }} className={styles.mapcontainer}>
             <div className={styles.mapgrid} style={{ position: 'relative' }}>
@@ -1649,10 +1641,8 @@ export default function SessionPage() {
               ))}
               {playerlocation.map((player, index) => (
                 <div key={index}>
-
                   {player.id === user.id ?
                     <div
-
                       className={styles.gridPlayer}
                       style={{
                         backgroundImage: `url('/path/to/player/image.jpg')`, // Assuming you have a player image
@@ -1662,17 +1652,14 @@ export default function SessionPage() {
                         width: '60px', // Adjust as needed
                         height: '60px', // Adjust as needed
                         border: player.id === user.id ? '1px solid red' : '1px solid blue',
-
                       }}
                       draggable
                       onDragStart={(e) => handleDragStart(e, player.position)}
-
                     >
                       {player.name}
                     </div>
                     :
                     <div
-
                       className={styles.gridPlayer}
                       style={{
                         backgroundImage: `url('/path/to/player/image.jpg')`, // Assuming you have a player image
@@ -1682,22 +1669,16 @@ export default function SessionPage() {
                         width: '60px', // Adjust as needed
                         height: '60px', // Adjust as needed
                         border: player.id === user.id ? '1px solid red' : '1px solid blue',
-
                       }}
-
                       onDragStart={(e) => handleDragStart(e, player.position)}
-
                     >
                       {player.name}
                     </div>}
-
-
-
                 </div>
               ))}
             </div>
           </div>
-          <div style={{ position: 'absolute', top: '1000px', maxWidth: '800px' }} >
+          <div style={{ position: 'absolute', top: '1200px', maxWidth: '800px' }} >
             <h1 style={{fontFamily:'sans-serif'}} > SEU INVENTARIO </h1>
             <div>
               <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
