@@ -1702,11 +1702,28 @@ export default function SessionPage() {
             </div>
           </div>
           <div style={{ position: 'absolute', top: '1000px', maxWidth: '800px' }} >
-            Itens na bolsa:
-            <div style={{ width: '100%', display: 'flex', gap: '5px', flexWrap: 'wrap' }} >
+            <h1 style={{fontFamily:'sans-serif'}} > SEU INVENTARIO </h1>
+            <div>
+              <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
+                if (items.length > 0) {
+
+                  updateInventory()
+                } else {
+                  alert('Por favor, crie um item primeiro, abaixo')
+                }
+              }}>Adicionar um item no inventario aleatoriamente</button>
+              <select id="itemSelect" onChange={handleAddItem}>
+                <option value="">Adicione um item</option>
+                {items?.map((item, index) => (
+                  <option key={index} value={index}>{item.name}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ width: '100%', display: 'flex', gap: '25px', flexWrap: 'wrap' }} >
               {inventory?.Items?.map((item, index) => (
                 <div
-                  style={{ maxWidth: '200px', gap: '5px', border: '2px solid green', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
+                  className={styles.slotsinv}
+                  style={{ maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
                   {item?.item?.url ? (
                     <div onClick={() => {
                       if (item?.item?.canequip) {
@@ -1781,22 +1798,7 @@ export default function SessionPage() {
                 </div>
               ))}
             </div>
-            <div>
-              <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
-                if (items.length > 0) {
-
-                  updateInventory()
-                } else {
-                  alert('Por favor, crie um item primeiro, abaixo')
-                }
-              }}>Adicionar um item no inventario aleatoriamente</button>
-              <select id="itemSelect" onChange={handleAddItem}>
-                <option value="">Adicione um item</option>
-                {items?.map((item, index) => (
-                  <option key={index} value={index}>{item.name}</option>
-                ))}
-              </select>
-            </div>
+            
           </div>
 
         </div>
