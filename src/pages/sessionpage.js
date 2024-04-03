@@ -7,6 +7,8 @@ import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import ShieldIcon from '@mui/icons-material/Shield';
 
 export default function SessionPage() {
+  const [takedmg, setTakeDmg] = useState(0);
+  const [takemana, setTakeMana] = useState(0);
   const [scale, setScale] = useState(1);
   const [newscale, setNewScale] = useState(1);
   const [isUrlValid, setIsUrlValid] = useState(false);
@@ -94,6 +96,9 @@ export default function SessionPage() {
 
     return () => clearInterval(interval);
   }, [user]);
+
+
+
 
 
   async function updateInventory() {
@@ -191,10 +196,12 @@ export default function SessionPage() {
   }
   async function getItems() {
     try {
-      const response = await axios.get(`${urlrequest}/item`,{headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
-      }});
+      const response = await axios.get(`${urlrequest}/item`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
       if (response.data) {
         const data = response.data;
         setItems(data)
@@ -209,10 +216,12 @@ export default function SessionPage() {
 
       const userId = user.id;
 
-      const response = await axios.get(`${urlrequest}/inventory/${userId}/${sessionid}`,{headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
-      }});
+      const response = await axios.get(`${urlrequest}/inventory/${userId}/${sessionid}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
 
       if (response.data) {
         let playerarray = response.data;
@@ -236,10 +245,12 @@ export default function SessionPage() {
       if (data) {
         for (let i = 0; i < data.length; i++) {
 
-          const response = await axios.get(`${urlrequest}/users/${data[i]}`,{headers: {
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true'
-          }});
+          const response = await axios.get(`${urlrequest}/users/${data[i]}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true'
+            }
+          });
           if (response.data) {
             const datares = response.data;
             const username = datares.username;
@@ -267,10 +278,12 @@ export default function SessionPage() {
   async function getSession() {
 
     try {
-      const response = await axios.get(`${urlrequest}/sessions/${sessionid}`,{headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
-      }});
+      const response = await axios.get(`${urlrequest}/sessions/${sessionid}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
       if (response.data) {
         const data = response.data;
         setRequest(data.Others);
@@ -490,10 +503,12 @@ export default function SessionPage() {
     updateSession({ Others: updatedRequests });
   }
   async function deletesession() {
-    const response = await axios.get(`${urlrequest}/sessions/delete/${sessionid}`,{headers: {
-      'Content-Type': 'application/json',
-      'ngrok-skip-browser-warning': 'true'
-    }});
+    const response = await axios.get(`${urlrequest}/sessions/delete/${sessionid}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }
+    });
 
 
     window.location.href = '/'
@@ -506,10 +521,12 @@ export default function SessionPage() {
       if (data) {
         for (let i = 0; i < data.length; i++) {
 
-          const response = await axios.get(`${urlrequest}/users/${data[i]}`,{headers: {
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true'
-          }});
+          const response = await axios.get(`${urlrequest}/users/${data[i]}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true'
+            }
+          });
           if (response.data) {
             const data = response.data;
             const username = data.username;
@@ -744,6 +761,38 @@ export default function SessionPage() {
                           Mana atual e máxima: {statsuser.mana}/{statsuser.maxMana}
                           <input style={{ width: '100%', maxWidth: '150px' }} type="range" id='barm' min="0" max={statsuser.maxMana} value={statsuser.mana} readOnly />
                         </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', marginBlock: '5px', width: '60%', gap: '5px', border: '1px solid black', padding: '5px', borderRadius: '5px' }} >
+                          Tomar dano
+                          <input placeholder='Valor do dano' value={takedmg} onChange={(e) => {
+                            setTakeDmg(parseInt(e.target.value))
+                          }} />
+                          <button onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            updatedUser.health -= takedmg;
+                            if (updatedUser.health < 0) {
+                              updatedUser.health = 0;
+                            }
+                            setStatsUser(updatedUser);
+                            handleUpdateStats(updatedUser);
+                            setTakeDmg('')
+                          }} >Acionar dano tomado</button>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', marginBlock: '5px', width: '60%', gap: '5px', border: '1px solid black', padding: '5px', borderRadius: '5px' }} >
+                          Gastar mana
+                          <input placeholder='Valor do dano' value={takemana} onChange={(e) => {
+                            setTakeMana(parseInt(e.target.value))
+                          }} />
+                          <button onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            updatedUser.mana -= takemana;
+                            if (updatedUser.mana < 0) {
+                              updatedUser.mana = 0;
+                            }
+                            setStatsUser(updatedUser);
+                            handleUpdateStats(updatedUser);
+                            setTakeMana('')
+                          }} >Acionar gasto de mana</button>
+                        </div>
 
                       </div>
                       <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -760,6 +809,7 @@ export default function SessionPage() {
 
 
                               setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
                             }} />
                         </div>
                         <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
@@ -771,6 +821,7 @@ export default function SessionPage() {
                               const updatedUser = { ...statsuser };
                               updatedUser.dexterity = parseInt(e.target.value, 10) || 0;
                               setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
                             }}
                           />
 
@@ -784,6 +835,7 @@ export default function SessionPage() {
                               const updatedUser = { ...statsuser };
                               updatedUser.constitution = parseInt(e.target.value, 10) || 0;
                               setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
                             }}
                           />
 
@@ -797,6 +849,7 @@ export default function SessionPage() {
                               const updatedUser = { ...statsuser };
                               updatedUser.intelligence = parseInt(e.target.value, 10) || 0;
                               setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
                             }}
                           />
 
@@ -810,6 +863,7 @@ export default function SessionPage() {
                               const updatedUser = { ...statsuser };
                               updatedUser.wisdom = parseInt(e.target.value, 10) || 0;
                               setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
                             }}
                           />
 
@@ -823,6 +877,7 @@ export default function SessionPage() {
                               const updatedUser = { ...statsuser };
                               updatedUser.charisma = parseInt(e.target.value, 10) || 0;
                               setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
                             }}
                           />
 
@@ -836,6 +891,7 @@ export default function SessionPage() {
                               const updatedUser = { ...statsuser };
                               updatedUser.atk = parseInt(e.target.value, 10) || 0;
                               setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
                             }}
                           />
 
@@ -849,8 +905,25 @@ export default function SessionPage() {
                               const updatedUser = { ...statsuser };
                               updatedUser.def = parseInt(e.target.value, 10) || 0;
                               setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
                             }}
                           />
+
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }} >
+
+                          <button type='button' onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            updatedUser.health = updatedUser.maxHealth;
+                            setStatsUser(updatedUser);
+                            handleUpdateStats(updatedUser);
+                          }}> Encher Vida</button>
+                          <button type='button' onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            updatedUser.mana = updatedUser.maxMana;
+                            setStatsUser(updatedUser);
+                            handleUpdateStats(updatedUser);
+                          }}> Encher Mana</button>
 
                         </div>
                       </div>
@@ -1195,7 +1268,7 @@ export default function SessionPage() {
 
                           </div>
                           <div style={{ display: 'flex', alignSelf: 'center' }} >
-                          Utensilios esquerdo
+                            Utensilios esquerdo
                           </div>
                         </div> :
                         <div style={{
@@ -1206,8 +1279,8 @@ export default function SessionPage() {
 
 
 
-                      
-                          {statsuser.shoes?.atk ?
+
+                      {statsuser.shoes?.atk ?
                         <div onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.shoes?.name);
@@ -1234,7 +1307,7 @@ export default function SessionPage() {
 
                           </div>
                           <div style={{ display: 'flex', alignSelf: 'center' }} >
-                          Sapato
+                            Sapato
                           </div>
                         </div> :
                         <div style={{
@@ -1271,7 +1344,7 @@ export default function SessionPage() {
 
                           </div>
                           <div style={{ display: 'flex', alignSelf: 'center' }} >
-                          Utensilios direito
+                            Utensilios direito
                           </div>
                         </div> :
                         <div style={{
@@ -1310,24 +1383,36 @@ export default function SessionPage() {
                         ) : null}
 
                         <div>
-                          {item?.item?.name} <span>({item?.quantity} Unidade(s))</span>
+                          {item?.item?.name} (<span style={{ fontWeight: 'bold', fontSize: '22px' }}  >{item?.quantity} </span>Unidade(s))
                         </div>
                         {item?.item?.canequip ?
                           <div>
                             <div>
-                              Tipo de equipavel: {item?.item?.typewear}
+                              <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                                {item?.item?.typewear}
+                              </span>
+
                             </div>
                             <div>
-                              <CloseFullscreenIcon /> {item?.item?.atk}
+                              <CloseFullscreenIcon />  <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                              {item?.item?.atk}
+                              </span> de ATK
                             </div>
-                            <div style={{ display: 'flex', alignContent: 'center' }} >
-                              <ShieldIcon /> {item?.item?.def}
+                            <div  >
+                              <ShieldIcon /> <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                              {item?.item?.def}
+                              </span> de DEF
                             </div>
                           </div> : null}
                         {item?.item?.cantrade ?
                           <div>
                             <div>
-                              VALOR: {item?.item?.value} peças de bronze
+                              VALOR:  &nbsp;
+                              
+                              <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                              {item?.item?.value}
+                              </span>
+                               &nbsp; Peças de bronze
                             </div>
 
                           </div> : null}
@@ -1480,23 +1565,32 @@ export default function SessionPage() {
 
                       <div style={{ margin: '5px', border: '1px solid black', padding: '5px' }} >
                         <span style={{ fontWeight: 'bold', fontSize: '20px' }} > Crie NPC'S aqui </span>
-                        <form>
-                          Nome:
-                          <input value={nameselected} onChange={(e) => {
-                            setNameSelected(e.target.value)
+                        <form style={{}} >
+                          <div>
 
-                          }} />
-                          Tile que o NPC irá aparecer
-                          <input type='number' value={tileselected} onChange={(e) => {
-                            setTileSelected(e.target.value)
+                            Nome:
+                            <input value={nameselected} onChange={(e) => {
+                              setNameSelected(e.target.value)
 
-                          }} />
+                            }} />
+                          </div>
+
+                          <div >
+
+                            Tile que o NPC irá aparecer
+                            <input style={{ width: '10%' }} type='number' value={tileselected} onChange={(e) => {
+                              setTileSelected(e.target.value)
+
+                            }} />
+
+
+                          </div>
                           <button onClick={() => {
                             addnpcpos()
 
                           }} > Adicionar NPC </button>
                         </form>
-                        &nbsp;
+
                         <button onClick={() => {
                           updateSession({ PlayersPos: [] })
 
@@ -1539,11 +1633,6 @@ export default function SessionPage() {
                   Escolha um mapa:
                   {Array.isArray(mapsarray) && mapsarray.length > 0 && (
                     <div style={{ display: 'flex' }} >
-
-
-
-
-
                       <select style={{ marginRight: '10px' }} onChange={(e) => {
                         updateMap(e.target.selectedIndex)
                       }}>

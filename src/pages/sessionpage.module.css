@@ -24,6 +24,7 @@
   margin-inline: 5px;
   overflow: scroll;
   max-height: 750px;
+  max-width: 1500px;
   z-index: 2;
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
@@ -50,6 +51,7 @@
   
   height: 100%;
   width: 100%;
+  
   
   
 }

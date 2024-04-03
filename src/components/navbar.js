@@ -39,13 +39,13 @@ export default function Navbar() {
             Faça o login aqui
           </button>
         </div>}
-      </div>
       <button onClick={()=> {
              
              window.location.href='/'
           }} >
             Ir para a pagina inicial
           </button>
+      </div>
     </div>
   )
 }
