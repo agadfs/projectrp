@@ -7,6 +7,10 @@ import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import ShieldIcon from '@mui/icons-material/Shield';
 
 export default function SessionPage() {
+  const tranlate = {
+    en: {},
+    pt: {}
+  }
   const [showGrid, setShowGrid] = useState(false);
   const [showTile, setShowTile] = useState(false);
   const [takedmg, setTakeDmg] = useState(0);
@@ -1170,12 +1174,10 @@ export default function SessionPage() {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.pants?.name);
                           if (index !== -1) {
-
-                            updatedUser.ringleft = '';
+                            updatedUser.pants = '';
                             handleUpdateStats(updatedUser);
                             handleAddItem2(index);
-
-
+                            
                           } else {
                             console.log('Item not found!');
                           }
@@ -1200,9 +1202,6 @@ export default function SessionPage() {
                            display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Calça </div>}
-
-
-
 
 
                       {statsuser.ringright?.atk ?
