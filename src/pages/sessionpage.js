@@ -7,14 +7,11 @@ import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import ShieldIcon from '@mui/icons-material/Shield';
 
 export default function SessionPage() {
-  const tranlate = {
-    en: {},
-    pt: {}
-  }
+
   const [showGrid, setShowGrid] = useState(false);
   const [showTile, setShowTile] = useState(false);
-  const [takedmg, setTakeDmg] = useState(0);
-  const [takemana, setTakeMana] = useState(0);
+  const [takedmg, setTakeDmg] = useState('');
+  const [takemana, setTakeMana] = useState('');
   const [scale, setScale] = useState(1);
   const [newscale, setNewScale] = useState(1);
   const [isUrlValid, setIsUrlValid] = useState(false);
