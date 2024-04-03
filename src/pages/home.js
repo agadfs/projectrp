@@ -57,7 +57,7 @@ export default function Home() {
       if (response.data) {
         const data = response.data;
         setSessions(data)
-        console.log(response.data)
+        console.log(urlrequest)
 
       }
     } catch (error) {

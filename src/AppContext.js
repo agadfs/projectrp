@@ -4,29 +4,36 @@ const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const [user, setUser] = useState({
-    id: '', 
-    inventory: [], 
-    chats: [] 
+    id: '',
+    inventory: [],
+    chats: []
   });
-  const [isUrlWorking, setIsUrlWorking] = useState(true);
-  const [urlrequest, seturlrequest] = useState(process.env.REACT_APP_API_URL);
+  const initialUrlRequest = localStorage.getItem('newapiserver') || process.env.REACT_APP_API_URL;
+  const [isUrlWorking, setIsUrlWorking] = useState(false);
+  const [urlrequest, seturlrequest] = useState(initialUrlRequest);
   useEffect(() => {
+
     const checkUrl = async () => {
+
       try {
-        const response = await fetch(urlrequest);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+        const response = await fetch(process.env.REACT_APP_API_URL);
+        if (response) {
+          localStorage.removeItem('newapiserver');
+         if(initialUrlRequest === 'https://projectrp.onrender.com'){
+          window.location.reload()
+         }
         }
       } catch (error) {
-        console.error('Error checking URL:', error);
-        setIsUrlWorking(false);
+       
+        localStorage.setItem('newapiserver', 'https://projectrp.onrender.com');
+        
 
-       seturlrequest('https://projectrp.onrender.com')
       }
+
     };
 
     checkUrl();
-  }, [urlrequest]);
+  }, []);
   return (
     <AppContext.Provider value={{ user, setUser, urlrequest, seturlrequest }}>
       {children}
