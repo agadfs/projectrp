@@ -45,8 +45,10 @@ export default function Navbar() {
         }} >
           Ir para a pagina inicial
         </button>
+        <div style={{maxWidth:'250px'}} >
 
         {urlrequest === process.env.REACT_APP_API_URL ? <div>Servidor principal ON</div> : <div>SERVIDOR PRINCIPAL ESTÁ OFF (Utilizando servidor backup, talvez tenha algum lag)</div>}
+        </div>
       </div>
     </div>
   )
