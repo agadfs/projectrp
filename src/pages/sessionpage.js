@@ -272,7 +272,7 @@ export default function SessionPage() {
         }
       }
       setPlayersStatsArray(stats);
-      console.log(stats)
+      
 
 
 
