@@ -831,7 +831,7 @@ export default function SessionPage() {
                         <div>
                           Experiência: 
                           <input
-                            style={{ width: '10%', minWidth: '15px' }}
+                            style={{ width: '30%', minWidth: '15px' }}
                             value={statsuser.experience} onChange={(e) => {
 
                               const updatedUser = { ...statsuser };
