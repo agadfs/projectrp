@@ -1735,7 +1735,7 @@ export default function SessionPage() {
                       draggable
                       onDragStart={(e) => handleDragStart(e, player.position)}
                     >
-                      <div style={{ color: 'white', position: 'relative', top: '-35px' }} >
+                      <div style={{ color: 'white', position: 'relative', top: '-30px' }} >
 
                         {player.name}
                         <HealthBar useridfind={player.id} playersstatsarray={playersstatsarray} />
@@ -1755,7 +1755,7 @@ export default function SessionPage() {
                       }}
                       onDragStart={(e) => handleDragStart(e, player.position)}
                     >
-                     <div style={{color:'white', position:'relative', top:'-35px'}} >
+                     <div style={{color:'white', position:'relative', top:'-30px'}} >
 
                         {player.name}
                         <HealthBar useridfind={player.id} playersstatsarray={playersstatsarray} />
