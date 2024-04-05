@@ -829,7 +829,22 @@ export default function SessionPage() {
                           Seu level: {statsuser.level}
                         </div>
                         <div>
-                          Experiência: {statsuser.experience}
+                          Experiência: 
+                          <input
+                            style={{ width: '10%', minWidth: '15px' }}
+                            value={statsuser.experience} onChange={(e) => {
+
+                              const updatedUser = { ...statsuser };
+
+
+                              updatedUser.experience = parseInt(e.target.value, 10) || 0;
+
+
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
+                            }} />
+                          
+                          
                         </div>
                         <div>
                           Vida atual e máxima: {statsuser.health}/{statsuser.maxHealth}
