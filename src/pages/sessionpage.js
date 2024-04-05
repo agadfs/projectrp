@@ -7,7 +7,8 @@ import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import ShieldIcon from '@mui/icons-material/Shield';
 
 export default function SessionPage() {
-
+  const [playersstatsarray, setPlayersStatsArray] = useState([]);
+  const [counterget, setCountGet] = useState(0);
   const [showGrid, setShowGrid] = useState(false);
   const [showTile, setShowTile] = useState(false);
   const [takedmg, setTakeDmg] = useState('');
@@ -27,7 +28,7 @@ export default function SessionPage() {
   const { user, urlrequest } = useAppContext();
   const [session, setSession] = useState('');
   const [players, setPlayers] = useState([]);
-  const [playersid, setPlayersid] = useState('');
+  const [playersid, setPlayersid] = useState([]);
   const [request, setRequest] = useState([]);
   const [requestNames, setRequestNames] = useState([])
   const [inventory, setInventory] = useState('');
@@ -100,8 +101,15 @@ export default function SessionPage() {
     return () => clearInterval(interval);
   }, [user]);
 
+  useEffect(() => {
 
+    setCountGet(previous => previous + 1);
 
+    if (counterget + 1 === 3) {
+      getInventoryAllUsers(playersid)
+      setCountGet(0);
+    }
+  }, [user, playersid]);
 
 
   async function updateInventory() {
@@ -240,6 +248,39 @@ export default function SessionPage() {
       console.error('Error getting any inventory: ', error);
     }
   }
+  async function getInventoryAllUsers(users) {
+    try {
+      const stats = [];
+
+      for (const usersId of users) {
+        const response = await axios.get(`${urlrequest}/inventory/${usersId}/${sessionid}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
+
+        if (response.data) {
+          const playerArray = response.data;
+
+          if (playerArray.length > 0) {
+            stats.push(playerArray[0]);
+          } else {
+
+
+          }
+        }
+      }
+      setPlayersStatsArray(stats);
+      console.log(stats)
+
+
+
+    } catch (error) {
+      console.error('Error getting any inventory: ', error);
+      throw error;
+    }
+  }
 
   async function getPlayers(data) {
     let playerarray = [];
@@ -278,6 +319,8 @@ export default function SessionPage() {
       console.error('Error fetching the session: ', error)
     }
   }
+
+
   async function getSession() {
 
     try {
@@ -303,6 +346,8 @@ export default function SessionPage() {
           setPlayersid(data.players);
           setAllInventories(data.inventories);
           setPlayerLocation(data.PlayersPos);
+
+
 
         } else {
           console.log("User is not authorized for this session.");
@@ -386,7 +431,7 @@ export default function SessionPage() {
 
 
       await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: inventory.Items })
-      getInventory()
+
 
     } catch (error) {
       console.error('Error updating inventory:', error);
@@ -418,7 +463,7 @@ export default function SessionPage() {
       if (response.data) {
 
 
-        getInventory()
+
       }
 
 
@@ -649,6 +694,33 @@ export default function SessionPage() {
     }
     setImgPrev(url)
   };
+  function HealthBar({ useridfind, playersstatsarray }) {
+    // Attempt to find the player stats by the given user ID
+    const playerStats = playersstatsarray.find(player => player.ownerId === useridfind);
+  
+     
+    if (playerStats && playerStats.Stats) {
+      const { health, maxHealth } = playerStats.Stats;
+      // Render the health bar with the found health and maxHealth values
+      return (
+        <div style={{ position: 'relative', top: '-35px', color: 'white' }}>
+          {health}/{maxHealth}
+          <input
+            style={{ width: '100%', maxWidth: '50px', height: '5px' }}
+            type="range"
+            id='barh'
+            min="0"
+            max={maxHealth}
+            value={health}
+            readOnly
+          />
+        </div>
+      );
+    } else {
+      // Return null or a fallback UI when no matching stats are found
+      return null;
+    }
+  }
   return (
     <div className={styles.body} >
 
@@ -732,7 +804,7 @@ export default function SessionPage() {
           </div>
           <div >
 
-           
+
             {inventory === undefined || inventory.length === 0 ? (
               <button onClick={() => {
                 createInventory()
@@ -742,7 +814,7 @@ export default function SessionPage() {
                 height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap', border: '3px solid black',
                 padding: '10px', borderRadius: '5px', flexDirection: 'column'
               }}>
-                
+
                 <div style={{ display: 'flex', flexDirection: 'column', padding: '0' }} >
                   <h3>Seus Atributos</h3>
                   {inventory.Stats ?
@@ -940,7 +1012,7 @@ export default function SessionPage() {
                   <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
                     <div style={{ display: 'flex', gap: '20px' }} >
                       {statsuser.earing?.atk ?
-                        <div className={styles.slots}  onClick={() => {
+                        <div className={styles.slots} onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.earing?.name);
                           if (index !== -1) {
@@ -948,6 +1020,8 @@ export default function SessionPage() {
                             updatedUser.earing = '';
                             handleUpdateStats(updatedUser);
                             handleAddItem2(index);
+                            setStatsUser(updatedUser);
+
 
 
                           } else {
@@ -969,9 +1043,9 @@ export default function SessionPage() {
                             brinco
                           </div>
                         </div> :
-                        <div  className={styles.slots} style={{
+                        <div className={styles.slots} style={{
                           width: '50px', height: '50px',
-                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Brinco </div>}
 
@@ -985,7 +1059,7 @@ export default function SessionPage() {
                             updatedUser.head = '';
                             handleUpdateStats(updatedUser);
                             handleAddItem2(index);
-
+                            setStatsUser(updatedUser);
 
                           } else {
                             console.log('Item not found!');
@@ -1008,7 +1082,7 @@ export default function SessionPage() {
                         </div> :
                         <div className={styles.slots} style={{
                           width: '50px', height: '50px',
-                         display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Capacete </div>}
 
@@ -1024,7 +1098,7 @@ export default function SessionPage() {
                             updatedUser.lefthand = '';
                             handleUpdateStats(updatedUser);
                             handleAddItem2(index);
-
+                            setStatsUser(updatedUser);
 
                           } else {
                             console.log('Item not found!');
@@ -1046,14 +1120,14 @@ export default function SessionPage() {
                           </div>
                         </div> :
                         <div className={styles.slots} style={{
-                          width: '50px', height: '50px', 
-                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          width: '50px', height: '50px',
+                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Mão esquerda </div>}
 
 
                       {statsuser.chest?.atk ?
-                        <div className={styles.slots}  onClick={() => {
+                        <div className={styles.slots} onClick={() => {
                           const updatedUser = { ...statsuser };
                           const index = items.findIndex(item => item.name === statsuser.chest?.name);
                           if (index !== -1) {
@@ -1061,7 +1135,7 @@ export default function SessionPage() {
                             updatedUser.chest = '';
                             handleUpdateStats(updatedUser);
                             handleAddItem2(index);
-
+                            setStatsUser(updatedUser);
 
                           } else {
                             console.log('Item not found!');
@@ -1084,7 +1158,7 @@ export default function SessionPage() {
                         </div> :
                         <div className={styles.slots} style={{
                           width: '50px', height: '50px',
-                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Tronco </div>}
 
@@ -1099,7 +1173,7 @@ export default function SessionPage() {
                             updatedUser.righthand = '';
                             handleUpdateStats(updatedUser);
                             handleAddItem2(index);
-
+                            setStatsUser(updatedUser);
 
                           } else {
                             console.log('Item not found!');
@@ -1137,7 +1211,7 @@ export default function SessionPage() {
                             updatedUser.ringleft = '';
                             handleUpdateStats(updatedUser);
                             handleAddItem2(index);
-
+                            setStatsUser(updatedUser);
 
                           } else {
                             console.log('Item not found!');
@@ -1160,7 +1234,7 @@ export default function SessionPage() {
                         </div> :
                         <div className={styles.slots} style={{
                           width: '50px', height: '50px',
-                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Anel esquerdo </div>}
 
@@ -1174,7 +1248,7 @@ export default function SessionPage() {
                             updatedUser.pants = '';
                             handleUpdateStats(updatedUser);
                             handleAddItem2(index);
-                            
+                            setStatsUser(updatedUser);
                           } else {
                             console.log('Item not found!');
                           }
@@ -1196,7 +1270,7 @@ export default function SessionPage() {
                         </div> :
                         <div className={styles.slots} style={{
                           width: '50px', height: '50px',
-                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Calça </div>}
 
@@ -1210,7 +1284,7 @@ export default function SessionPage() {
                             updatedUser.ringright = '';
                             handleUpdateStats(updatedUser);
                             handleAddItem2(index);
-
+                            setStatsUser(updatedUser);
 
                           } else {
                             console.log('Item not found!');
@@ -1233,7 +1307,7 @@ export default function SessionPage() {
                         </div> :
                         <div className={styles.slots} style={{
                           width: '50px', height: '50px',
-                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Anel direito </div>}
                     </div>
@@ -1248,7 +1322,7 @@ export default function SessionPage() {
                             updatedUser.othersleft = '';
                             handleUpdateStats(updatedUser);
                             handleAddItem2(index);
-
+                            setStatsUser(updatedUser);
 
                           } else {
                             console.log('Item not found!');
@@ -1271,7 +1345,7 @@ export default function SessionPage() {
                         </div> :
                         <div className={styles.slots} style={{
                           width: '50px', height: '50px',
-                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Utensilios esquerdo </div>}
 
@@ -1287,13 +1361,13 @@ export default function SessionPage() {
                             updatedUser.shoes = '';
                             handleUpdateStats(updatedUser);
                             handleAddItem2(index);
-
+                            setStatsUser(updatedUser);
 
                           } else {
                             console.log('Item not found!');
                           }
 
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column'}}>
+                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
                           <img src={statsuser?.shoes?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1324,7 +1398,7 @@ export default function SessionPage() {
                             updatedUser.othersright = '';
                             handleUpdateStats(updatedUser);
                             handleAddItem2(index);
-
+                            setStatsUser(updatedUser);
 
                           } else {
                             console.log('Item not found!');
@@ -1347,7 +1421,7 @@ export default function SessionPage() {
                         </div> :
                         <div className={styles.slots} style={{
                           width: '50px', height: '50px',
-                           display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
                         }} >
                           Utensilios direito </div>}
                     </div>
@@ -1656,6 +1730,7 @@ export default function SessionPage() {
                       draggable
                       onDragStart={(e) => handleDragStart(e, player.position)}
                     >
+                      <HealthBar useridfind={player.id} playersstatsarray={playersstatsarray} />
                       {player.name}
                     </div>
                     :
@@ -1672,6 +1747,7 @@ export default function SessionPage() {
                       }}
                       onDragStart={(e) => handleDragStart(e, player.position)}
                     >
+                     <HealthBar useridfind={player.id} playersstatsarray={playersstatsarray} />
                       {player.name}
                     </div>}
                 </div>
@@ -1679,7 +1755,7 @@ export default function SessionPage() {
             </div>
           </div>
           <div style={{ position: 'absolute', top: '1200px', maxWidth: '800px' }} >
-            <h1 style={{fontFamily:'sans-serif'}} > SEU INVENTARIO </h1>
+            <h1 style={{ fontFamily: 'sans-serif' }} > SEU INVENTARIO </h1>
             <div>
               <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
                 if (items.length > 0) {
@@ -1710,8 +1786,8 @@ export default function SessionPage() {
                           alert('Desequipe primeiro o item!')
                         } else {
                           updatedUser[types] = inventory?.Items[index].item;
-
                           handleUpdateQuantity2(index, -1, updatedUser);
+                          setStatsUser(updatedUser);
 
 
 
@@ -1775,7 +1851,7 @@ export default function SessionPage() {
                 </div>
               ))}
             </div>
-            
+
           </div>
 
         </div>
