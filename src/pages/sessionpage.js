@@ -272,7 +272,7 @@ export default function SessionPage() {
         }
       }
       setPlayersStatsArray(stats);
-      
+
 
 
 
@@ -697,23 +697,28 @@ export default function SessionPage() {
   function HealthBar({ useridfind, playersstatsarray }) {
     // Attempt to find the player stats by the given user ID
     const playerStats = playersstatsarray.find(player => player.ownerId === useridfind);
-  
-     
+
+
     if (playerStats && playerStats.Stats) {
       const { health, maxHealth } = playerStats.Stats;
       // Render the health bar with the found health and maxHealth values
       return (
-        <div style={{ position: 'relative', top: '-35px', color: 'white' }}>
-          {health}/{maxHealth}
-          <input
-            style={{ width: '100%', maxWidth: '50px', height: '5px' }}
-            type="range"
-            id='barh'
-            min="0"
-            max={maxHealth}
-            value={health}
-            readOnly
-          />
+        <div >
+          <div>
+            Level: {playerStats.Stats.level}
+          </div>
+          <div style={{ position: 'relative', top: '70px', left: '5px' }} >
+
+            <input
+              style={{ width: '100%', maxWidth: '40px', height: '5px' }}
+              type="range"
+              id='barh'
+              min="0"
+              max={maxHealth}
+              value={health}
+              readOnly
+            />{health}/{maxHealth}
+          </div>
         </div>
       );
     } else {
@@ -1730,8 +1735,11 @@ export default function SessionPage() {
                       draggable
                       onDragStart={(e) => handleDragStart(e, player.position)}
                     >
-                      <HealthBar useridfind={player.id} playersstatsarray={playersstatsarray} />
-                      {player.name}
+                      <div style={{ color: 'white', position: 'relative', top: '-35px' }} >
+
+                        {player.name}
+                        <HealthBar useridfind={player.id} playersstatsarray={playersstatsarray} />
+                      </div>
                     </div>
                     :
                     <div
@@ -1747,8 +1755,11 @@ export default function SessionPage() {
                       }}
                       onDragStart={(e) => handleDragStart(e, player.position)}
                     >
-                     <HealthBar useridfind={player.id} playersstatsarray={playersstatsarray} />
-                      {player.name}
+                     <div style={{color:'white', position:'relative', top:'-35px'}} >
+
+                        {player.name}
+                        <HealthBar useridfind={player.id} playersstatsarray={playersstatsarray} />
+                      </div>
                     </div>}
                 </div>
               ))}
