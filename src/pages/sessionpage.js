@@ -157,7 +157,7 @@ export default function SessionPage() {
 
       await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: newInv })
       handleUpdateStats(updateddata);
-      console.log(newInv)
+      
 
 
 
@@ -241,7 +241,7 @@ export default function SessionPage() {
           setInventory(playerarray);
           setStatsUser(playerarray.Stats)
         } else {
-          console.log('Inventory not found')
+          
         }
       }
     } catch (error) {
