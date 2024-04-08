@@ -7,9 +7,17 @@
 .datashow{
   width: 20%;
   height: 100%;
-  border:1px solid red;
+  border-width: 8px;
+  padding:5px; /* Largura da borda */
+  border-style: solid; /* Estilo da borda */
+  border-image-source: url('https://ronenness.github.io/RPGUI/rpgui/img/border-image-golden.png'); 
+  border-image-slice: 4 4 4 4; 
+  background-color: rgb(173, 128, 61);
+  font-weight: bold;
+  font-family: sans-serif;
   display: flex;
   flex-direction: column;
+  margin-top: 50px;
 }
 .simplebutton{
   width: fit-content;
@@ -26,8 +34,16 @@
   padding:5px;
   height: 100%;
   justify-content: center;
-  border:1px solid green;
+  border-width: 8px;
+  padding:5px; /* Largura da borda */
+  border-style: solid; /* Estilo da borda */
+  border-image-source: url('https://ronenness.github.io/RPGUI/rpgui/img/border-image-golden.png'); 
+  border-image-slice: 4 4 4 4; 
+  background-color: rgb(173, 128, 61);
+  font-weight: bold;
+  font-family: sans-serif;
   align-items: center;
+ 
 }
 .maincontainertitle{
   display: flex;
@@ -46,5 +62,39 @@
   gap:10px;
   margin: 10px;
   border-radius: 5px;
+  border-width: 8px;
+  border-style: solid; /* Estilo da borda */
+  border-image-source: url('https://ronenness.github.io/RPGUI/rpgui/img/border-image-golden.png'); 
+  border-image-slice: 4 4 4 4; 
+  background-color: rgb(173, 128, 61);
+  font-weight: bold;
+  font-family: sans-serif;
+
   
+}
+.rpgdiv1 {
+  border-width: 8px;
+  padding:5px; /* Largura da borda */
+  border-style: solid; /* Estilo da borda */
+  border-image-source: url('https://ronenness.github.io/RPGUI/rpgui/img/border-image-golden.png'); 
+  border-image-slice: 4 4 4 4; 
+  background-color: rgb(173, 128, 61);
+  font-weight: bold;
+  font-family: sans-serif;
+
+}
+
+.rpgdiv2 {
+  border-width: 8px;
+  padding:5px; /* Largura da borda */
+  border-style: solid; /* Estilo da borda */
+  border-image-source: url('https://ronenness.github.io/RPGUI/rpgui/img/border-image-golden.png'); 
+  border-image-slice: 4 4 4 4; 
+  background-color: rgb(173, 128, 61);
+  font-weight: bold;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
 }

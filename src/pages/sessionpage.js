@@ -5,8 +5,12 @@ import axios from 'axios';
 import { useAppContext } from '../AppContext';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import ShieldIcon from '@mui/icons-material/Shield';
+import CircularProgress from '@mui/material/CircularProgress';
+import { PiCoinsBold } from 'react-icons/pi';
 
 export default function SessionPage() {
+  const [randomText, setRandomText] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [playersstatsarray, setPlayersStatsArray] = useState([]);
   const [counterget, setCountGet] = useState(0);
   const [showGrid, setShowGrid] = useState(false);
@@ -25,7 +29,7 @@ export default function SessionPage() {
   const gridItems = Array.from({ length: 4096 }); /* 64 x 64 */
   const [titulo, setTitulo] = useState('');
   const { sessionid } = useParams();
-  const { user, urlrequest } = useAppContext();
+  const { user, urlrequest, randomStrings } = useAppContext();
   const [session, setSession] = useState('');
   const [players, setPlayers] = useState([]);
   const [playersid, setPlayersid] = useState([]);
@@ -84,6 +88,17 @@ export default function SessionPage() {
       shoes: ''
 
     })
+
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * randomStrings.length);
+    setRandomText(randomStrings[randomIndex]);
+
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+
+  }, []);
 
 
 
@@ -157,7 +172,7 @@ export default function SessionPage() {
 
       await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, items: newInv })
       handleUpdateStats(updateddata);
-      
+
 
 
 
@@ -241,7 +256,7 @@ export default function SessionPage() {
           setInventory(playerarray);
           setStatsUser(playerarray.Stats)
         } else {
-          
+
         }
       }
     } catch (error) {
@@ -726,28 +741,41 @@ export default function SessionPage() {
       return null;
     }
   }
+  function GoldCoinBag() {
+    return (
+      <img
+        src='https://png.pngtree.com/png-vector/20230131/ourmid/pngtree-gold-coin-bag-png-image_6204484.png'
+        width={60}
+        style={{ position: 'relative', top: '20px' }}
+        alt="Gold Coin Bag"
+      />
+    );
+  }
   return (
     <div className={styles.body} >
 
-      {showinfo === true ?
+      {showinfo === true && !isLoading ?
 
         <div className={styles.infobody}>
-          <div>
+          <div  className={styles.rpgdiv1}>
             ID da sessão: {sessionid}
-          </div>
           {user?.id === playersid[0] ? <div>
-            <button onClick={() => {
+            <button style={{marginTop:'10px'}} onClick={() => {
               deletesession()
             }}>
               Deletar sessão
             </button>
           </div> : null}
-          <div style={{ marginTop: '10px' }}>
-            Titulo do jogo: {title}
+          </div>
+          <div className={styles.rpgdiv1} style={{ marginTop: '10px' }}>
+            <div style={{ justifyContent: 'center', width: '100%', display: 'flex' }} className={styles.medievalsharp}>
+              Titulo do jogo: {title}
+
+            </div>
 
             {user?.id === playersid[0] ?
-              <div>
-                <form>
+              <div  >
+                <form style={{width:'100%', justifyContent:'center', display:'flex'}}>
                   <input value={titulo} onChange={(e) => {
                     setTitulo(e.target.value)
                   }} />
@@ -764,8 +792,8 @@ export default function SessionPage() {
               </div> : null}
           </div>
           <div style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
-            Jogadores:
-            <div style={{ height: '100%', display: 'flex', maxWidth: '300px', gap: '10px', flexWrap: 'wrap', border: '3px solid black', padding: '10px', borderRadius: '5px' }}>
+            <div className={styles.rpgdiv1} style={{ height: '100%', display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent:'center' }}>
+              <h1 style={{ justifyContent: 'center', width: '100%', display: 'flex' }} className={styles.medievalsharp}> Jogadores  </h1>
               {players?.map((player, index) => (
                 <div style={{
                   padding: '10px', border: '1px solid black', width: 'auto', borderRadius: '5px',
@@ -780,11 +808,11 @@ export default function SessionPage() {
               ))}
             </div>
             {user?.id === playersid[0] ?
-              <div style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
-                Solicitações para entrar:
-                <div style={{ height: '100%', display: 'flex', maxWidth: '300px', gap: '10px', flexWrap: 'wrap', border: '3px solid black', padding: '10px', borderRadius: '5px' }}>
+              <div className={styles.rpgdiv1} style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
+                <h1 style={{ justifyContent: 'center', width: '100%', display: 'flex' }} className={styles.medievalsharp}> Solicitações para entrar  </h1>
+                <div style={{ height: '100%', display: 'flex', gap: '10px', flexWrap: 'wrap', border: '3px solid black', padding: '10px', borderRadius: '5px' }}>
                   {request && request?.length > 0 && request?.map((player, index) => (
-                    <div style={{ padding: '10px', border: '1px solid black', width: 'auto' }} key={index}>
+                    <div style={{ padding: '10px', border: '1px solid black', width: '100%'}} key={index}>
                       <div>
 
                         {requestNames[index]}
@@ -815,13 +843,14 @@ export default function SessionPage() {
                 createInventory()
               }} >Criar inventário</button>
             ) : (
-              <div style={{
-                height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap', border: '3px solid black',
-                padding: '10px', borderRadius: '5px', flexDirection: 'column'
+              <div className={styles.rpgdiv1} style={{
+                height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap',
+                flexDirection: 'column'
               }}>
 
-                <div style={{ display: 'flex', flexDirection: 'column', padding: '0' }} >
-                  <h3>Seus Atributos</h3>
+
+                <div style={{ display: 'flex', flexDirection: 'column' }} >
+                  <h3 className={styles.medievalsharp}>Seus Atributos</h3>
                   {inventory.Stats ?
                     <div style={{ display: 'flex', flexDirection: 'row' }} >
                       <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -829,7 +858,7 @@ export default function SessionPage() {
                           Seu level: {statsuser.level}
                         </div>
                         <div>
-                          Experiência: 
+                          Experiência:
                           <input
                             style={{ width: '30%', minWidth: '15px' }}
                             value={statsuser.experience} onChange={(e) => {
@@ -843,8 +872,8 @@ export default function SessionPage() {
                               setStatsUser(updatedUser);
                               handleUpdateStats(updatedUser);
                             }} />
-                          
-                          
+
+
                         </div>
                         <div>
                           Vida atual e máxima: {statsuser.health}/{statsuser.maxHealth}
@@ -1452,8 +1481,8 @@ export default function SessionPage() {
 
           </div>
           {user?.id === playersid[0] ?
-            <div>
-              <h2>Adicionar Item</h2>
+            <div style={{ marginTop: '10px' }} className={styles.rpgdiv1}>
+              <h2 style={{width:'100%', justifyContent:'center', display:'flex'}} className={styles.medievalsharp} >Adicionar Item</h2>
               <form onSubmit={handleSubmit}>
                 <label htmlFor="name">Nome:</label><br />
                 <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required /><br />
@@ -1461,7 +1490,9 @@ export default function SessionPage() {
                 <label htmlFor="description">Descrição:</label><br />
                 <textarea id="description" name="description" value={formData.description} onChange={handleChange} required /><br />
 
-                <label htmlFor="cantrade">Pode ser negociado:</label><br />
+                <label htmlFor="cantrade">Pode ser negociado
+                  <GoldCoinBag />
+                  :</label><br />
                 <input type="checkbox" id="cantrade" name="cantrade" checked={formData.cantrade} onChange={handleChange} /><br />
 
                 {formData.cantrade ?
@@ -1522,21 +1553,29 @@ export default function SessionPage() {
         </div>
         :
         <div>
-          {user.id ?
+          {isLoading ?
+            <div style={{ display: 'flex', width: '100%', justifyContent: 'center', color:'white' }} ><CircularProgress /> Carregando...
+              <br />
+              Dica: {randomText}
+            </div>
+            :
             <div>
-              {!request.includes(user.id) ?
-                <button onClick={() => {
-                  makeRequest()
-                }} >
-                  Solicitar entrada
-                </button>
-                :
+              {user.id ?
                 <div>
-                  Você já solicitou pra entrar
-                </div>}
-            </div> : <div> Por favor, faça o login para poder interagir com as sessões </div>}
-        </div>}
-      {showinfo === true ?
+                  {!request.includes(user.id) ?
+                    <button onClick={() => {
+                      makeRequest()
+                    }} >
+                      Solicitar entrada
+                    </button>
+                    :
+                    <div>
+                      Você já solicitou pra entrar
+                    </div>}
+                </div> : <div> Por favor, faça o login para poder interagir com as sessões </div>}
+            </div>}</div>}
+
+      {showinfo === true && !isLoading ?
 
         <div className={styles.mapbody}>
           <div className={styles.maptitle}>
@@ -1556,7 +1595,7 @@ export default function SessionPage() {
                 :
                 <div>
                   {user?.id === playersid[0] ?
-                    <div>
+                    <div className={styles.rpgdiv1}>
                       Você é o <span style={{ fontWeight: 'bold', fontSize: '20px' }} >  MESTRE </span>
 
                       <div style={{ margin: '5px', border: '1px solid black', padding: '5px' }} >
@@ -1594,7 +1633,7 @@ export default function SessionPage() {
                       </div>
                     </div>
                     :
-                    <div>
+                    <div className={styles.rpgdiv1}>
                       <div>
                         Escolha o tile e clique para adicionar você (Não pode ter nenhum jogador ou npc em cima)
                         <div>
@@ -1620,15 +1659,22 @@ export default function SessionPage() {
 
 
             </div>
-            <div>
+            <div style={{bottom:'15px', position:'relative'}} className={styles.rpgdiv1}>
 
-              Mapa de <span style={{ fontWeight: 'bold', fontSize: '20px' }} > {map?.name} </span>
+              <div style={{width:'100%', justifyContent:'center', display:'flex'}} className={styles.medievalsharp}>
+
+              Mapa:  {map?.name} 
+              </div>
+              <div style={{width:'100%', justifyContent:'center', display:'flex'}} className={styles.medievalsharp} >
+
+
               <button onClick={() => {
                 setShowGrid(!showGrid)
               }}>Mostrar quadriculados do mapa</button>
               <button onClick={() => {
                 setShowTile(!showTile)
               }} >Mostrar numero dos tiles</button>
+                </div>
               {user?.id === playersid[0] ?
                 <div style={{ margin: '5px', border: '1px solid black', padding: '5px' }} >
                   Escolha um mapa:
@@ -1770,7 +1816,7 @@ export default function SessionPage() {
                       }}
                       onDragStart={(e) => handleDragStart(e, player.position)}
                     >
-                     <div style={{color:'white', position:'relative', top:'-30px'}} >
+                      <div style={{ color: 'white', position: 'relative', top: '-30px' }} >
 
                         {player.name}
                         <HealthBar useridfind={player.id} playersstatsarray={playersstatsarray} />
@@ -1780,9 +1826,10 @@ export default function SessionPage() {
               ))}
             </div>
           </div>
-          <div style={{ position: 'absolute', top: '1200px', maxWidth: '800px' }} >
-            <h1 style={{ fontFamily: 'sans-serif' }} > SEU INVENTARIO </h1>
+          <div className={styles.rpgdiv1} style={{ position: 'absolute', top: '1030px', maxWidth: '1000px' }} >
+            <h1 style={{width:'100%', justifyContent:'center', display:'flex'}} className={styles.medievalsharp} > SEU INVENTARIO  ({items?.length} Items)</h1>
             <div>
+
               <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
                 if (items.length > 0) {
 
@@ -1798,85 +1845,90 @@ export default function SessionPage() {
                 ))}
               </select>
             </div>
-            <div style={{ width: '100%', display: 'flex', gap: '25px', flexWrap: 'wrap' }} >
-              {inventory?.Items?.map((item, index) => (
-                <div
-                  className={styles.slotsinv}
-                  style={{ maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
-                  {item?.item?.url ? (
-                    <div onClick={() => {
-                      if (item?.item?.canequip) {
-                        const types = item?.item?.typewear;
-                        const updatedUser = { ...statsuser };
-                        if (updatedUser[types]) {
-                          alert('Desequipe primeiro o item!')
-                        } else {
-                          updatedUser[types] = inventory?.Items[index].item;
-                          handleUpdateQuantity2(index, -1, updatedUser);
-                          setStatsUser(updatedUser);
+
+            <div className={styles.customScrollDiv} style={{height:'785px', width: '50vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
+              <div style={{minWidth: '1600px', display: 'flex', gap: '25px', flexWrap: 'wrap', transform: 'scaleY(-1)', position: 'relative', bottom: '10px', marginTop:'20px' }} >
+                {inventory?.Items?.map((item, index) => (
+                  <div
+                    className={styles.slotsinv}
+                    style={{ maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
+                    {item?.item?.url ? (
+                      <div onClick={() => {
+                        if (item?.item?.canequip) {
+                          const types = item?.item?.typewear;
+                          const updatedUser = { ...statsuser };
+                          if (updatedUser[types]) {
+                            alert('Desequipe primeiro o item!')
+                          } else {
+                            updatedUser[types] = inventory?.Items[index].item;
+                            handleUpdateQuantity2(index, -1, updatedUser);
+                            setStatsUser(updatedUser);
 
 
 
+                          }
                         }
-                      }
-                    }} style={{ display: 'flex', justifyContent: 'center' }} >
-                      <img src={item?.item?.url} alt="Item Image" style={{ maxWidth: '100px', height: 'auto' }} />
+                      }} style={{ display: 'flex', justifyContent: 'center' }} >
+                        <img src={item?.item?.url} alt="Item Image" style={{ maxWidth: '100px', height: 'auto' }} />
 
+                      </div>
+                    ) : null}
+
+                    <div>
+                      {item?.item?.name} (<span style={{ fontWeight: 'bold', fontSize: '22px' }}  >{item?.quantity} </span>Unidade(s))
                     </div>
-                  ) : null}
-
-                  <div>
-                    {item?.item?.name} (<span style={{ fontWeight: 'bold', fontSize: '22px' }}  >{item?.quantity} </span>Unidade(s))
-                  </div>
-                  {item?.item?.canequip ?
-                    <div>
+                    {item?.item?.canequip ?
                       <div>
-                        <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                          {item?.item?.typewear}
-                        </span>
+                        <div>
+                          <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                            {item?.item?.typewear}
+                          </span>
 
-                      </div>
+                        </div>
+                        <div>
+                          <CloseFullscreenIcon />  <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                            {item?.item?.atk}
+                          </span> de ATK
+                        </div>
+                        <div  >
+                          <ShieldIcon /> <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                            {item?.item?.def}
+                          </span> de DEF
+                        </div>
+                      </div> : null}
+                    {item?.item?.cantrade ?
                       <div>
-                        <CloseFullscreenIcon />  <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                          {item?.item?.atk}
-                        </span> de ATK
-                      </div>
-                      <div  >
-                        <ShieldIcon /> <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                          {item?.item?.def}
-                        </span> de DEF
-                      </div>
-                    </div> : null}
-                  {item?.item?.cantrade ?
-                    <div>
-                      <div>
-                        VALOR:  &nbsp;
+                        <div>
+                          VALOR:  &nbsp;
 
-                        <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                          {item?.item?.value}
-                        </span>
-                        &nbsp; Peças de bronze
-                      </div>
+                          <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                            {item?.item?.value}
+                          </span>
+                          <PiCoinsBold size={20} color='rgb(133, 72, 7)' />
+                        </div>
 
-                    </div> : null}
+                      </div> : null}
 
 
 
 
-                  <button onClick={() => handleDelete(index)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
-                    Deletar
-                  </button>
-                  <div style={{ display: 'flex', gap: '5px' }}>
-                    <button onClick={() => handleUpdateQuantity(index, +1)} style={{ color: 'green', cursor: 'pointer' }}>
-                      +1
+                    <button onClick={() => handleDelete(index)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
+                      Deletar
                     </button>
-                    <button onClick={() => handleUpdateQuantity(index, -1)} style={{ color: 'red', cursor: 'pointer' }}>
-                      -1
-                    </button>
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                      <button onClick={() => handleUpdateQuantity(index, +1)} style={{ color: 'green', cursor: 'pointer' }}>
+                        +1
+                      </button>
+                      <button onClick={() => handleUpdateQuantity(index, -1)} style={{ color: 'red', cursor: 'pointer' }}>
+                        -1
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
             </div>
+
 
           </div>
 

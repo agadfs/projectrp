@@ -1,6 +1,19 @@
 .body{
   display: flex;
- 
   top: 0;
+  margin-bottom: -120px;
+  top:0;
   
+}
+
+.rpgdiv1 {
+  border-width: 8px;
+  padding:5px; /* Largura da borda */
+  border-style: solid; /* Estilo da borda */
+  border-image-source: url('https://ronenness.github.io/RPGUI/rpgui/img/border-image-golden.png'); 
+  border-image-slice: 4 4 4 4; 
+  background-color: rgb(173, 128, 61);
+  font-weight: bold;
+  font-family: sans-serif;
+
 }

@@ -9,7 +9,7 @@ export default function Sessions(array, id) {
     <div>
       {sessions?.map((session, index) =>
       (
-        <div style={{ border: session.players[0] === user.id ? '2px solid red' : '2px solid black'}} className={styles.sessionbody} key={index} >
+        <div style={{ backgroundColor: session.players[0] === user.id ? 'rgb(223, 54, 14)' : 'rgb(173, 154, 124)'}} className={styles.sessionbody} key={index} >
           <div>{session.players[0] === user.id ? 'Entrar como MESTRE' : 'Entrar como JOGADOR'} </div>
           <div>
 

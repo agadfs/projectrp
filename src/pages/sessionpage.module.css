@@ -1,8 +1,10 @@
+*
 .body{
   margin-top: 130px;
   display: flex;
   width: 100%;
   height: 100%;
+  
   
 }
 .infobody{
@@ -10,7 +12,7 @@
   max-width: 600px;
   min-width: 400px;
   height: 100%;
-  border:2px solid rgb(17, 147, 151);
+  
   border-radius: 5px;
   padding:5px;
   
@@ -21,7 +23,7 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  border:2px solid rgb(17, 147, 151);
+  
   border-radius: 5px;
   margin-inline: 5px;
   background-color: black;
@@ -36,6 +38,15 @@
       -ms-user-select: none; /* Internet Explorer/Edge */
           user-select: none; /* Non-prefixed version, currently
                                 supported by Chrome, Edge, Opera and Firefox */
+                                border-width: 8px;
+  padding:5px; /* Largura da borda */
+  border-style: solid; /* Estilo da borda */
+  border-image-source: url('https://ronenness.github.io/RPGUI/rpgui/img/border-image-golden.png'); 
+  border-image-slice: 4 4 4 4; 
+  background-color: rgb(0, 0, 0);
+  font-weight: bold;
+  font-family: sans-serif;
+  margin-top: -70px;
 
 }
 .maptitle{
@@ -51,7 +62,6 @@
 
 .mapcontainer{
   display: flex;
-  
   height: 100%;
   width: 100%;
   
@@ -316,5 +326,44 @@ input[id="barh"]::-ms-tooltip {
   
 }
 
+.rpgdiv1 {
+  border-width: 8px;
+  padding:5px; /* Largura da borda */
+  border-style: solid; /* Estilo da borda */
+  border-image-source: url('https://ronenness.github.io/RPGUI/rpgui/img/border-image-golden.png'); 
+  border-image-slice: 4 4 4 4; 
+  background-color: rgb(173, 128, 61);
+  font-weight: bold;
+  font-family: sans-serif;
 
+}
+
+
+.customScrollDiv::-webkit-scrollbar-track {
+  background: black; /* Scrollbar track color */
+}
+
+.customScrollDiv::-webkit-scrollbar-thumb {
+  background: grey; /* Scrollbar thumb color */
+  
+}
+
+.customScrollDiv::-webkit-scrollbar {
+  width: 8px; /* Width of the vertical scrollbar */
+  height: 8px; /* Height of the horizontal scrollbar */
+}
+
+/* Firefox */
+.customScrollDiv {
+  scrollbar-width: auto;
+  scrollbar-color: rgb(241, 241, 241) black;
+  
+}
+
+.medievalsharp{
+  font-family: "MedievalSharp", cursive;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 30px;
+}
 

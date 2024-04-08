@@ -17,10 +17,9 @@ export default function Navbar() {
   }, [user])
   return (
     <div className={styles.body} >
-
       <div>{user.id ?
-        <div>
-          <div>
+        <div style={{display:'flex', flexDirection:'column', gap:'10px'}} >
+          <div style={{marginBottom:'0px'}} className={styles.rpgdiv1}>
             Seu id: {user.id}
           </div>
           <button onClick={() => {
@@ -31,7 +30,7 @@ export default function Navbar() {
             Logout
           </button>
         </div> :
-        <div>
+        <div >
 
           <button onClick={() => {
             window.location.href = '/login'; // Corrected navigation
@@ -39,7 +38,7 @@ export default function Navbar() {
             Faça o login aqui
           </button>
         </div>}
-        <button onClick={() => {
+        <button  style={{width:'100%', marginBlock:'10px'}} onClick={() => {
 
           window.location.href = '/'
         }} >
@@ -47,7 +46,7 @@ export default function Navbar() {
         </button>
         <div style={{maxWidth:'250px'}} >
 
-        {urlrequest === process.env.REACT_APP_API_URL ? <div>Servidor principal ON</div> : <div>SERVIDOR PRINCIPAL ESTÁ OFF (Utilizando servidor backup, talvez tenha algum lag, POR GENTILEZA, NÃO CLIQUE RAPIDAMENTE VARIAS VEZES NAS COISAS, CLIQUE UMA VEZ E ESPERE PELO MENOS 1 SEGUNDO)<br/> Caso não respeite o aviso, há chance de perder dados da sessão, tal como atributos e items</div>}
+        {urlrequest === process.env.REACT_APP_API_URL ? <div className={styles.rpgdiv1} >Servidor principal ON</div> : <div style={{maxWidth:'350px', width:'100vw'}} className={styles.rpgdiv1}>SERVIDOR PRINCIPAL ESTÁ OFF (Utilizando servidor backup, talvez tenha algum lag, POR GENTILEZA, NÃO CLIQUE RAPIDAMENTE VARIAS VEZES NAS COISAS, CLIQUE UMA VEZ E ESPERE PELO MENOS 1 SEGUNDO)<br/> Caso não respeite o aviso, há chance de perder dados da sessão, tal como atributos e items</div>}
         </div>
       </div>
     </div>

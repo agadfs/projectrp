@@ -4,22 +4,38 @@ import axios from 'axios';
 import User from '../server/models/User';
 import { useAppContext } from '../AppContext';
 import Sessions from '../components/sessions';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function Home() {
+  const [randomText, setRandomText] = useState('');
   const [changed, setChanged] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState('')
-  const { user, urlrequest } = useAppContext();
+  const { user, urlrequest, randomStrings } = useAppContext();
   const [userscount, setUsersCount] = useState();
   const [userscountonline, setUserscountonline] = useState();
   const [sessions, setSessions] = useState();
   const [title, setTitle] = useState('');
   const [newName, setNewName] = useState('');
+
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * randomStrings.length);
+    setRandomText(randomStrings[randomIndex]);
+
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 4000);
+
+
+  }, []);
   async function getusers() {
     try {
-      const response = await axios.get(`${urlrequest}/userscount`,{headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
-      }});
+      const response = await axios.get(`${urlrequest}/userscount`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
       if (response.data) {
         const count = response.data;
         setUsersCount(count)
@@ -31,10 +47,12 @@ export default function Home() {
   }
   async function getusersonline() {
     try {
-      const response = await axios.get(`${urlrequest}/userscountonline`,{headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
-      }});
+      const response = await axios.get(`${urlrequest}/userscountonline`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
       if (response.data > 0) {
         const count = response.data;
         setUserscountonline(count)
@@ -50,10 +68,12 @@ export default function Home() {
   }
   async function getsessions() {
     try {
-      const response = await axios.get(`${urlrequest}/sessions`, {headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
-      }});
+      const response = await axios.get(`${urlrequest}/sessions`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
       if (response.data) {
         const data = response.data;
         setSessions(data)
@@ -74,16 +94,31 @@ export default function Home() {
 
 
   async function setname() {
-    const response = await axios.post(`${urlrequest}/users/update/${user.id}`, { username: newName });
+    let namenew = newName;
+    if (newName === '' || newName.length < 3) {
+      namenew = 'Player'
+      const response = await axios.post(`${urlrequest}/users/update/${user.id}`, { username: namenew });
+      if (response) {
+        setNewName('Player')
+        alert('Por favor, insira um nome maior que 2 caracteres, seu nome provisório será Player')
+      }
+    }
+    else {
+      const response = await axios.post(`${urlrequest}/users/update/${user.id}`, { username: namenew });
+      if (response) {
+        setName(newName);
+      }
+    }
 
-    setName(newName);
 
   }
   async function getname0() {
-    const response = await axios.get(`${urlrequest}/users/${user.id}`,{headers: {
-      'Content-Type': 'application/json',
-      'ngrok-skip-browser-warning': 'true'
-    }});
+    const response = await axios.get(`${urlrequest}/users/${user.id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }
+    });
     if (response.data) {
       const data = response.data;
       const username = data.username;
@@ -156,7 +191,6 @@ export default function Home() {
   return (
     <div className={styles.body}>
       <div className={styles.datashow}>
-
         {user.id ?
           <div style={{ display: 'flex', border: '1px solid black', padding: '5px', margin: '5px' }}>
             Nome da sessão nova
@@ -174,17 +208,17 @@ export default function Home() {
               }
               e.preventDefault();
             }} >
-              <input 
+              <input
 
-              style={{ display: 'flex', marginBottom: '10px' }} value={title} onChange={(e) => {
-                setTitle(e.target.value)
-              }} />
+                style={{ display: 'flex', marginBottom: '10px' }} value={title} onChange={(e) => {
+                  setTitle(e.target.value)
+                }} />
               <button className={styles.simplebutton} >
                 Criar Sessão
               </button>
             </form>
           </div> : null}
-        {userscount ? null : <div>Carregando, por favor aguarde, isso pode levar até 1 minuto para inicializar o servidor</div>}
+
         <div>
           Total de usuários: {userscount}
         </div>
@@ -193,16 +227,31 @@ export default function Home() {
         </div>
       </div>
 
+      {user.id && sessions && userscount && userscountonline && !isLoading ?
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }} >
 
-      {user.id ?
-        <div className={styles.maincontainer}>
-          <div> SEU NOME: <input value={newName} onChange={(e) => { setNewName(e.target.value) }} /> Espere o nome a seguir,estar igual ao que você quer: {name}</div>
-          <div className={styles.maincontainertitle}> BEM VINDO AO PROJECTRP</div>
-          {sessions ? <Sessions sessions={sessions} id={user.id} /> : null}
+          {user.id ?
+            <div className={styles.maincontainer}>
+              <div style={{ marginBottom: '10px' }} className={styles.rpgdiv1} > SEU NOME: <input value={newName} onChange={(e) => { setNewName(e.target.value) }} /> Espere o nome a seguir,estar igual ao que você quer: {name}</div>
+              <div className={styles.maincontainertitle}> BEM VINDO AO PROJECTRP</div>
+              {sessions ? <Sessions sessions={sessions} id={user.id} /> :
+                <div>
 
-        </div>
-        :
-        null}
+                </div>}
+
+            </div>
+            :
+            null}
+
+        </div> : <div style={{ display: 'flex', width: '100%', justifyContent: 'center', color: 'white' }} >
+          <div className={styles.rpgdiv2}>
+            <div style={{width:'100%', justifyContent:'center', display:'flex'}} >
+              <CircularProgress />
+              Carregando...
+            </div>
+            Dica: {randomText}
+          </div>
+        </div>}
 
 
 
