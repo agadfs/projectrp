@@ -48,7 +48,9 @@ export default function SessionPage() {
     atk: '',
     def: '',
     url: '',
-    typewear: ''
+    typewear: '',
+    weight: '',
+    rpgbook: ''
   });
   const [items, setItems] = useState();
   const [showinfo, setShowInfo] = useState(false);
@@ -1490,6 +1492,20 @@ export default function SessionPage() {
                 <label htmlFor="description">Descrição:</label><br />
                 <textarea id="description" name="description" value={formData.description} onChange={handleChange} required /><br />
 
+                <label htmlFor="weight">Peso:</label><br />
+                <textarea id="weight" name="weight" value={formData.weight} onChange={handleChange} required /><br />
+
+                  <div>
+
+                <label htmlFor="rpgbook">Para qual livro de rpg é esse item?:</label><br />
+                <select id="rpgbook" name="rpgbook" value={formData.rpgbook} onChange={handleChange}>
+                      <option value="">Selecione uma opção</option>
+                      <option value="generic">Genérico</option>
+                      <option value="d&d">D&D</option>
+                     
+                    </select>
+                  </div>
+
                 <label htmlFor="cantrade">Pode ser negociado
                   <GoldCoinBag />
                   :</label><br />
@@ -1762,7 +1778,9 @@ export default function SessionPage() {
                 </div> : null}
             </div>
           </div>
-          <div style={{ backgroundImage: imgprev ? `url('${imgprev}')` : `url('${map?.url}')`, backgroundSize: (nameselectedmap ? `${imageWidth * parseFloat(newscale)}px ${imageWidth * parseFloat(newscale)}px` : `${imageWidth * parseFloat(scale)}px ${imageWidth * parseFloat(scale)}px`), backgroundRepeat: 'no-repeat' }} className={styles.mapcontainer}>
+          <div style={{ backgroundImage: imgprev ? `url('${imgprev}')` : `url('${map?.url}')`, 
+          backgroundSize: (nameselectedmap ? `${imageWidth * parseFloat(newscale)}px ${imageWidth * parseFloat(newscale)}px` : `${imageWidth * parseFloat(scale)}px ${imageWidth * parseFloat(scale)}px`), 
+          backgroundRepeat: 'no-repeat' }} className={styles.mapcontainer}>
             <div className={styles.mapgrid} style={{ position: 'relative' }}>
               {gridItems.map((_, index) => (
                 <div
@@ -1826,8 +1844,9 @@ export default function SessionPage() {
               ))}
             </div>
           </div>
-          <div className={styles.rpgdiv1} style={{ position: 'absolute', top: '1030px', maxWidth: '1000px' }} >
-            <h1 style={{width:'100%', justifyContent:'center', display:'flex'}} className={styles.medievalsharp} > SEU INVENTARIO  ({items?.length} Items)</h1>
+          <div className={styles.rpgdiv1} style={{ position: 'absolute', top: '1050px', maxWidth: '1000px' }} >
+            <h1 style={{width:'100%', justifyContent:'center', display:'flex'}} className={styles.medievalsharp} > SEU INVENTARIO 
+             ({inventory?.Items?.length} Items)</h1>
             <div>
 
               <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
@@ -1846,12 +1865,12 @@ export default function SessionPage() {
               </select>
             </div>
 
-            <div className={styles.customScrollDiv} style={{height:'785px', width: '50vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
+            <div className={styles.customScrollDiv} style={{height:'auto', width: '50vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
               <div style={{minWidth: '1600px', display: 'flex', gap: '25px', flexWrap: 'wrap', transform: 'scaleY(-1)', position: 'relative', bottom: '10px', marginTop:'20px' }} >
                 {inventory?.Items?.map((item, index) => (
                   <div
                     className={styles.slotsinv}
-                    style={{ maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
+                    style={{maxHeight:'350px', maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
                     {item?.item?.url ? (
                       <div onClick={() => {
                         if (item?.item?.canequip) {
@@ -1906,6 +1925,15 @@ export default function SessionPage() {
                           </span>
                           <PiCoinsBold size={20} color='rgb(133, 72, 7)' />
                         </div>
+                        <div>
+                         Peso:  &nbsp;
+
+                          <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                            {item?.item?.value}
+                          </span>
+                          <PiCoinsBold size={20} color='rgb(133, 72, 7)' />
+                        </div>
+
 
                       </div> : null}
 

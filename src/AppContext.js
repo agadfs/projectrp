@@ -39,7 +39,9 @@ export const AppProvider = ({ children }) => {
       } catch (error) {
        
         localStorage.setItem('newapiserver', 'https://projectrp.onrender.com');
-        
+        if(initialUrlRequest !== 'https://projectrp.onrender.com'){
+          window.location.reload()
+        }
 
       }
 

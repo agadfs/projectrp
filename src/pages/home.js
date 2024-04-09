@@ -77,7 +77,7 @@ export default function Home() {
       if (response.data) {
         const data = response.data;
         setSessions(data)
-        console.log(urlrequest)
+        
 
       }
     } catch (error) {
@@ -95,7 +95,7 @@ export default function Home() {
 
   async function setname() {
     let namenew = newName;
-    if (newName === '' || newName.length < 3) {
+    if (newName === '' || newName.length < 3 && name !== '') {
       namenew = 'Player'
       const response = await axios.post(`${urlrequest}/users/update/${user.id}`, { username: namenew });
       if (response) {
@@ -244,13 +244,19 @@ export default function Home() {
             null}
 
         </div> : <div style={{ display: 'flex', width: '100%', justifyContent: 'center', color: 'white' }} >
-          <div className={styles.rpgdiv2}>
+          {user.id !== '' ? <div className={styles.rpgdiv2}>
             <div style={{width:'100%', justifyContent:'center', display:'flex'}} >
               <CircularProgress />
               Carregando...
             </div>
             Dica: {randomText}
-          </div>
+          </div>: <div className={styles.rpgdiv2}>
+            <div style={{width:'100%', justifyContent:'center', display:'flex'}} >
+              <CircularProgress />
+              Faça o login para ver as sessões!
+            </div>
+            Dica: {randomText}
+          </div>}
         </div>}
 
 

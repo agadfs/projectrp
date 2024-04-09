@@ -10,6 +10,10 @@ const ItemSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  weight: {
+    type: String,
+    required: true
+  },
   cantrade: {
     type: Boolean,
     required: false,
