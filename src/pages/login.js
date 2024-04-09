@@ -44,17 +44,16 @@ export default function Login() {
   async function fetchUserData() {
     try {
       const queryParams = {
-        params: {
-          email: email,
-          password: password
-        },
         headers: {
           'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true'
+          'ngrok-skip-browser-warning': 'true',
+
         }
       };
+      
+      console.log(queryParams)
   
-      const response = await axios.get(`${urlrequest}/users`, queryParams);
+      const response = await axios.get(`${urlrequest}/usersget/${email}/${password}`, queryParams);
   
       if (response) {
         
