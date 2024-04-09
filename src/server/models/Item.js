@@ -48,6 +48,30 @@ const ItemSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  strength: {
+    type: Number,
+   required: false,
+  },
+  dexterity: {
+    type: Number,
+   required: false,
+  },
+  constitution: {
+    type: Number,
+   required: false,
+  },
+  intelligence: {
+    type: Number,
+   required: false,
+  },
+  wisdom: {
+    type: Number,
+   required: false,
+  },
+  charisma: {
+    type: Number,
+   required: false,
+  }
   
 },{ collection: 'Item' });
 

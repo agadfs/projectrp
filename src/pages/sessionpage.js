@@ -7,7 +7,7 @@ import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import ShieldIcon from '@mui/icons-material/Shield';
 import CircularProgress from '@mui/material/CircularProgress';
 import { PiCoinsBold } from 'react-icons/pi';
-
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 export default function SessionPage() {
   const [randomText, setRandomText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -50,7 +50,13 @@ export default function SessionPage() {
     url: '',
     typewear: '',
     weight: '',
-    rpgbook: ''
+    rpgbook: '',
+    strength: 0,
+    dexterity: 0,
+    constitution: 0,
+    intelligence: 0,
+    wisdom: 0,
+    charisma: 0,
   });
   const [items, setItems] = useState();
   const [showinfo, setShowInfo] = useState(false);
@@ -1929,9 +1935,9 @@ export default function SessionPage() {
                          Peso:  &nbsp;
 
                           <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                            {item?.item?.value}
+                            {item?.item?.weight}
                           </span>
-                          <PiCoinsBold size={20} color='rgb(133, 72, 7)' />
+                          <FitnessCenterIcon size={20} color='rgb(133, 72, 7)' />
                         </div>
 
 
