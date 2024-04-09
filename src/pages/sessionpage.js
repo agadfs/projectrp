@@ -96,6 +96,35 @@ export default function SessionPage() {
       shoes: ''
 
     })
+  const [statsuserequip, setStatsUserEquip] = useState(
+    {
+      level: 0,
+      experience: 0,
+      health: 0,
+      maxHealth: 0,
+      mana: 0,
+      maxMana: 0,
+      strength: 0,
+      dexterity: 0,
+      constitution: 0,
+      intelligence: 0,
+      wisdom: 0,
+      charisma: 0,
+      atk: 0,
+      def: 0,
+      earing: '',
+      head: '',
+      lefthand: '',
+      righthand: '',
+      chest: '',
+      ringleft: '',
+      ringright: '',
+      pants: '',
+      othersleft: '',
+      othersright: '',
+      shoes: ''
+
+    })
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * randomStrings.length);
@@ -262,7 +291,8 @@ export default function SessionPage() {
         if (playerarray.length > 0) {
           playerarray = playerarray[0];
           setInventory(playerarray);
-          setStatsUser(playerarray.Stats)
+          setStatsUser(playerarray.Stats);
+          handleUpdateStats(playerarray.Stats);
         } else {
 
         }
@@ -462,22 +492,34 @@ export default function SessionPage() {
   };
   async function handleUpdateStats(stats) {
     let statsnew = stats;
-    statsnew.level = Math.floor((Math.sqrt(1 + 8 * statsnew.experience / 1000) - 1) / 2) + 1;
-    statsnew.maxHealth = (statsnew.level * 5) + (statsnew.strength * 10) + (statsnew.dexterity * 2) + (statsnew.constitution * 2) + 10;
-    statsnew.maxMana = (statsnew.level * 5) + (statsnew.intelligence * 10) + (statsnew.wisdom * 2) + (statsnew.charisma * 2) + 10;
-    statsnew.atk = (statsnew.level * 1) + (statsnew.strength * 0.2) + (statsnew.dexterity * 0.3) + 1;
-    stats.def = (statsnew.level * 1) + (statsnew.strength * 0.3) + (statsnew.dexterity * 0.2) + (statsnew.constitution * 1) + 1;
+    let equipstats = { ...statsnew };
+    equipstats.atk = 0;
+    equipstats.def = 0;
+    equipstats.strength = 0;
+    equipstats.dexterity = 0;
+    equipstats.wisdom = 0;
+    equipstats.constitution = 0;
+    equipstats.intelligence = 0;
+    equipstats.charisma = 0;
+
     const equipmentSlots = ['earing', 'head', 'lefthand', 'righthand', 'chest', 'ringleft', 'ringright', 'pants', 'othersleft', 'othersright', 'shoes'];
     equipmentSlots.forEach(slot => {
 
       if (typeof statsnew[slot] === 'object') {
-
-        statsnew.atk += !isNaN(parseInt(statsnew[slot].atk)) ? parseInt(statsnew[slot].atk) : 0;
-        statsnew.def += !isNaN(parseInt(statsnew[slot].def)) ? parseInt(statsnew[slot].def) : 0;
+        equipstats.atk += !isNaN(parseInt(equipstats[slot].atk)) ? parseInt(equipstats[slot].atk) : 0;
+        equipstats.def += !isNaN(parseInt(equipstats[slot].def)) ? parseInt(equipstats[slot].def) : 0;
+        equipstats.strength += !isNaN(parseInt(equipstats[slot].strength)) ? parseInt(equipstats[slot].strength) : 0;
+        equipstats.dexterity += !isNaN(parseInt(equipstats[slot].dexterity)) ? parseInt(equipstats[slot].dexterity) : 0;
+        equipstats.wisdom += !isNaN(parseInt(equipstats[slot].wisdom)) ? parseInt(equipstats[slot].wisdom) : 0;
+        equipstats.constitution += !isNaN(parseInt(equipstats[slot].constitution)) ? parseInt(equipstats[slot].constitution) : 0;
+        equipstats.intelligence += !isNaN(parseInt(equipstats[slot].intelligence)) ? parseInt(equipstats[slot].intelligence) : 0;
+        equipstats.charisma += !isNaN(parseInt(equipstats[slot].charisma)) ? parseInt(equipstats[slot].charisma) : 0;
       }
     });
-    statsnew.atk = Math.round(statsnew.atk);
-    statsnew.def = Math.round(statsnew.def);
+
+
+    setStatsUserEquip(equipstats);
+
 
     try {
 
@@ -765,15 +807,15 @@ export default function SessionPage() {
       {showinfo === true && !isLoading ?
 
         <div className={styles.infobody}>
-          <div  className={styles.rpgdiv1}>
+          <div className={styles.rpgdiv1}>
             ID da sessão: {sessionid}
-          {user?.id === playersid[0] ? <div>
-            <button style={{marginTop:'10px'}} onClick={() => {
-              deletesession()
-            }}>
-              Deletar sessão
-            </button>
-          </div> : null}
+            {user?.id === playersid[0] ? <div>
+              <button style={{ marginTop: '10px' }} onClick={() => {
+                deletesession()
+              }}>
+                Deletar sessão
+              </button>
+            </div> : null}
           </div>
           <div className={styles.rpgdiv1} style={{ marginTop: '10px' }}>
             <div style={{ justifyContent: 'center', width: '100%', display: 'flex' }} className={styles.medievalsharp}>
@@ -783,7 +825,7 @@ export default function SessionPage() {
 
             {user?.id === playersid[0] ?
               <div  >
-                <form style={{width:'100%', justifyContent:'center', display:'flex'}}>
+                <form style={{ width: '100%', justifyContent: 'center', display: 'flex' }}>
                   <input value={titulo} onChange={(e) => {
                     setTitulo(e.target.value)
                   }} />
@@ -800,7 +842,7 @@ export default function SessionPage() {
               </div> : null}
           </div>
           <div style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
-            <div className={styles.rpgdiv1} style={{ height: '100%', display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent:'center' }}>
+            <div className={styles.rpgdiv1} style={{ height: '100%', display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
               <h1 style={{ justifyContent: 'center', width: '100%', display: 'flex' }} className={styles.medievalsharp}> Jogadores  </h1>
               {players?.map((player, index) => (
                 <div style={{
@@ -820,7 +862,7 @@ export default function SessionPage() {
                 <h1 style={{ justifyContent: 'center', width: '100%', display: 'flex' }} className={styles.medievalsharp}> Solicitações para entrar  </h1>
                 <div style={{ height: '100%', display: 'flex', gap: '10px', flexWrap: 'wrap', border: '3px solid black', padding: '10px', borderRadius: '5px' }}>
                   {request && request?.length > 0 && request?.map((player, index) => (
-                    <div style={{ padding: '10px', border: '1px solid black', width: '100%'}} key={index}>
+                    <div style={{ padding: '10px', border: '1px solid black', width: '100%' }} key={index}>
                       <div>
 
                         {requestNames[index]}
@@ -863,7 +905,20 @@ export default function SessionPage() {
                     <div style={{ display: 'flex', flexDirection: 'row' }} >
                       <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                         <div>
-                          Seu level: {statsuser.level}
+                          Seu level:
+                          <input
+                            style={{ width: '30%', minWidth: '15px' }}
+                            value={statsuser.level} onChange={(e) => {
+
+                              const updatedUser = { ...statsuser };
+
+
+                              updatedUser.level = parseInt(e.target.value, 10) || 0;
+
+
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
+                            }} />
                         </div>
                         <div>
                           Experiência:
@@ -884,13 +939,61 @@ export default function SessionPage() {
 
                         </div>
                         <div>
-                          Vida atual e máxima: {statsuser.health}/{statsuser.maxHealth}
+                          Vida atual e máxima:  <input
+                            style={{ width: '30%', minWidth: '15px' }}
+                            value={statsuser.health} onChange={(e) => {
+
+                              const updatedUser = { ...statsuser };
+
+
+                              updatedUser.health = parseInt(e.target.value, 10) || 0;
+
+
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
+                            }} />/ <input
+                            style={{ width: '30%', minWidth: '15px' }}
+                            value={statsuser.maxHealth} onChange={(e) => {
+
+                              const updatedUser = { ...statsuser };
+
+
+                              updatedUser.maxHealth = parseInt(e.target.value, 10) || 0;
+
+
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
+                            }} />
 
                           <input style={{ width: '100%', maxWidth: '150px' }} type="range" id='barh' min="0" max={statsuser.maxHealth} value={statsuser.health} readOnly />
 
                         </div>
                         <div>
-                          Mana atual e máxima: {statsuser.mana}/{statsuser.maxMana}
+                          Mana atual e máxima:  <input
+                            style={{ width: '30%', minWidth: '15px' }}
+                            value={statsuser.mana} onChange={(e) => {
+
+                              const updatedUser = { ...statsuser };
+
+
+                              updatedUser.mana = parseInt(e.target.value, 10) || 0;
+
+
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
+                            }} />/ <input
+                            style={{ width: '30%', minWidth: '15px' }}
+                            value={statsuser.maxMana} onChange={(e) => {
+
+                              const updatedUser = { ...statsuser };
+
+
+                              updatedUser.maxMana = parseInt(e.target.value, 10) || 0;
+
+
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
+                            }} />
                           <input style={{ width: '100%', maxWidth: '150px' }} type="range" id='barm' min="0" max={statsuser.maxMana} value={statsuser.mana} readOnly />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', marginBlock: '5px', width: '60%', gap: '5px', border: '1px solid black', padding: '5px', borderRadius: '5px' }} >
@@ -928,10 +1031,21 @@ export default function SessionPage() {
 
                       </div>
                       <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                        <div style={{ width: '190px', justifyContent: 'space-between', display: 'flex', marginBottom:'5px' }}>
+                          <div style={{maxWidth:'70px', fontSize:'10px'}}>
+                            Nome
+                          </div>
+                          <div style={{maxWidth:'70px', fontSize:'10px'}}>
+                            Valor
+                          </div>
+                          <div style={{maxWidth:'75px', fontSize:'10px'}} >
+                            (Valor + Equipamentos)
+                          </div>
+                        </div>
+                        <div style={{ width: '190px', justifyContent: 'space-between', display: 'flex' }}>
                           Força:
                           <input
-                            style={{ width: '10%', minWidth: '15px' }}
+                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
                             value={statsuser.strength} onChange={(e) => {
 
                               const updatedUser = { ...statsuser };
@@ -942,12 +1056,12 @@ export default function SessionPage() {
 
                               setStatsUser(updatedUser);
                               handleUpdateStats(updatedUser);
-                            }} />
+                            }} /> ({statsuser.strength + statsuserequip.strength})
                         </div>
-                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Destreza:
                           <input
-                            style={{ width: '10%', minWidth: '15px' }}
+                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
                             value={statsuser.dexterity}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -956,12 +1070,12 @@ export default function SessionPage() {
                               handleUpdateStats(updatedUser);
                             }}
                           />
-
+                          ({statsuser.dexterity + statsuserequip.dexterity})
                         </div>
-                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Constituição:
                           <input
-                            style={{ width: '10%', minWidth: '15px' }}
+                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
                             value={statsuser.constitution}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -970,12 +1084,12 @@ export default function SessionPage() {
                               handleUpdateStats(updatedUser);
                             }}
                           />
-
+                          ({statsuser.constitution + statsuserequip.constitution})
                         </div>
-                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Inteligência:
                           <input
-                            style={{ width: '10%', minWidth: '15px' }}
+                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
                             value={statsuser.intelligence}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -984,12 +1098,12 @@ export default function SessionPage() {
                               handleUpdateStats(updatedUser);
                             }}
                           />
-
+                          ({statsuser.intelligence + statsuserequip.intelligence})
                         </div>
-                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Sabedoria:
                           <input
-                            style={{ width: '10%', minWidth: '15px' }}
+                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
                             value={statsuser.wisdom}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -998,12 +1112,12 @@ export default function SessionPage() {
                               handleUpdateStats(updatedUser);
                             }}
                           />
-
+                          ({statsuser.wisdom + statsuserequip.wisdom})
                         </div>
-                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Carisma:
                           <input
-                            style={{ width: '10%', minWidth: '15px' }}
+                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
                             value={statsuser.charisma}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -1012,12 +1126,12 @@ export default function SessionPage() {
                               handleUpdateStats(updatedUser);
                             }}
                           />
-
+                          ({statsuser.charisma + statsuserequip.charisma})
                         </div>
-                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Atk:
                           <input
-                            style={{ width: '10%', minWidth: '15px' }}
+                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
                             value={statsuser.atk}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -1026,12 +1140,12 @@ export default function SessionPage() {
                               handleUpdateStats(updatedUser);
                             }}
                           />
-
+                          ({statsuser.atk + statsuserequip.atk})
                         </div>
-                        <div style={{ width: '100%', justifyContent: 'flex-end', display: 'flex' }}>
+                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Def:
                           <input
-                            style={{ width: '10%', minWidth: '15px' }}
+                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
                             value={statsuser.def}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -1040,7 +1154,7 @@ export default function SessionPage() {
                               handleUpdateStats(updatedUser);
                             }}
                           />
-
+                          ({statsuser.def + statsuserequip.def})
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }} >
 
@@ -1086,6 +1200,7 @@ export default function SessionPage() {
                           }
 
                         }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                          <div> {statsuser.earing?.name} </div>
                           <img src={statsuser?.earing?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1123,6 +1238,7 @@ export default function SessionPage() {
                           }
 
                         }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                          <div> {statsuser.head?.name} </div>
                           <img src={statsuser?.head?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1162,6 +1278,7 @@ export default function SessionPage() {
                           }
 
                         }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                          <div> {statsuser.lefthand?.name} </div>
                           <img src={statsuser?.lefthand?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1199,6 +1316,7 @@ export default function SessionPage() {
                           }
 
                         }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                          <div> {statsuser.chest?.name} </div>
                           <img src={statsuser?.chest?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1237,6 +1355,7 @@ export default function SessionPage() {
                           }
 
                         }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                          <div> {statsuser.righthand?.name} </div>
                           <img src={statsuser?.righthand?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1275,6 +1394,7 @@ export default function SessionPage() {
                           }
 
                         }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                          <div> {statsuser.ringleft?.name} </div>
                           <img src={statsuser?.ringleft?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1311,6 +1431,7 @@ export default function SessionPage() {
                           }
 
                         }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                          <div> {statsuser.pants?.name} </div>
                           <img src={statsuser?.pants?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1348,6 +1469,7 @@ export default function SessionPage() {
                           }
 
                         }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                          <div> {statsuser.ringright?.name} </div>
                           <img src={statsuser?.ringright?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1386,6 +1508,7 @@ export default function SessionPage() {
                           }
 
                         }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                          <div> {statsuser.othersleft?.name} </div>
                           <img src={statsuser?.othersleft?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1425,6 +1548,7 @@ export default function SessionPage() {
                           }
 
                         }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                          <div> {statsuser.shoes?.name} </div>
                           <img src={statsuser?.shoes?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1462,6 +1586,7 @@ export default function SessionPage() {
                           }
 
                         }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                          <div> {statsuser.othersright?.name} </div>
                           <img src={statsuser?.othersright?.url} alt="Item Image" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
                           <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                             <div  >
@@ -1490,7 +1615,7 @@ export default function SessionPage() {
           </div>
           {user?.id === playersid[0] ?
             <div style={{ marginTop: '10px' }} className={styles.rpgdiv1}>
-              <h2 style={{width:'100%', justifyContent:'center', display:'flex'}} className={styles.medievalsharp} >Adicionar Item</h2>
+              <h2 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} >Adicionar Item</h2>
               <form onSubmit={handleSubmit}>
                 <label htmlFor="name">Nome:</label><br />
                 <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required /><br />
@@ -1501,16 +1626,16 @@ export default function SessionPage() {
                 <label htmlFor="weight">Peso:</label><br />
                 <textarea id="weight" name="weight" value={formData.weight} onChange={handleChange} required /><br />
 
-                  <div>
+                <div>
 
-                <label htmlFor="rpgbook">Para qual livro de rpg é esse item?:</label><br />
-                <select id="rpgbook" name="rpgbook" value={formData.rpgbook} onChange={handleChange}>
-                      <option value="">Selecione uma opção</option>
-                      <option value="generic">Genérico</option>
-                      <option value="d&d">D&D</option>
-                     
-                    </select>
-                  </div>
+                  <label htmlFor="rpgbook">Para qual livro de rpg é esse item?:</label><br />
+                  <select id="rpgbook" name="rpgbook" value={formData.rpgbook} onChange={handleChange}>
+                    <option value="">Selecione uma opção</option>
+                    <option value="generic">Genérico</option>
+                    <option value="d&d">D&D</option>
+
+                  </select>
+                </div>
 
                 <label htmlFor="cantrade">Pode ser negociado
                   <GoldCoinBag />
@@ -1550,6 +1675,25 @@ export default function SessionPage() {
                     <label htmlFor="def">Defesa:</label><br />
                     <input type="text" id="def" name="def" value={formData.def} onChange={handleChange} /><br />
 
+                    <label htmlFor="strength">Força:</label><br />
+                    <input type="number" id="strength" name="strength" value={formData.strength} onChange={handleChange} /><br />
+
+                    <label htmlFor="dexterity">Destreza:</label><br />
+                    <input type="number" id="dexterity" name="dexterity" value={formData.dexterity} onChange={handleChange} /><br />
+
+                    <label htmlFor="constitution">Constituição:</label><br />
+                    <input type="number" id="constitution" name="constitution" value={formData.constitution} onChange={handleChange} /><br />
+
+                    <label htmlFor="intelligence">Inteligência:</label><br />
+                    <input type="number" id="intelligence" name="intelligence" value={formData.intelligence} onChange={handleChange} /><br />
+
+                    <label htmlFor="wisdom">Sabedoria:</label><br />
+                    <input type="number" id="wisdom" name="wisdom" value={formData.wisdom} onChange={handleChange} /><br />
+
+                    <label htmlFor="charisma">Carisma:</label><br />
+                    <input type="number" id="charisma" name="charisma" value={formData.charisma} onChange={handleChange} /><br />
+
+
                     <p>Caso o equipamento tenha debuff ou buff, escreva o nome e em seguida o valor, por exemplo:
                       'slow-1' ou 'speed+2' ou 'sabedoria+4' ou 'destreza-1'. ESCREVA SEM ASPAS
                     </p>
@@ -1576,7 +1720,7 @@ export default function SessionPage() {
         :
         <div>
           {isLoading ?
-            <div style={{ display: 'flex', width: '100%', justifyContent: 'center', color:'white' }} ><CircularProgress /> Carregando...
+            <div style={{ display: 'flex', width: '100%', justifyContent: 'center', color: 'white' }} ><CircularProgress /> Carregando...
               <br />
               Dica: {randomText}
             </div>
@@ -1681,22 +1825,22 @@ export default function SessionPage() {
 
 
             </div>
-            <div style={{bottom:'15px', position:'relative'}} className={styles.rpgdiv1}>
+            <div style={{ bottom: '15px', position: 'relative' }} className={styles.rpgdiv1}>
 
-              <div style={{width:'100%', justifyContent:'center', display:'flex'}} className={styles.medievalsharp}>
+              <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp}>
 
-              Mapa:  {map?.name} 
+                Mapa:  {map?.name}
               </div>
-              <div style={{width:'100%', justifyContent:'center', display:'flex'}} className={styles.medievalsharp} >
+              <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} >
 
 
-              <button onClick={() => {
-                setShowGrid(!showGrid)
-              }}>Mostrar quadriculados do mapa</button>
-              <button onClick={() => {
-                setShowTile(!showTile)
-              }} >Mostrar numero dos tiles</button>
-                </div>
+                <button onClick={() => {
+                  setShowGrid(!showGrid)
+                }}>Mostrar quadriculados do mapa</button>
+                <button onClick={() => {
+                  setShowTile(!showTile)
+                }} >Mostrar numero dos tiles</button>
+              </div>
               {user?.id === playersid[0] ?
                 <div style={{ margin: '5px', border: '1px solid black', padding: '5px' }} >
                   Escolha um mapa:
@@ -1784,9 +1928,11 @@ export default function SessionPage() {
                 </div> : null}
             </div>
           </div>
-          <div style={{ backgroundImage: imgprev ? `url('${imgprev}')` : `url('${map?.url}')`, 
-          backgroundSize: (nameselectedmap ? `${imageWidth * parseFloat(newscale)}px ${imageWidth * parseFloat(newscale)}px` : `${imageWidth * parseFloat(scale)}px ${imageWidth * parseFloat(scale)}px`), 
-          backgroundRepeat: 'no-repeat' }} className={styles.mapcontainer}>
+          <div style={{
+            backgroundImage: imgprev ? `url('${imgprev}')` : `url('${map?.url}')`,
+            backgroundSize: (nameselectedmap ? `${imageWidth * parseFloat(newscale)}px ${imageWidth * parseFloat(newscale)}px` : `${imageWidth * parseFloat(scale)}px ${imageWidth * parseFloat(scale)}px`),
+            backgroundRepeat: 'no-repeat'
+          }} className={styles.mapcontainer}>
             <div className={styles.mapgrid} style={{ position: 'relative' }}>
               {gridItems.map((_, index) => (
                 <div
@@ -1851,8 +1997,8 @@ export default function SessionPage() {
             </div>
           </div>
           <div className={styles.rpgdiv1} style={{ position: 'absolute', top: '1050px', maxWidth: '1000px' }} >
-            <h1 style={{width:'100%', justifyContent:'center', display:'flex'}} className={styles.medievalsharp} > SEU INVENTARIO 
-             ({inventory?.Items?.length} Items)</h1>
+            <h1 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > SEU INVENTARIO
+              ({inventory?.Items?.length} Items)</h1>
             <div>
 
               <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
@@ -1871,12 +2017,12 @@ export default function SessionPage() {
               </select>
             </div>
 
-            <div className={styles.customScrollDiv} style={{height:'auto', width: '50vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
-              <div style={{minWidth: '1600px', display: 'flex', gap: '25px', flexWrap: 'wrap', transform: 'scaleY(-1)', position: 'relative', bottom: '10px', marginTop:'20px' }} >
+            <div className={styles.customScrollDiv} style={{ height: 'auto', width: '50vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
+              <div style={{ minWidth: '1600px', display: 'flex', gap: '25px', flexWrap: 'wrap', transform: 'scaleY(-1)', position: 'relative', bottom: '10px', marginTop: '20px' }} >
                 {inventory?.Items?.map((item, index) => (
                   <div
                     className={styles.slotsinv}
-                    style={{maxHeight:'350px', maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
+                    style={{ maxHeight: '350px', maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
                     {item?.item?.url ? (
                       <div onClick={() => {
                         if (item?.item?.canequip) {
@@ -1932,7 +2078,7 @@ export default function SessionPage() {
                           <PiCoinsBold size={20} color='rgb(133, 72, 7)' />
                         </div>
                         <div>
-                         Peso:  &nbsp;
+                          Peso:  &nbsp;
 
                           <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
                             {item?.item?.weight}
