@@ -1761,7 +1761,7 @@ export default function SessionPage() {
                 :
                 <div>
                   {user?.id === playersid[0] ?
-                    <div className={styles.rpgdiv1}>
+                    <div style={{bottom:'35px', position:'relative'}} className={styles.rpgdiv1}>
                       Você é o <span style={{ fontWeight: 'bold', fontSize: '20px' }} >  MESTRE </span>
 
                       <div style={{ margin: '5px', border: '1px solid black', padding: '5px' }} >
