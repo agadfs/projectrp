@@ -40,21 +40,18 @@ export default function Login() {
       console.error('Error creating user:', error);
     }
   }
-
+  
   async function fetchUserData() {
     try {
-      const queryParams = {
+      const response = await axios.get(`${urlrequest}/users`, {
+        params: {
+          email: email,
+          password: password
+        },
         headers: {
           'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
-
-        }
-      };
-      
-      console.log(queryParams)
-  
-      const response = await axios.get(`${urlrequest}/usersget/${email}/${password}`, queryParams);
-  
+          'ngrok-skip-browser-warning': 'any'
+        }});
       if (response) {
         
         if(response.data.length > 0){

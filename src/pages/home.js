@@ -144,10 +144,6 @@ export default function Home() {
 
           // Assuming you're updating the user's activity status in your backend
           await axios.post(`${urlrequest}/heartbeat`, { userId: user.id, lastActiveAt: new Date });
-
-          getusers();
-          getusersonline();
-          getsessions();
           setChanged(true);
 
         } catch (error) {
@@ -158,6 +154,31 @@ export default function Home() {
       return () => clearInterval(intervalId);
     }
   }, [user.id]);
+
+  useEffect(() => {
+    if (user.id) {
+      getusers();
+      getusersonline();
+      const intervalId = setInterval(async () => {
+        try {
+
+          // Assuming you're updating the user's activity status in your backend
+          await axios.post(`${urlrequest}/heartbeat`, { userId: user.id, lastActiveAt: new Date });
+
+          getusers();
+          getusersonline();
+          getsessions();
+
+
+        } catch (error) {
+          console.error('Error sending heartbeat:', error);
+        }
+      }, 10000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [user.id]);
+
 
 
   async function createRandomSession() {

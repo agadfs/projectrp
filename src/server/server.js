@@ -4,12 +4,8 @@ const cors = require("cors");
 require("dotenv").config();
 const bodyParser = require('body-parser');
 const app = express();
-const corsOptions ={
-  origin:'http://localhost:3000', 
-  credentials:true,            //access-control-allow-credentials:true
-  optionSuccessStatus:200
-}
-app.use(cors(corsOptions));
+
+app.use(cors());
 
 app.use(bodyParser.json());
 const MONGODB_URI = process.env.MONGODB_URI;
