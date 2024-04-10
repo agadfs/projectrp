@@ -77,7 +77,7 @@ export default function Home() {
       if (response.data) {
         const data = response.data;
         setSessions(data)
-        
+
 
       }
     } catch (error) {
@@ -213,9 +213,22 @@ export default function Home() {
     <div className={styles.body}>
       <div className={styles.datashow}>
         {user.id ?
-          <div style={{ display: 'flex', border: '1px solid black', padding: '5px', margin: '5px' }}>
-            Nome da sessão nova
-            <form onSubmit={(e) => {
+          <div style={{
+            borderRadius: '5px',
+            display: 'flex', padding: '5px', margin: '5px',
+            flexDirection: 'column', border: '3px solid hsl(34, 98%, 25%, 0.5)',
+            backgroundColor: '#592c16', boxShadow: '0px 0px 0px 4px hsl(34, 99%, 29%, 0.5)',
+            justifyContent: 'center',
+            alignContent: 'center',
+            alignItems: 'center'
+          }}>
+            <div className={styles.textmedieval} style={{ color: 'white' }} >
+
+              Nome da sessão nova
+            </div>
+            <form style={{display:'flex', flexDirection:'column',justifyContent: 'center',
+            alignContent: 'center',
+            alignItems: 'center'}} onSubmit={(e) => {
               if (title) {
                 const existingSessionWithUser = sessions.find(session => session.players && session.players.length > 0 && session.players[0] === user.id)
                 if (!existingSessionWithUser) {
@@ -231,12 +244,17 @@ export default function Home() {
             }} >
               <input
 
-                style={{ display: 'flex', marginBottom: '10px' }} value={title} onChange={(e) => {
+                style={{ display: 'flex', marginBottom: '10px', borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }} value={title} onChange={(e) => {
                   setTitle(e.target.value)
                 }} />
-              <button className={styles.simplebutton} >
-                Criar Sessão
+
+              <button className={styles.pushable}>
+                <span className={styles.edge}></span>
+                <span className={styles.front}>
+                  Criar Sessão
+                </span>
               </button>
+
             </form>
           </div> : null}
 
@@ -253,7 +271,10 @@ export default function Home() {
 
           {user.id ?
             <div className={styles.maincontainer}>
-              <div style={{ marginBottom: '10px' }} className={styles.rpgdiv1} > SEU NOME: <input value={newName} onChange={(e) => { setNewName(e.target.value) }} /> Espere o nome a seguir,estar igual ao que você quer: {name}</div>
+              <div style={{ marginBottom: '10px' }} className={styles.rpgdiv1} > SEU NOME: <input  style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }} 
+              value={newName} onChange={(e) => { setNewName(e.target.value) }} /> 
+              Espere o nome a seguir,estar igual ao que você quer: 
+              <span style={{color:'white', padding:'5px', fontWeight:'bold'}} >{name}</span></div>
               <div className={styles.maincontainertitle}> BEM VINDO AO PROJECTRP</div>
               {sessions ? <Sessions sessions={sessions} id={user.id} /> :
                 <div>
@@ -266,13 +287,13 @@ export default function Home() {
 
         </div> : <div style={{ display: 'flex', width: '100%', justifyContent: 'center', color: 'white' }} >
           {user.id !== '' ? <div className={styles.rpgdiv2}>
-            <div style={{width:'100%', justifyContent:'center', display:'flex'}} >
+            <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} >
               <CircularProgress />
               Carregando...
             </div>
             Dica: {randomText}
-          </div>: <div className={styles.rpgdiv2}>
-            <div style={{width:'100%', justifyContent:'center', display:'flex'}} >
+          </div> : <div className={styles.rpgdiv2}>
+            <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} >
               <CircularProgress />
               Faça o login para ver as sessões!
             </div>

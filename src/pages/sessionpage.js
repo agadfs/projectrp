@@ -810,11 +810,16 @@ export default function SessionPage() {
           <div className={styles.rpgdiv1}>
             ID da sessão: {sessionid}
             {user?.id === playersid[0] ? <div>
-              <button style={{ marginTop: '10px' }} onClick={() => {
+              <button onClick={() => {
                 deletesession()
-              }}>
-                Deletar sessão
+
+              }} className={styles.pushable}>
+                <span style={{ fontSize: '10px', width: '116px' }} className={styles.edge}></span>
+                <span style={{ fontSize: '12px', width: '90px' }} className={styles.front}>
+                  Deletar sessão
+                </span>
               </button>
+
             </div> : null}
           </div>
           <div className={styles.rpgdiv1} style={{ marginTop: '10px' }}>
@@ -826,17 +831,23 @@ export default function SessionPage() {
             {user?.id === playersid[0] ?
               <div  >
                 <form style={{ width: '100%', justifyContent: 'center', display: 'flex' }}>
-                  <input value={titulo} onChange={(e) => {
+                  <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '250px' }} value={titulo} onChange={(e) => {
                     setTitulo(e.target.value)
                   }} />
 
-                  <button onClick={() => {
+                  <button style={{maxHeight:'50px'}} onClick={() => {
                     if (titulo && titulo.length > 5 && titulo !== title) {
                       updateSession({ title: titulo });
                     } else {
                       alert('O titulo tem que ser maior que 5 caracteres, e diferente do titulo anterior')
                     }
-                  }} >Mudar nome</button>
+                  }} className={styles.pushable}>
+                    <span style={{ fontSize: '12px', width: '136px', height:'50px' }} className={styles.edge}></span>
+                    <span style={{ fontSize: '12px', width: '110px', height:'25px' }} className={styles.front}>
+                      Mudar nome da sessão
+                    </span>
+                  </button>
+
 
                 </form>
               </div> : null}
@@ -907,7 +918,7 @@ export default function SessionPage() {
                         <div>
                           Seu level:
                           <input
-                            style={{ width: '30%', minWidth: '15px' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.level} onChange={(e) => {
 
                               const updatedUser = { ...statsuser };
@@ -923,7 +934,7 @@ export default function SessionPage() {
                         <div>
                           Experiência:
                           <input
-                            style={{ width: '30%', minWidth: '15px' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.experience} onChange={(e) => {
 
                               const updatedUser = { ...statsuser };
@@ -940,7 +951,7 @@ export default function SessionPage() {
                         </div>
                         <div>
                           Vida atual e máxima:  <input
-                            style={{ width: '30%', minWidth: '15px' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.health} onChange={(e) => {
 
                               const updatedUser = { ...statsuser };
@@ -952,7 +963,7 @@ export default function SessionPage() {
                               setStatsUser(updatedUser);
                               handleUpdateStats(updatedUser);
                             }} />/ <input
-                            style={{ width: '30%', minWidth: '15px' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.maxHealth} onChange={(e) => {
 
                               const updatedUser = { ...statsuser };
@@ -970,7 +981,7 @@ export default function SessionPage() {
                         </div>
                         <div>
                           Mana atual e máxima:  <input
-                            style={{ width: '30%', minWidth: '15px' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.mana} onChange={(e) => {
 
                               const updatedUser = { ...statsuser };
@@ -982,7 +993,7 @@ export default function SessionPage() {
                               setStatsUser(updatedUser);
                               handleUpdateStats(updatedUser);
                             }} />/ <input
-                            style={{ width: '30%', minWidth: '15px' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.maxMana} onChange={(e) => {
 
                               const updatedUser = { ...statsuser };
@@ -998,54 +1009,69 @@ export default function SessionPage() {
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', marginBlock: '5px', width: '60%', gap: '5px', border: '1px solid black', padding: '5px', borderRadius: '5px' }} >
                           Tomar dano
-                          <input placeholder='Valor do dano' value={takedmg} onChange={(e) => {
-                            setTakeDmg(parseInt(e.target.value))
+                          <input type='text' style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} placeholder='Valor do dano' value={takedmg} onChange={(e) => {
+                            setTakeDmg(e.target.value)
                           }} />
+
                           <button onClick={() => {
                             const updatedUser = { ...statsuser };
-                            updatedUser.health -= takedmg;
+                            updatedUser.health -= (parseInt(takedmg));
                             if (updatedUser.health < 0) {
                               updatedUser.health = 0;
                             }
                             setStatsUser(updatedUser);
                             handleUpdateStats(updatedUser);
                             setTakeDmg('')
-                          }} >Acionar dano tomado</button>
+
+                          }} className={styles.pushable}>
+                            <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
+                            <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
+                              Acionar dano tomado
+                            </span>
+                          </button>
+
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', marginBlock: '5px', width: '60%', gap: '5px', border: '1px solid black', padding: '5px', borderRadius: '5px' }} >
                           Gastar mana
-                          <input placeholder='Valor do dano' value={takemana} onChange={(e) => {
-                            setTakeMana(parseInt(e.target.value))
+                          <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} placeholder='Valor do dano' value={takemana} onChange={(e) => {
+                            setTakeMana(e.target.value)
                           }} />
                           <button onClick={() => {
                             const updatedUser = { ...statsuser };
-                            updatedUser.mana -= takemana;
+                            updatedUser.mana -= (parseInt(takemana));
                             if (updatedUser.mana < 0) {
                               updatedUser.mana = 0;
                             }
                             setStatsUser(updatedUser);
                             handleUpdateStats(updatedUser);
                             setTakeMana('')
-                          }} >Acionar gasto de mana</button>
+
+                          }} className={styles.pushable}>
+                            <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
+                            <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
+                              Acionar gasto de mana
+                            </span>
+                          </button>
+
                         </div>
 
                       </div>
                       <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ width: '190px', justifyContent: 'space-between', display: 'flex', marginBottom:'5px' }}>
-                          <div style={{maxWidth:'70px', fontSize:'10px'}}>
+                        <div style={{ width: '190px', justifyContent: 'space-between', display: 'flex', marginBottom: '5px' }}>
+                          <div style={{ maxWidth: '70px', fontSize: '10px' }}>
                             Nome
                           </div>
-                          <div style={{maxWidth:'70px', fontSize:'10px'}}>
+                          <div style={{ maxWidth: '70px', fontSize: '10px' }}>
                             Valor
                           </div>
-                          <div style={{maxWidth:'75px', fontSize:'10px'}} >
+                          <div style={{ maxWidth: '75px', fontSize: '10px' }} >
                             (Valor + Equipamentos)
                           </div>
                         </div>
                         <div style={{ width: '190px', justifyContent: 'space-between', display: 'flex' }}>
                           Força:
                           <input
-                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.strength} onChange={(e) => {
 
                               const updatedUser = { ...statsuser };
@@ -1061,7 +1087,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Destreza:
                           <input
-                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.dexterity}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -1075,7 +1101,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Constituição:
                           <input
-                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.constitution}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -1089,7 +1115,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Inteligência:
                           <input
-                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.intelligence}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -1103,7 +1129,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Sabedoria:
                           <input
-                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.wisdom}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -1117,7 +1143,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Carisma:
                           <input
-                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.charisma}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -1131,7 +1157,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Atk:
                           <input
-                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.atk}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -1145,7 +1171,7 @@ export default function SessionPage() {
                         <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
                           Def:
                           <input
-                            style={{ width: '100%', minWidth: '15px', maxWidth: '30px', marginLeft: '10%' }}
+                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                             value={statsuser.def}
                             onChange={(e) => {
                               const updatedUser = { ...statsuser };
@@ -1163,13 +1189,24 @@ export default function SessionPage() {
                             updatedUser.health = updatedUser.maxHealth;
                             setStatsUser(updatedUser);
                             handleUpdateStats(updatedUser);
-                          }}> Encher Vida</button>
+                          }} className={styles.pushable}>
+                            <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
+                            <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
+                              Encher Vida
+                            </span>
+                          </button>
                           <button type='button' onClick={() => {
                             const updatedUser = { ...statsuser };
                             updatedUser.mana = updatedUser.maxMana;
                             setStatsUser(updatedUser);
                             handleUpdateStats(updatedUser);
-                          }}> Encher Mana</button>
+                          }} className={styles.pushable}>
+                            <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
+                            <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
+                              Encher Mana
+                            </span>
+                          </button>
+
 
                         </div>
                       </div>
@@ -1618,13 +1655,13 @@ export default function SessionPage() {
               <h2 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} >Adicionar Item</h2>
               <form onSubmit={handleSubmit}>
                 <label htmlFor="name">Nome:</label><br />
-                <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required /><br />
+                <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="name" name="name" value={formData.name} onChange={handleChange} required /><br />
 
                 <label htmlFor="description">Descrição:</label><br />
-                <textarea id="description" name="description" value={formData.description} onChange={handleChange} required /><br />
+                <textarea style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} id="description" name="description" value={formData.description} onChange={handleChange} required /><br />
 
                 <label htmlFor="weight">Peso:</label><br />
-                <textarea id="weight" name="weight" value={formData.weight} onChange={handleChange} required /><br />
+                <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} id="weight" name="weight" value={formData.weight} onChange={handleChange} required /><br />
 
                 <div>
 
@@ -1647,10 +1684,10 @@ export default function SessionPage() {
 
 
                     <label htmlFor="value">Valor:</label><br />
-                    <input type="text" id="value" name="value" value={formData.value} onChange={handleChange} /><br /></div> : null}
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="value" name="value" value={formData.value} onChange={handleChange} /><br /></div> : null}
 
                 <label htmlFor="canequip">Pode ser equipado:</label><br />
-                <input type="checkbox" id="canequip" name="canequip" checked={formData.canequip} onChange={handleChange} /><br />
+                <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="checkbox" id="canequip" name="canequip" checked={formData.canequip} onChange={handleChange} /><br />
                 {formData.canequip ?
                   <div>
                     <label htmlFor="typewear">Onde é equipavel:</label><br />
@@ -1668,30 +1705,30 @@ export default function SessionPage() {
                       <option value="othersright">Others Right</option>
                       <option value="shoes">Shoes</option>
                     </select>
-
+                    <br />
                     <label htmlFor="atk">Ataque:</label><br />
-                    <input type="text" id="atk" name="atk" value={formData.atk} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="atk" name="atk" value={formData.atk} onChange={handleChange} /><br />
 
                     <label htmlFor="def">Defesa:</label><br />
-                    <input type="text" id="def" name="def" value={formData.def} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="def" name="def" value={formData.def} onChange={handleChange} /><br />
 
                     <label htmlFor="strength">Força:</label><br />
-                    <input type="number" id="strength" name="strength" value={formData.strength} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="number" id="strength" name="strength" value={formData.strength} onChange={handleChange} /><br />
 
                     <label htmlFor="dexterity">Destreza:</label><br />
-                    <input type="number" id="dexterity" name="dexterity" value={formData.dexterity} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="number" id="dexterity" name="dexterity" value={formData.dexterity} onChange={handleChange} /><br />
 
                     <label htmlFor="constitution">Constituição:</label><br />
-                    <input type="number" id="constitution" name="constitution" value={formData.constitution} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="number" id="constitution" name="constitution" value={formData.constitution} onChange={handleChange} /><br />
 
                     <label htmlFor="intelligence">Inteligência:</label><br />
-                    <input type="number" id="intelligence" name="intelligence" value={formData.intelligence} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="number" id="intelligence" name="intelligence" value={formData.intelligence} onChange={handleChange} /><br />
 
                     <label htmlFor="wisdom">Sabedoria:</label><br />
-                    <input type="number" id="wisdom" name="wisdom" value={formData.wisdom} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="number" id="wisdom" name="wisdom" value={formData.wisdom} onChange={handleChange} /><br />
 
                     <label htmlFor="charisma">Carisma:</label><br />
-                    <input type="number" id="charisma" name="charisma" value={formData.charisma} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="number" id="charisma" name="charisma" value={formData.charisma} onChange={handleChange} /><br />
 
 
                     <p>Caso o equipamento tenha debuff ou buff, escreva o nome e em seguida o valor, por exemplo:
@@ -1699,13 +1736,13 @@ export default function SessionPage() {
                     </p>
 
                     <label htmlFor="buff1">Buff ou Debuff 1 :</label><br />
-                    <input type="text" id="buff1" name="buff1" value={formData.buff1} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="buff1" name="buff1" value={formData.buff1} onChange={handleChange} /><br />
 
                     <label htmlFor="buff2">Buff ou Debuff 2:</label><br />
-                    <input type="text" id="buff2" name="buff2" value={formData.buff2} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="buff2" name="buff2" value={formData.buff2} onChange={handleChange} /><br />
 
                     <label htmlFor="buff2">Buff ou Debuff 3:</label><br />
-                    <input type="text" id="buff2" name="buff2" value={formData.buff2} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="buff2" name="buff2" value={formData.buff2} onChange={handleChange} /><br />
 
                   </div> : null}
 
@@ -1761,7 +1798,7 @@ export default function SessionPage() {
                 :
                 <div>
                   {user?.id === playersid[0] ?
-                    <div style={{bottom:'35px', position:'relative'}} className={styles.rpgdiv1}>
+                    <div style={{ bottom: '35px', position: 'relative' }} className={styles.rpgdiv1}>
                       Você é o <span style={{ fontWeight: 'bold', fontSize: '20px' }} >  MESTRE </span>
 
                       <div style={{ margin: '5px', border: '1px solid black', padding: '5px' }} >
@@ -1770,7 +1807,7 @@ export default function SessionPage() {
                           <div>
 
                             Nome:
-                            <input value={nameselected} onChange={(e) => {
+                            <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} value={nameselected} onChange={(e) => {
                               setNameSelected(e.target.value)
 
                             }} />
@@ -1778,24 +1815,44 @@ export default function SessionPage() {
 
                           <div >
 
-                            Tile que o NPC irá aparecer
-                            <input style={{ width: '10%', minWidth: '15px' }} type='number' value={tileselected} onChange={(e) => {
+                            Tile que o NPC irá aparecer &nbsp;
+                            <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }} type='number' value={tileselected} onChange={(e) => {
                               setTileSelected(e.target.value)
 
                             }} />
 
 
                           </div>
-                          <button onClick={() => {
-                            addnpcpos()
+                          <div>
 
-                          }} > Adicionar NPC </button>
+
+                            <button onClick={() => {
+                              if (nameselected) {
+
+                                addnpcpos()
+                              } else {
+                                alert('O npc deve ter nome!')
+                              }
+
+                            }} className={styles.pushable}>
+                              <span className={styles.edge}></span>
+                              <span className={styles.front}>
+                                Adicionar NPC
+                              </span>
+                            </button>
+
+                            <button type='button' onClick={() => {
+                              updateSession({ PlayersPos: [] })
+
+                            }} className={styles.pushable}>
+                              <span className={styles.edge}></span>
+                              <span className={styles.front}>
+                                Limpar mapa de npc e player
+                              </span>
+                            </button>
+                          </div>
                         </form>
 
-                        <button onClick={() => {
-                          updateSession({ PlayersPos: [] })
-
-                        }} > Limpar mapa de npc e player </button>
                       </div>
                     </div>
                     :
@@ -1804,7 +1861,7 @@ export default function SessionPage() {
                         Escolha o tile e clique para adicionar você (Não pode ter nenhum jogador ou npc em cima)
                         <div>
                           <form>
-                            <input type='number' value={tileselected} onChange={(e) => {
+                            <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }} type='number' value={tileselected} onChange={(e) => {
                               setTileSelected(e.target.value)
 
                             }} />
@@ -1831,45 +1888,49 @@ export default function SessionPage() {
 
                 Mapa:  {map?.name}
               </div>
-              <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} >
 
-
-                <button onClick={() => {
-                  setShowGrid(!showGrid)
-                }}>Mostrar quadriculados do mapa</button>
-                <button onClick={() => {
-                  setShowTile(!showTile)
-                }} >Mostrar numero dos tiles</button>
-              </div>
               {user?.id === playersid[0] ?
-                <div style={{ margin: '5px', border: '1px solid black', padding: '5px' }} >
-                  Escolha um mapa:
-                  {Array.isArray(mapsarray) && mapsarray.length > 0 && (
-                    <div style={{ display: 'flex' }} >
-                      <select style={{ marginRight: '10px' }} onChange={(e) => {
-                        updateMap(e.target.selectedIndex)
-                      }}>
-                        {mapsarray.map((map, index) => (
-                          <option key={index} value={{ name: map.name, url: map.url }}>
-                            {map.name}
-                          </option>
-                        ))}
-                      </select>
-                      <button onClick={() => {
-                        removemap(map?.name)
-                      }} > Deletar Mapa Atual</button>
-                      &nbsp;
-                      <div> Escala do mapa: {scale}
-                      </div>
-                      <div>
-                      </div>
-                    </div>
-                  )}
+                <div style={{ display: 'flex', width: '750px', gap: '20px' }} >
+                  <div style={{ margin: '5px', padding: '5px' }} >
+                    Escolha um mapa:
+                    {Array.isArray(mapsarray) && mapsarray.length > 0 && (
+                      <div style={{ display: 'flex', flexDirection: 'column' }} >
+                        <select style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '250px' }} onChange={(e) => {
+                          updateMap(e.target.selectedIndex)
+                        }}>
+                          {mapsarray.map((map, index) => (
+                            <option key={index} value={{ name: map.name, url: map.url }}>
+                              {map.name}
+                            </option>
+                          ))}
+                        </select>
 
 
-                  <div style={{ marginTop: '2px' }} >
+                        <button onClick={() => {
+                          removemap(map?.name)
+
+                        }} className={styles.pushable}>
+                          <span className={styles.edge}></span>
+                          <span className={styles.front}>
+                            Deletar Mapa Atual
+                          </span>
+                        </button>
+
+
+                        &nbsp;
+                        <div> Escala do mapa: {scale}
+                        </div>
+                        <div>
+                        </div>
+                      </div>
+                    )}
+
+
+
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }} >
                     <span style={{ fontWeight: 'bold', fontSize: '20px' }}>Crie um mapa novo</span>
-                    <form style={{ display: 'flex' }} onSubmit={(e) => {
+                    <form style={{ display: 'flex', flexDirection: 'column', gap: '10px' }} onSubmit={(e) => {
                       e.preventDefault()
                       if (isUrlValid) {
                         addmap()
@@ -1880,7 +1941,7 @@ export default function SessionPage() {
                       <div>
 
                         Nome:
-                        <input value={nameselectedmap} onChange={(e) => {
+                        <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} value={nameselectedmap} onChange={(e) => {
                           setNameSelectedMap(e.target.value)
 
                         }} />
@@ -1888,7 +1949,7 @@ export default function SessionPage() {
                       <div>
 
                         Url da foto do mapa:
-                        <input value={urlselectedmap} onChange={(e) => {
+                        <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} value={urlselectedmap} onChange={(e) => {
                           setUrlSelectedMap(e.target.value)
                           handleUrlChange(e.target.value)
                         }} />
@@ -1896,7 +1957,7 @@ export default function SessionPage() {
                       <div style={{}} >
                         Escala do mapa:
                         <input
-
+                          style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                           value={newscale}
                           onChange={(e) => {
                             setNewScale(e.target.value);
@@ -1905,7 +1966,8 @@ export default function SessionPage() {
                         />
                         <div>
                           <input
-                            step="0.01"
+
+                            step="0.05"
                             type="range"
                             min="0.1"
                             max="3"
@@ -1922,10 +1984,40 @@ export default function SessionPage() {
                         </div>
 
                       </div>
-                      <button disabled={!isUrlValid} > Adicionar Mapa </button>
+                      <button disabled={!isUrlValid} className={styles.pushable}>
+                        <span style={{ fontSize: '10px', width: '116px' }} className={styles.edge}></span>
+                        <span style={{ fontSize: '10px', width: '90px' }} className={styles.front}>
+                          Adicionar Mapa
+                        </span>
+                      </button>
+
                     </form>
                   </div>
-                </div> : null}
+                  <div className={styles.medievalsharp} >
+
+                    <button onClick={() => {
+                      setShowGrid(!showGrid)
+
+                    }} className={styles.pushable}>
+                      <span style={{ fontSize: '10px', width: '116px' }} className={styles.edge}></span>
+                      <span style={{ fontSize: '10px', width: '90px' }} className={styles.front}>
+                        Mostrar quadriculados do mapa
+                      </span>
+                    </button>
+                    <button onClick={() => {
+                      setShowTile(!showTile)
+
+                    }} className={styles.pushable}>
+                      <span className={styles.edge}></span>
+                      <span className={styles.front}>
+                        Mostrar numero dos tiles
+                      </span>
+                    </button>
+
+                  </div>
+
+                </div>
+                : null}
             </div>
           </div>
           <div style={{

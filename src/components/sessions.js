@@ -20,7 +20,13 @@ export default function Sessions(array, id) {
           </div>
           <button onClick={() => {
             window.location.href=`/session/${session._id}`
-          }} className={styles.simplebutton}> Entrar </button>
+          }}  className={styles.pushable}>
+                <span className={styles.edge}></span>
+                <span className={styles.front}>
+                Entrar
+                </span>
+              </button>
+          
         </div>
       )
       )}
