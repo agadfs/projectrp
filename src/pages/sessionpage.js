@@ -2088,7 +2088,7 @@ export default function SessionPage() {
               ))}
             </div>
           </div>
-          <div className={styles.rpgdiv1} style={{ position: 'absolute', top: '1050px', maxWidth: '1000px' }} >
+          <div className={styles.rpgdiv1} style={{ position: 'absolute', top: '1080px', maxWidth: '1000px' }} >
             <h1 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > SEU INVENTARIO
               ({inventory?.Items?.length} Items)</h1>
             <div>
