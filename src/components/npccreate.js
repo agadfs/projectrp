@@ -4,7 +4,8 @@ import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import ShieldIcon from '@mui/icons-material/Shield';
 import { PiCoinsBold } from 'react-icons/pi';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
-import { Axios } from 'axios';
+import axios from 'axios';
+
 import { useAppContext } from '../AppContext';
 export default function NpcCreate({ userid, sessionid, items }) {
   const { urlrequest } = useAppContext();
@@ -83,7 +84,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
     e.preventDefault();
     try {
 
-       const response = await Axios.post(`${urlrequest}/npcscreate`, newNpc); 
+       const response = await axios.post(`${urlrequest}/npcscreate`, newNpc); 
 
 
       console.log(newNpc)
