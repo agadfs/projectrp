@@ -41,7 +41,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
       shoes: ''
 
     },
-    Isnpc: false,
+    Isnpc: true,
     Npcname: '',
     NpcUrlPhoto: '',
     NpcBook: ''
@@ -1093,7 +1093,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
           <textarea id="NpcUrlPhoto" name="NpcUrlPhoto"
             value={newNpc.NpcUrlPhoto} onChange={handleChange} /><br />
 
-          <button type="submit">Enviar</button>
+          <button onClick={handleSubmit} type="button">Enviar</button>
         </form>
       </div>
 

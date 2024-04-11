@@ -190,7 +190,10 @@ export default function Home() {
         players: [user.id],
       };
 
-      await axios.post(`${urlrequest}/sessions`, randomSession);
+      const response = await axios.post(`${urlrequest}/sessions`, randomSession);
+      if(response){
+        window.location.reload()
+      }
 
 
     } catch (error) {
@@ -241,6 +244,7 @@ export default function Home() {
                 alert('Por favor preencha o nome da sessão')
               }
               e.preventDefault();
+
             }} >
               <input
 
