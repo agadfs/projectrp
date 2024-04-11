@@ -19,7 +19,17 @@ const InventorySchema = new mongoose.Schema({
     type: Object,
     required: false,
    
+  },
+  Isnpc: {
+    type: Boolean,
+    required: false,
+   
+  },
+  Npcname:{
+    type: String,
+    required: false
   }
+
   
 },{ collection: 'Inventory' });
 

@@ -25,7 +25,6 @@ export default function SessionPage() {
   const [imageWidth, setImageWidth] = useState(null);
   const [tileselected, setTileSelected] = useState('');
   const [nameselected, setNameSelected] = useState('');
-  const [draggedItem, setDraggedItem] = useState(null);
   const gridItems = Array.from({ length: 4096 }); /* 64 x 64 */
   const [titulo, setTitulo] = useState('');
   const { sessionid } = useParams();
@@ -287,10 +286,11 @@ export default function SessionPage() {
       });
 
       if (response.data) {
-        let playerarray = response.data;
-        if (playerarray.length > 0) {
-          playerarray = playerarray[0];
+        let playerarrays = response.data;
+        if (playerarrays.length > 0) {
+          let playerarray = playerarrays[0];
           setInventory(playerarray);
+          console.log(playerarrays)
           setStatsUser(playerarray.Stats);
           handleUpdateStats(playerarray.Stats);
         } else {
