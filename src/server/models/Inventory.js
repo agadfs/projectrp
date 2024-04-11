@@ -32,6 +32,10 @@ const InventorySchema = new mongoose.Schema({
   NpcUrlPhoto:{
     type: String,
     required: false
+  },
+  NpcBook:{
+    type: String,
+    required: false
   }
 
   

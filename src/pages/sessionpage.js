@@ -8,6 +8,7 @@ import ShieldIcon from '@mui/icons-material/Shield';
 import CircularProgress from '@mui/material/CircularProgress';
 import { PiCoinsBold } from 'react-icons/pi';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
+import NpcCreate from '../components/npccreate';
 export default function SessionPage() {
 
   
@@ -126,30 +127,7 @@ export default function SessionPage() {
       shoes: ''
 
     })
-    const [newNpc, setNewNpc] = useState({
-      ownerId: user.id,
-      gameId: sessionid,
-      Items: [],
-      
-      Stats: {
-        level: 0,
-        experience: 0,
-        health: 0,
-        maxHealth: 0,
-        mana: 0,
-        maxMana: 0,
-        strength: 0,
-        dexterity: 0,
-        constitution: 0,
-        intelligence: 0,
-        wisdom: 0,
-        charisma: 0,
-  
-      },
-      Isnpc:false,
-      Npcname:''
-  
-    });
+    
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * randomStrings.length);
@@ -1781,41 +1759,7 @@ export default function SessionPage() {
               </form>
             </div>
             : null}
-            {user?.id === playersid[0] ?
-            <div style={{ marginTop: '10px' }} className={styles.rpgdiv1}>
-              <h2 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} >
-                Adicionar NPC</h2>
-              <form onSubmit={handleSubmit}>
-                <label htmlFor="name">Nome:</label><br />
-                <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="name" name="name"
-                 value={newNpc.Npcname} onChange={handleChange} required /><br />
-
-                <label htmlFor="description">Inventario:</label><br />
-                <textarea style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', 
-                fontWeight: 'bold', maxWidth: '150px' }} id="description" name="description" value={formData.description} onChange={handleChange} required /><br />
-
-                <label htmlFor="weight">Status:</label><br />
-                <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', 
-                fontWeight: 'bold', maxWidth: '150px' }} id="weight" name="weight" value={formData.weight} onChange={handleChange} required /><br />
-                <div>
-                  <label htmlFor="rpgbook">Para qual livro de rpg é esse npc?:</label><br />
-                  <select id="rpgbook" name="rpgbook" 
-                  value={formData.rpgbook} onChange={handleChange}>
-                    <option value="">Selecione uma opção</option>
-                    <option value="generic">Genérico</option>
-                    <option value="d&d">D&D</option>
-
-                  </select>
-                </div>
-               
-                <label htmlFor="url">Url da foto do npc:</label><br />
-                <textarea id="url" name="url" 
-                value={formData.img} onChange={handleChange} /><br />
-
-                <button type="submit">Enviar</button>
-              </form>
-            </div>
-            : null}
+             {user?.id === playersid[0] ? <NpcCreate/> : null}
         </div>
         :
         <div>
