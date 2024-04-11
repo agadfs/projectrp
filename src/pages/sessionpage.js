@@ -11,7 +11,7 @@ import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import NpcCreate from '../components/npccreate';
 export default function SessionPage() {
 
-  
+
   const [randomText, setRandomText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [playersstatsarray, setPlayersStatsArray] = useState([]);
@@ -127,7 +127,7 @@ export default function SessionPage() {
       shoes: ''
 
     })
-    
+
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * randomStrings.length);
@@ -229,7 +229,7 @@ export default function SessionPage() {
         ownerId: user.id,
         gameId: sessionid,
         Items: [],
-        
+
         Stats: {
           level: 0,
           experience: 0,
@@ -913,7 +913,7 @@ export default function SessionPage() {
               <div className={styles.rpgdiv1} style={{
                 height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap',
                 flexDirection: 'column'
-              }}>
+               }}>
 
 
                 <div style={{ display: 'flex', flexDirection: 'column' }} >
@@ -1759,7 +1759,7 @@ export default function SessionPage() {
               </form>
             </div>
             : null}
-             {user?.id === playersid[0] ? <NpcCreate/> : null}
+          {user?.id === playersid[0] ? <NpcCreate items={items} userid={user.id} sessionid={sessionid} /> : null}
         </div>
         :
         <div>
@@ -2209,9 +2209,9 @@ export default function SessionPage() {
             </div>
 
 
-          
+
           </div>
-          
+
 
         </div>
 
