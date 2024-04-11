@@ -28,6 +28,10 @@ const InventorySchema = new mongoose.Schema({
   Npcname:{
     type: String,
     required: false
+  },
+  NpcUrlPhoto:{
+    type: String,
+    required: false
   }
 
   
