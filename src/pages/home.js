@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from './home.module.css';
 import axios from 'axios';
-import User from '../server/models/User';
 import { useAppContext } from '../AppContext';
 import Sessions from '../components/sessions';
 import CircularProgress from '@mui/material/CircularProgress';

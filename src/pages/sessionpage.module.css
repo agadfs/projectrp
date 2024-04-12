@@ -354,8 +354,9 @@ input[id="barh"]::-ms-tooltip {
 
 /* Firefox */
 .customScrollDiv {
-  scrollbar-width: auto;
+  scrollbar-width:auto;
   scrollbar-color: rgb(241, 241, 241) black;
+
   
 }
 

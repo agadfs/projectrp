@@ -76,7 +76,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
 
     });
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setNewNpc({ ...newNpc, [name]: value });
 
   };
@@ -90,6 +90,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
       console.log(newNpc)
       if(response.data){
         console.log('Npc Criado com Sucesso!')
+        window.location.reload()
       }else{
         console.log('Criação do Npc deu errado, tente novamente!')
       }
@@ -255,7 +256,8 @@ export default function NpcCreate({ userid, sessionid, items }) {
 
 
       <div style={{ marginTop: '10px' }} className={styles.rpgdiv1}>
-        <h2 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} >
+        <h2 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} 
+        className={styles.medievalsharp} >
           Adicionar NPC</h2>
         <form onSubmit={handleSubmit}>
           <label htmlFor="Npcname">Nome:</label><br />
@@ -269,7 +271,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
               ({newNpc?.Items?.length} Items)</h1>
             <div>
 
-              <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
+              <button type='button' style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
                 if (items.length > 0) {
 
                   updatenewNpc()
@@ -285,7 +287,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
               </select>
             </div>
 
-            <div className={styles.customScrollDiv} style={{ height: 'auto', width: '50vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
+            <div className={styles.customScrollDiv} style={{ height: 'auto', width: '21vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
               <div style={{ minWidth: '1600px', display: 'flex', gap: '25px', flexWrap: 'wrap', transform: 'scaleY(-1)', position: 'relative', bottom: '10px', marginTop: '20px' }} >
                 {newNpc?.Items?.map((item, index) => (
                   <div
@@ -358,14 +360,14 @@ export default function NpcCreate({ userid, sessionid, items }) {
 
 
 
-                    <button onClick={() => handleDelete(index)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
+                    <button  type='button' onClick={() => handleDelete(index)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
                       Deletar
                     </button>
                     <div style={{ display: 'flex', gap: '5px' }}>
-                      <button onClick={() => handleUpdateQuantity(index, +1)} style={{ color: 'green', cursor: 'pointer' }}>
+                      <button  type='button' onClick={() => handleUpdateQuantity(index, +1)} style={{ color: 'green', cursor: 'pointer' }}>
                         +1
                       </button>
-                      <button onClick={() => handleUpdateQuantity(index, -1)} style={{ color: 'red', cursor: 'pointer' }}>
+                      <button  type='button' onClick={() => handleUpdateQuantity(index, -1)} style={{ color: 'red', cursor: 'pointer' }}>
                         -1
                       </button>
                     </div>
