@@ -61,7 +61,7 @@ export default function Login() {
           const userId = response.data[0]._id;
           setUser({ id: userId });
         } else {
-          console.log('Nenhuma conta encontrada')
+          alert('Nenhuma conta encontrada com esse login')
         }
       }
     } catch (error) {
