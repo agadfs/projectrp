@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { AwesomeButton } from 'react-awesome-button';
 
 export default function Navbar() {
+  const currentYear = new Date().getFullYear();
   const { user, setUser, urlrequest } = useAppContext();
   useEffect(() => {
     if (user.id) {
@@ -19,11 +20,15 @@ export default function Navbar() {
   return (
     <div className={styles.body} >
       <div style={{display:'flex', flexDirection:'column', justifyContent:'flex-start', alignContent:'flex-start', alignItems:'flex-start'}} >
+      <div style={{ marginBottom: '0px' }} className={styles.rpgdiv1}>
+      © {currentYear} Henrique Dev. Todos os direitos reservados.
+          </div>
         {user.id ?
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }} >
           <div style={{ marginBottom: '0px' }} className={styles.rpgdiv1}>
             Seu id: {user.id}
           </div>
+          
           
         </div> :
         null}
