@@ -12,6 +12,9 @@ import NpcCreate from '../components/npccreate';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 export default function SessionPage() {
+  const [ReqKeeper, setReqKeeper] = useState(false);
+  const [tile, setTile] = useState('');
+  const [npcmap, setNpcMap] = useState({});
   const [npcid, setNpcId] = useState('');
   const [nameuser, setNameUser] = useState('')
   const [urlphotouser, setUrlPhotoUser] = useState('')
@@ -20,7 +23,6 @@ export default function SessionPage() {
   const [npcs, setNpcs] = useState([]);
   const [randomText, setRandomText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [playersstatsarray, setPlayersStatsArray] = useState([]);
   const [disableUpdate, setDisableUpdate] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showTile, setShowTile] = useState(false);
@@ -143,13 +145,44 @@ export default function SessionPage() {
 
   }, []);
 
+  async function AddPlayerToMap() {
+    let pos = playerlocation;
+    const response = await axios.get(`${urlrequest}/sessions/${sessionid}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }
+    });
+    if (response.data) {
+      pos = response.data.PlayersPos;
 
-
+    }
+    let posnpc = { npcmap: npcssession.find(player => player.ownerId === user?.id), tile }
+    pos.push(posnpc)
+    console.log({ PlayersPos: pos })
+    updateSession({ PlayersPos: pos })
+    setTile('')
+  }
   useEffect(() => {
 
     const interval = setInterval(() => {
       if (user.id) {
         getSession()
+
+      } else {
+
+      }
+
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [user, disableUpdate]);
+
+  useEffect(() => {
+
+    const interval = setInterval(() => {
+      if (user.id) {
+        setReqKeeper(false);
 
       } else {
 
@@ -167,33 +200,20 @@ export default function SessionPage() {
         item: randomItem,
         quantity: 1
       };
-
       const existingItemIndex = inventory.findIndex(item => item.item.name === randomItem.name);
-
       if (existingItemIndex !== -1) {
-
         inventory[existingItemIndex].quantity++;
       } else {
-
         inventory.push(newItem);
       }
-
     } catch (error) {
       console.error('Error updating inventory:', error);
     }
   }
-
-  async function deleteInventoryItem2(newInv, updateddata) {
-
+  async function deleteInventoryItem2(updateddata) {
     try {
-
-
-     
       handleUpdateStats(updateddata);
-
-
-
-
+      
     } catch (error) {
       console.error('Error updating inventory:', error);
     }
@@ -256,7 +276,6 @@ export default function SessionPage() {
       console.error('Error creating inventory:', error);
     }
 
-
   }
   async function getItems() {
     try {
@@ -275,7 +294,7 @@ export default function SessionPage() {
       console.error('Error fetching sessions ', error)
     }
   }
-  
+
   async function getPlayers(data) {
     let playerarray = [];
 
@@ -314,6 +333,28 @@ export default function SessionPage() {
     }
   }
 
+  useEffect(() => {
+    if (user.id && playerlocation.length > 0 && npcssession.length > 0) {
+      const updatedPlayerLocation = [...playerlocation];
+      const olddata = playerlocation.map(pl => ({
+        ...pl,
+        npcmap: { ...pl.npcmap }
+      }));
+
+      for (let i = 0; i < updatedPlayerLocation.length; i++) {
+        const indexInNpcSession = npcssession.findIndex(npc => npc.idtrack === updatedPlayerLocation[i].npcmap.idtrack);
+        if (indexInNpcSession !== -1) {
+          updatedPlayerLocation[i].npcmap = npcssession[indexInNpcSession];
+        }
+      }
+      if (JSON.stringify(playerlocation) !== JSON.stringify(olddata)) {
+      
+        updateSession({ PlayersPos: updatedPlayerLocation });
+      
+     
+      } 
+    }
+  }, [user, playerlocation, npcssession]);
 
   async function getSession() {
 
@@ -330,6 +371,9 @@ export default function SessionPage() {
         getName(data.Others);
         if (data.players.includes(user.id)) {
           setNpcSession(data.Npcs);
+          setPlayerLocation(data.PlayersPos);
+
+
           if (data.Npcs.some(npc => npc.ownerId === user.id)) {
             const existingNPC = data.Npcs.find(npc => npc.ownerId === user.id);
 
@@ -353,6 +397,8 @@ export default function SessionPage() {
           getPlayers(data.players);
           setShowInfo(true);
           setPlayersid(data.players);
+
+
         } else {
           console.log("User is not authorized for this session.");
 
@@ -420,19 +466,20 @@ export default function SessionPage() {
                 headers: {
                   'Content-Type': 'application/json',
                   'ngrok-skip-browser-warning': 'true'
-                }})
-                if (res.data) {
-                  let updatedNpcs = res.data.Npcs;
-              
-                 
-                  const index = updatedNpcs.findIndex(npc => npc.ownerId === newData.ownerId && npc.gameId === newData.gameId);
-              
-                 
-                  if (index !== -1) {
-                      updatedNpcs[index] = {...updatedNpcs[index], ...newData};
-                  }
+                }
+              })
+              if (res.data) {
+                let updatedNpcs = res.data.Npcs;
 
-                   updateSession({ Npcs: updatedNpcs });
+
+                const index = updatedNpcs.findIndex(npc => npc.ownerId === newData.ownerId && npc.gameId === newData.gameId);
+
+
+                if (index !== -1) {
+                  updatedNpcs[index] = { ...updatedNpcs[index], ...newData };
+                }
+
+                updateSession({ Npcs: updatedNpcs });
               }
 
             }
@@ -519,12 +566,11 @@ export default function SessionPage() {
 
 
 
-
   }
 
   useEffect(() => {
     if (user.id) {
-      
+
       getSession()
       getItems()
     }
@@ -665,7 +711,7 @@ export default function SessionPage() {
     const selectedId = event.target.value;
     handleAdd(selectedId)
     updateNpcs()
-    handleUpdateStats()
+   
 
   }
   function handleAddItem2(event) {
@@ -675,6 +721,7 @@ export default function SessionPage() {
 
   }
   const handleUpdateQuantity2 = (index, quantityChange, updateddata) => {
+    
     const updatedItems = inventory.map((item, itemIndex) => {
       if (itemIndex === index) {
         const newQuantity = item.quantity + quantityChange;
@@ -694,7 +741,7 @@ export default function SessionPage() {
     setInventory(updatedItems)
 
     deleteInventoryItem2(updatedItems, updateddata);
-
+    
 
 
   };
@@ -717,8 +764,7 @@ export default function SessionPage() {
       return item;
     }).filter(item => item !== null);
     setInventory(updatedItems)
-
-    
+    updateNpcs()
 
 
   };
@@ -795,26 +841,30 @@ export default function SessionPage() {
     e.preventDefault();
   };
 
-  const handleDrop = (e, targetIndex) => {
+  const handleDrop = async (e, targetIndex) => {
     const newPosition = parseInt(e.dataTransfer.getData('position'));
-    const updatedPlayerLocations = [...playerlocation];
-    const draggedPlayerIndex = updatedPlayerLocations.findIndex(player => player.position === newPosition);
+
+    let updatedPlayerLocations = [...playerlocation];
+    const response = await axios.get(`${urlrequest}/sessions/${sessionid}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      }
+    });
+    if (response.data) {
+      updatedPlayerLocations = response.data.PlayersPos
+
+    }
+    const draggedPlayerIndex = updatedPlayerLocations.findIndex(player => parseInt(player.tile) === parseInt(newPosition));
 
     if (draggedPlayerIndex !== -1) {
-      updatedPlayerLocations[draggedPlayerIndex].position = targetIndex;
+      updatedPlayerLocations[draggedPlayerIndex].tile = targetIndex;
     }
+
 
     setPlayerLocation(updatedPlayerLocations);
     updateSession({ PlayersPos: updatedPlayerLocations });
   };
-  function addplayerpos() {
-    let playerspositions = [...playerlocation]
-    const index = playersid.indexOf(user.id);
-    const nameuser = players[index];
-
-    playerspositions.push({ name: nameuser, position: parseInt(tileselected), id: user.id })
-    updateSession({ PlayersPos: playerspositions });
-  }
 
   function addmap() {
     let mapsdata = [...mapsarray]
@@ -881,18 +931,21 @@ export default function SessionPage() {
     }
     setImgPrev(url)
   };
-  function HealthBar({ useridfind, playersstatsarray }) {
-    // Attempt to find the player stats by the given user ID
-    const playerStats = playersstatsarray.find(player => player.ownerId === useridfind);
+  function HealthBar({ useridfind }) {
 
 
-    if (playerStats && playerStats.Stats) {
-      const { health, maxHealth } = playerStats.Stats;
-      // Render the health bar with the found health and maxHealth values
+    let playerStats = playerlocation?.find(player => player.npcmap.idtrack === useridfind);
+    playerStats = playerStats?.npcmap;
+
+
+    if (playerStats && playerStats?.Stats) {
+      const { health, maxHealth } = playerStats?.Stats;
+
+
       return (
         <div >
           <div>
-            Level: {playerStats.Stats.level}
+            Level: {playerStats?.Stats.level}
           </div>
           <div style={{ position: 'relative', top: '70px', left: '5px' }} >
 
@@ -1416,8 +1469,9 @@ export default function SessionPage() {
                             </button>
                             <div style={{ display: 'flex' }} >
 
-                              <button type='button' onClick={() => {
+                              <button style={{display:ReqKeeper ? 'none' : 'flex'}} type='button' onClick={() => {
                                 updateNpcs1();
+                               
 
 
                               }} className={styles.pushable}>
@@ -2016,26 +2070,37 @@ export default function SessionPage() {
 
         <div className={styles.mapbody}>
           <div className={styles.maptitle}>
-            <div style={{ marginRight: '50px' }}>
-              {playerlocation?.find(obj => obj.name === players[playersid?.indexOf(user?.id)]) && user?.id !== playersid[0] ?
-                <div>
+            <div >
 
-                  Você já criou seu personagem
-                  <span style={{ fontWeight: 'bold', fontSize: '20px' }} >  {players[playersid?.indexOf(user.id)]} </span>,
-                  ele se encontra no tile: {
-                    playerlocation.find(obj => obj.name === players[playersid.indexOf(user.id)]) ?
-                      playerlocation.find(obj => obj.name === players[playersid.indexOf(user.id)]).position
-                      : null
+              {user?.id !== playersid[0] ?
+                <div className={styles.rpgdiv1} style={{ marginRight: '30px' }}>
+                  {playerlocation?.find(obj => obj.npcmap.ownerId === user?.id) ?
+                    <div>
+
+                      Você já criou seu personagem e está no mapa no tile {playerlocation?.find(obj => obj.npcmap.ownerId === user?.id).tile}
+
+                    </div>
+                    :
+                    <div>
+                      Adicionar personagem no mapa
+                      <input type='number' value={tile} onChange={(e) => {
+                        setTile(e.target.value)
+                      }} />
+                      <button onClick={() => {
+                        if (tile) {
+
+                          AddPlayerToMap()
+                        }
+                      }} type='button' >Adicionar</button>
+
+
+                    </div>
                   }
 
-                </div>
-                :
-                <div>
 
 
+                </div> : null}
 
-                </div>
-              }
 
 
             </div>
@@ -2200,45 +2265,50 @@ export default function SessionPage() {
               ))}
               {playerlocation.map((player, index) => (
                 <div key={index}>
-                  {player.id === user.id ?
+                  {player.npcmap.ownerId === user.id ?
                     <div
                       className={styles.gridPlayer}
                       style={{
-                        backgroundImage: `url('/path/to/player/image.jpg')`, // Assuming you have a player image
+                        backgroundImage: `url(${player.npcmap.NpcUrlPhoto})`,
                         position: 'absolute',
-                        top: `calc(${Math.floor(player.position / 64)} * (100% / 64))`,
-                        left: `calc(${player.position % 64} * (100% / 64))`,
+                        borderRadius: '50%',
+                        position: 'absolute',
+                        top: `calc(${Math.floor(parseInt(player.tile) / 64)} * (100% / 64))`,
+                        left: `calc(${parseInt(player.tile) % 64} * (100% / 64))`,
                         width: '60px', // Adjust as needed
                         height: '60px', // Adjust as needed
-                        border: player.id === user.id ? '1px solid red' : '1px solid blue',
+                        border: player.npcmap.ownerId === user.id ? '1px solid red' : '1px solid blue',
                       }}
                       draggable
-                      onDragStart={(e) => handleDragStart(e, player.position)}
+                      onDragStart={(e) => handleDragStart(e, parseInt(player.tile))}
                     >
+
                       <div style={{ color: 'white', position: 'relative', top: '-30px' }} >
 
-                        {player.name}
-                        <HealthBar useridfind={player.id} playersstatsarray={playersstatsarray} />
+                        {player.npcmap.Npcname}
+                        <HealthBar useridfind={player.npcmap.idtrack} />
                       </div>
                     </div>
                     :
                     <div
                       className={styles.gridPlayer}
                       style={{
-                        backgroundImage: `url('/path/to/player/image.jpg')`, // Assuming you have a player image
+                        backgroundImage: `url(${player.npcmap.NpcUrlPhoto})`,
                         position: 'absolute',
-                        top: `calc(${Math.floor(player.position / 64)} * (100% / 64))`,
-                        left: `calc(${player.position % 64} * (100% / 64))`,
+                        borderRadius: '50%',
+                        top: `calc(${Math.floor(parseInt(player.tile) / 64)} * (100% / 64))`,
+                        left: `calc(${parseInt(player.tile) % 64} * (100% / 64))`,
                         width: '60px', // Adjust as needed
                         height: '60px', // Adjust as needed
-                        border: player.id === user.id ? '1px solid red' : '1px solid blue',
+                        border: player.npcmap.ownerId === user.id ? '1px solid red' : '1px solid blue',
                       }}
-                      onDragStart={(e) => handleDragStart(e, player.position)}
+                      onDragStart={(e) => handleDragStart(e, parseInt(player.tile))}
                     >
+
                       <div style={{ color: 'white', position: 'relative', top: '-30px' }} >
 
-                        {player.name}
-                        <HealthBar useridfind={player.id} playersstatsarray={playersstatsarray} />
+                        {player.npcmap.Npcname}
+                        <HealthBar useridfind={player.npcmap.idtrack} />
                       </div>
                     </div>}
                 </div>
@@ -2358,7 +2428,7 @@ export default function SessionPage() {
 
             </div> : null}
           {user?.id === playersid[0] ?
-            <div style={{ bottom: '-1500px', position: 'absolute' }} className={styles.rpgdiv1}>
+            <div style={{ bottom: '-1600px', position: 'absolute' }} className={styles.rpgdiv1}>
               Você é o <span style={{ fontWeight: 'bold', fontSize: '20px' }} >  MESTRE </span>
               Players e Npc's inseridos na sessão:
               <div>
@@ -2376,31 +2446,74 @@ export default function SessionPage() {
               </div>
 
 
-              <div style={{ margin: '5px', border: '1px solid black', padding: '5px' }} >
-                <span style={{ fontWeight: 'bold', fontSize: '20px' }} > Crie NPC'S aqui </span>
-                <button onClick={() => {
-                  getNpcs()
-                }}>Carregar lista de npcs de {bookrpg}</button>
-                <form onSubmit={(e) => {
-                  e.preventDefault()
-                  let newnpcs = [...npcssession];
-                  newnpcs.push(selectedNpc);
-                  updateSession({ Npcs: newnpcs })
-                }} >
-                  <div>
+              <div style={{ margin: '5px', padding: '5px' }} >
+                <div style={{ display: 'flex', border: '1px solid black' }} >
+                  <div style={{ display: 'flex', flexDirection: 'column' }} >
+                    <span style={{ fontWeight: 'bold', fontSize: '20px' }} > Crie NPC'S aqui </span>
+                    <button onClick={() => {
+                      getNpcs()
+                    }}>Carregar lista de npcs de {bookrpg}</button>
 
-                    Selecione o npc criado de {bookrpg}:
+                  </div>
+
+                  <form style={{ display: 'flex' }} onSubmit={(e) => {
+                    e.preventDefault()
+                    let newnpcs = [...npcssession];
+                    newnpcs.push(selectedNpc);
+                    updateSession({ Npcs: newnpcs })
+                  }} >
+                    <div >
+                      Selecione o npc criado de {bookrpg}:
+                      <select style={{
+                        borderRadius: '5px',
+                        backgroundColor: 'hsl(34, 97%, 31%)', color: 'white',
+                        fontWeight: 'bold', width: '200px'
+                      }} onChange={(e) => {
+
+                        setSelectedNpc(npcs.filter(npc => npc.Isnpc && npc.NpcBook === bookrpg)[e.target.selectedIndex]);
+
+                      }}>
+
+                        {npcs?.filter(npc => npc.Isnpc && npc.NpcBook === bookrpg).map((npc, index) => (
+                          <option key={index} value={npc}>
+                            {npc?.Npcname}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div >
+                      NPC selecionado: {selectedNpc.Npcname}
+
+                      <button className={styles.pushable}>
+                        <span className={styles.edge}></span>
+                        <span className={styles.front}>
+                          Adicionar NPC
+                        </span>
+                      </button>
+
+
+                    </div>
+                  </form>
+
+                </div>
+
+                <div style={{ display: 'flex', border: '1px solid black', marginTop: '10px' }} >
+                  <p onClick={() => {
+                    console.log(playerlocation)
+                  }} >Adicionar Npc no mapa</p>
+                  <div>
+                    Nome do NPC
                     <select style={{
                       borderRadius: '5px',
                       backgroundColor: 'hsl(34, 97%, 31%)', color: 'white',
                       fontWeight: 'bold', width: '150px'
                     }} onChange={(e) => {
 
-                      setSelectedNpc(npcs.filter(npc => npc.Isnpc && npc.NpcBook === bookrpg)[e.target.selectedIndex]);
+                      setNpcMap(npcssession.filter(npc => npc.Isnpc && npc.NpcBook === bookrpg)[e.target.selectedIndex]);
 
                     }}>
 
-                      {npcs?.filter(npc => npc.Isnpc && npc.NpcBook === bookrpg).map((npc, index) => (
+                      {npcssession?.filter(npc => npc.Isnpc && npc.NpcBook === bookrpg).map((npc, index) => (
                         <option key={index} value={npc}>
                           {npc?.Npcname}
                         </option>
@@ -2408,26 +2521,27 @@ export default function SessionPage() {
                     </select>
                   </div>
                   <div>
-                    NPC selecionado: {selectedNpc.Npcname}
+                    Tile para spawnar npc
 
-                    <button className={styles.pushable}>
-                      <span className={styles.edge}></span>
-                      <span className={styles.front}>
-                        Adicionar NPC
-                      </span>
-                    </button>
 
-                    <button type='button' onClick={() => {
-                      updateSession({ PlayersPos: [] })
-
-                    }} className={styles.pushable}>
-                      <span className={styles.edge}></span>
-                      <span className={styles.front}>
-                        Limpar mapa de npc e player
-                      </span>
-                    </button>
+                    <input type='number' value={tile} onChange={(e) => {
+                      setTile(e.target.value)
+                    }} />
                   </div>
-                </form>
+                  <button type='button' onClick={() => {
+                    let pos = playerlocation;
+                    let posnpc = { npcmap, tile }
+                    pos.push(posnpc)
+                    updateSession({ PlayersPos: pos })
+
+                  }} className={styles.pushable}>
+                    <span className={styles.edge}></span>
+                    <span className={styles.front}>
+                      Adicionar {npcmap.Npcname} no tile {tile}
+                    </span>
+                  </button>
+
+                </div>
               </div>
               {npcssession?.filter(npc => npc.Isnpc && npc.NpcBook === bookrpg).map((npc, index) => (
                 <div onClick={() => {
@@ -2442,904 +2556,911 @@ export default function SessionPage() {
 
                 </div>
               ))}
-              <div className={styles.rpgdiv1} style={{
-                height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap',
-                flexDirection: 'column'
-              }}>
-                <div style={{ display: 'flex', flexDirection: 'column' }} >
-                  <h3 className={styles.medievalsharp}>Atributos do NPC </h3>
-                  <p>{npcid}</p>
-                  {user?.id === playersid[0] ?
-                    <div style={{ display: 'flex', flexDirection: 'row' }} >
-                      <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                        <div>
-                          Seu level:
-                          <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.level} onChange={(e) => {
+              {npcid ?
+                <div className={styles.rpgdiv1} style={{
+                  height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap',
+                  flexDirection: 'column'
+                }}>
+                  <div style={{ display: 'flex', flexDirection: 'column' }} >
+                    <h3 className={styles.medievalsharp}>Atributos do NPC </h3>
+                    <p>{npcid}</p>
+                    {user?.id === playersid[0] ?
+                      <div style={{ display: 'flex', flexDirection: 'row' }} >
+                        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                          <div>
+                            Seu level:
+                            <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.level} onChange={(e) => {
 
-                              const updatedUser = { ...statsuser };
-
-
-                              updatedUser.level = parseInt(e.target.value, 10) || 0;
-
-                              setStatsUser(updatedUser);
-
-                              updateNpcs()
+                                const updatedUser = { ...statsuser };
 
 
+                                updatedUser.level = parseInt(e.target.value, 10) || 0;
 
-                            }} />
-                        </div>
-                        <div>
-                          Experiência:
-                          <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.experience} onChange={(e) => {
+                                setStatsUser(updatedUser);
 
-                              const updatedUser = { ...statsuser };
+                                updateNpcs()
 
 
-                              updatedUser.experience = parseInt(e.target.value, 10) || 0;
 
-
-                              setStatsUser(updatedUser);
-
-                              updateNpcs()
-                            }} />
-
-
-                        </div>
-                        <div>
-                          Vida atual e máxima:  <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.health} onChange={(e) => {
-
-                              const updatedUser = { ...statsuser };
-
-
-                              updatedUser.health = parseInt(e.target.value, 10) || 0;
-
-
-                              setStatsUser(updatedUser);
-
-                              updateNpcs()
-                            }} />/ <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.maxHealth} onChange={(e) => {
-
-                              const updatedUser = { ...statsuser };
-
-
-                              updatedUser.maxHealth = parseInt(e.target.value, 10) || 0;
-
-
-                              setStatsUser(updatedUser);
-
-                              updateNpcs()
-                            }} />
-
-                          <input style={{ width: '100%', maxWidth: '150px' }} type="range" id='barh' min="0" max={statsuser.maxHealth} value={statsuser.health} readOnly />
-
-                        </div>
-                        <div>
-                          Mana atual e máxima:  <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.mana} onChange={(e) => {
-
-                              const updatedUser = { ...statsuser };
-
-
-                              updatedUser.mana = parseInt(e.target.value, 10) || 0;
-
-
-                              setStatsUser(updatedUser);
-
-                              updateNpcs()
-                            }} />/ <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.maxMana} onChange={(e) => {
-
-                              const updatedUser = { ...statsuser };
-
-
-                              updatedUser.maxMana = parseInt(e.target.value, 10) || 0;
-
-
-                              setStatsUser(updatedUser);
-
-                              updateNpcs()
-                            }} />
-                          <input style={{ width: '100%', maxWidth: '150px' }} type="range" id='barm' min="0" max={statsuser.maxMana} value={statsuser.mana} readOnly />
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', marginBlock: '5px', width: '60%', gap: '5px', border: '1px solid black', padding: '5px', borderRadius: '5px' }} >
-                          Tomar dano
-                          <input type='text' style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} placeholder='Valor do dano' value={takedmg} onChange={(e) => {
-                            setTakeDmg(e.target.value)
-                            updateNpcs()
-                          }} />
-
-                          <button onClick={() => {
-                            const updatedUser = { ...statsuser };
-                            updatedUser.health -= (parseInt(takedmg));
-                            if (updatedUser.health < 0) {
-                              updatedUser.health = 0;
-                            }
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser);
-                            setTakeDmg('')
-
-                          }} className={styles.pushable}>
-                            <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
-                            <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
-                              Acionar dano tomado
-                            </span>
-                          </button>
-
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', marginBlock: '5px', width: '60%', gap: '5px', border: '1px solid black', padding: '5px', borderRadius: '5px' }} >
-                          Gastar mana
-                          <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} placeholder='Valor do dano' value={takemana} onChange={(e) => {
-                            setTakeMana(e.target.value)
-                          }} />
-                          <button onClick={() => {
-                            const updatedUser = { ...statsuser };
-                            updatedUser.mana -= (parseInt(takemana));
-                            if (updatedUser.mana < 0) {
-                              updatedUser.mana = 0;
-                            }
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser);
-                            setTakeMana('')
-                            updateNpcs()
-
-                          }} className={styles.pushable}>
-                            <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
-                            <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
-                              Acionar gasto de mana
-                            </span>
-                          </button>
-
-                        </div>
-
-                      </div>
-                      <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-                        <div style={{ width: '190px', justifyContent: 'space-between', display: 'flex', marginBottom: '5px' }}>
-                          <div style={{ maxWidth: '70px', fontSize: '10px' }}>
-                            Nome
+                              }} />
                           </div>
-                          <div style={{ maxWidth: '70px', fontSize: '10px' }}>
-                            Valor
+                          <div>
+                            Experiência:
+                            <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.experience} onChange={(e) => {
+
+                                const updatedUser = { ...statsuser };
+
+
+                                updatedUser.experience = parseInt(e.target.value, 10) || 0;
+
+
+                                setStatsUser(updatedUser);
+
+                                updateNpcs()
+                              }} />
+
+
                           </div>
-                          <div style={{ maxWidth: '75px', fontSize: '10px' }} >
-                            (Valor + Equipamentos)
+                          <div>
+                            Vida atual e máxima:  <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.health} onChange={(e) => {
+
+                                const updatedUser = { ...statsuser };
+
+
+                                updatedUser.health = parseInt(e.target.value, 10) || 0;
+
+
+                                setStatsUser(updatedUser);
+
+                                updateNpcs()
+                              }} />/ <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.maxHealth} onChange={(e) => {
+
+                                const updatedUser = { ...statsuser };
+
+
+                                updatedUser.maxHealth = parseInt(e.target.value, 10) || 0;
+
+
+                                setStatsUser(updatedUser);
+
+                                updateNpcs()
+                              }} />
+
+                            <input style={{ width: '100%', maxWidth: '150px' }} type="range" id='barh' min="0" max={statsuser.maxHealth} value={statsuser.health} readOnly />
+
                           </div>
-                        </div>
-                        <div style={{ width: '190px', justifyContent: 'space-between', display: 'flex' }}>
-                          Força:
-                          <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.strength} onChange={(e) => {
+                          <div>
+                            Mana atual e máxima:  <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.mana} onChange={(e) => {
 
-                              const updatedUser = { ...statsuser };
+                                const updatedUser = { ...statsuser };
 
 
-                              updatedUser.strength = parseInt(e.target.value, 10) || 0;
+                                updatedUser.mana = parseInt(e.target.value, 10) || 0;
 
 
-                              setStatsUser(updatedUser);
+                                setStatsUser(updatedUser);
 
+                                updateNpcs()
+                              }} />/ <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.maxMana} onChange={(e) => {
+
+                                const updatedUser = { ...statsuser };
+
+
+                                updatedUser.maxMana = parseInt(e.target.value, 10) || 0;
+
+
+                                setStatsUser(updatedUser);
+
+                                updateNpcs()
+                              }} />
+                            <input style={{ width: '100%', maxWidth: '150px' }} type="range" id='barm' min="0" max={statsuser.maxMana} value={statsuser.mana} readOnly />
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', marginBlock: '5px', width: '60%', gap: '5px', border: '1px solid black', padding: '5px', borderRadius: '5px' }} >
+                            Tomar dano
+                            <input type='text' style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} placeholder='Valor do dano' value={takedmg} onChange={(e) => {
+                              setTakeDmg(e.target.value)
                               updateNpcs()
-                            }} /> ({statsuser.strength + statsuserequip.strength})
-                        </div>
-                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
-                          Destreza:
-                          <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.dexterity}
-                            onChange={(e) => {
+                            }} />
+
+                            <button onClick={() => {
                               const updatedUser = { ...statsuser };
-                              updatedUser.dexterity = parseInt(e.target.value, 10) || 0;
+                              updatedUser.health -= (parseInt(takedmg));
+                              if (updatedUser.health < 0) {
+                                updatedUser.health = 0;
+                              }
                               setStatsUser(updatedUser);
-
-                              updateNpcs()
-                            }}
-                          />
-                          ({statsuser.dexterity + statsuserequip.dexterity})
-                        </div>
-                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
-                          Constituição:
-                          <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.constitution}
-                            onChange={(e) => {
-                              const updatedUser = { ...statsuser };
-                              updatedUser.constitution = parseInt(e.target.value, 10) || 0;
-                              setStatsUser(updatedUser);
-
-                              updateNpcs()
-                            }}
-                          />
-                          ({statsuser.constitution + statsuserequip.constitution})
-                        </div>
-                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
-                          Inteligência:
-                          <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.intelligence}
-                            onChange={(e) => {
-                              const updatedUser = { ...statsuser };
-                              updatedUser.intelligence = parseInt(e.target.value, 10) || 0;
-                              setStatsUser(updatedUser);
-
-                              updateNpcs()
-                            }}
-                          />
-                          ({statsuser.intelligence + statsuserequip.intelligence})
-                        </div>
-                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
-                          Sabedoria:
-                          <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.wisdom}
-                            onChange={(e) => {
-                              const updatedUser = { ...statsuser };
-                              updatedUser.wisdom = parseInt(e.target.value, 10) || 0;
-                              setStatsUser(updatedUser);
-
-                              updateNpcs()
-                            }}
-                          />
-                          ({statsuser.wisdom + statsuserequip.wisdom})
-                        </div>
-                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
-                          Carisma:
-                          <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.charisma}
-                            onChange={(e) => {
-                              const updatedUser = { ...statsuser };
-                              updatedUser.charisma = parseInt(e.target.value, 10) || 0;
-                              setStatsUser(updatedUser);
-
-                              updateNpcs()
-                            }}
-                          />
-                          ({statsuser.charisma + statsuserequip.charisma})
-                        </div>
-                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
-                          Atk:
-                          <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.atk}
-                            onChange={(e) => {
-                              const updatedUser = { ...statsuser };
-                              updatedUser.atk = parseInt(e.target.value, 10) || 0;
-                              setStatsUser(updatedUser);
-
-                              updateNpcs()
-                            }}
-                          />
-                          ({statsuser.atk + statsuserequip.atk})
-                        </div>
-                        <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
-                          Def:
-                          <input
-                            style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
-                            value={statsuser.def}
-                            onChange={(e) => {
-                              const updatedUser = { ...statsuser };
-                              updatedUser.def = parseInt(e.target.value, 10) || 0;
-                              setStatsUser(updatedUser);
-                              updateNpcs()
-                            }}
-                          />
-                          ({statsuser.def + statsuserequip.def})
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }} >
-
-                          <button type='button' onClick={() => {
-                            const updatedUser = { ...statsuser };
-                            updatedUser.health = updatedUser.maxHealth;
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser);
-                            updateNpcs()
-                          }} className={styles.pushable}>
-                            <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
-                            <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
-                              Encher Vida
-                            </span>
-                          </button>
-                          <button type='button' onClick={() => {
-                            const updatedUser = { ...statsuser };
-                            updatedUser.mana = updatedUser.maxMana;
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser);
-                            updateNpcs()
-                          }} className={styles.pushable}>
-                            <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
-                            <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
-                              Encher Mana
-                            </span>
-                          </button>
-                          <div style={{ display: 'flex' }} >
-
-                            <button type='button' onClick={() => {
-                              updateNpcs1();
-
+                              handleUpdateStats(updatedUser);
+                              setTakeDmg('')
 
                             }} className={styles.pushable}>
-                              <span style={{ fontSize: '10px', width: '116px' }} className={styles.edge}></span>
-                              <span style={{ fontSize: '12px', width: '90px', color: disableUpdate ? '#D70040' : 'white' }} className={styles.front}>
-                                Salvar Informações
+                              <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
+                              <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
+                                Acionar dano tomado
                               </span>
                             </button>
-                            <div style={{ position: 'relative', left: '10px', color: '#D70040' }} >
 
-                              {disableUpdate ? <KeyboardBackspaceIcon /> : null}
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', marginBlock: '5px', width: '60%', gap: '5px', border: '1px solid black', padding: '5px', borderRadius: '5px' }} >
+                            Gastar mana
+                            <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} placeholder='Valor do dano' value={takemana} onChange={(e) => {
+                              setTakeMana(e.target.value)
+                            }} />
+                            <button onClick={() => {
+                              const updatedUser = { ...statsuser };
+                              updatedUser.mana -= (parseInt(takemana));
+                              if (updatedUser.mana < 0) {
+                                updatedUser.mana = 0;
+                              }
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
+                              setTakeMana('')
+                              updateNpcs()
+
+                            }} className={styles.pushable}>
+                              <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
+                              <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
+                                Acionar gasto de mana
+                              </span>
+                            </button>
+
+                          </div>
+
+                        </div>
+                        <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ width: '190px', justifyContent: 'space-between', display: 'flex', marginBottom: '5px' }}>
+                            <div style={{ maxWidth: '70px', fontSize: '10px' }}>
+                              Nome
+                            </div>
+                            <div style={{ maxWidth: '70px', fontSize: '10px' }}>
+                              Valor
+                            </div>
+                            <div style={{ maxWidth: '75px', fontSize: '10px' }} >
+                              (Valor + Equipamentos)
+                            </div>
+                          </div>
+                          <div style={{ width: '190px', justifyContent: 'space-between', display: 'flex' }}>
+                            Força:
+                            <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.strength} onChange={(e) => {
+
+                                const updatedUser = { ...statsuser };
+
+
+                                updatedUser.strength = parseInt(e.target.value, 10) || 0;
+
+
+                                setStatsUser(updatedUser);
+
+                                updateNpcs()
+                              }} /> ({statsuser.strength + statsuserequip.strength})
+                          </div>
+                          <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
+                            Destreza:
+                            <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.dexterity}
+                              onChange={(e) => {
+                                const updatedUser = { ...statsuser };
+                                updatedUser.dexterity = parseInt(e.target.value, 10) || 0;
+                                setStatsUser(updatedUser);
+
+                                updateNpcs()
+                              }}
+                            />
+                            ({statsuser.dexterity + statsuserequip.dexterity})
+                          </div>
+                          <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
+                            Constituição:
+                            <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.constitution}
+                              onChange={(e) => {
+                                const updatedUser = { ...statsuser };
+                                updatedUser.constitution = parseInt(e.target.value, 10) || 0;
+                                setStatsUser(updatedUser);
+
+                                updateNpcs()
+                              }}
+                            />
+                            ({statsuser.constitution + statsuserequip.constitution})
+                          </div>
+                          <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
+                            Inteligência:
+                            <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.intelligence}
+                              onChange={(e) => {
+                                const updatedUser = { ...statsuser };
+                                updatedUser.intelligence = parseInt(e.target.value, 10) || 0;
+                                setStatsUser(updatedUser);
+
+                                updateNpcs()
+                              }}
+                            />
+                            ({statsuser.intelligence + statsuserequip.intelligence})
+                          </div>
+                          <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
+                            Sabedoria:
+                            <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.wisdom}
+                              onChange={(e) => {
+                                const updatedUser = { ...statsuser };
+                                updatedUser.wisdom = parseInt(e.target.value, 10) || 0;
+                                setStatsUser(updatedUser);
+
+                                updateNpcs()
+                              }}
+                            />
+                            ({statsuser.wisdom + statsuserequip.wisdom})
+                          </div>
+                          <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
+                            Carisma:
+                            <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.charisma}
+                              onChange={(e) => {
+                                const updatedUser = { ...statsuser };
+                                updatedUser.charisma = parseInt(e.target.value, 10) || 0;
+                                setStatsUser(updatedUser);
+
+                                updateNpcs()
+                              }}
+                            />
+                            ({statsuser.charisma + statsuserequip.charisma})
+                          </div>
+                          <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
+                            Atk:
+                            <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.atk}
+                              onChange={(e) => {
+                                const updatedUser = { ...statsuser };
+                                updatedUser.atk = parseInt(e.target.value, 10) || 0;
+                                setStatsUser(updatedUser);
+
+                                updateNpcs()
+                              }}
+                            />
+                            ({statsuser.atk + statsuserequip.atk})
+                          </div>
+                          <div style={{ width: '100%', justifyContent: 'space-between', display: 'flex' }}>
+                            Def:
+                            <input
+                              style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                              value={statsuser.def}
+                              onChange={(e) => {
+                                const updatedUser = { ...statsuser };
+                                updatedUser.def = parseInt(e.target.value, 10) || 0;
+                                setStatsUser(updatedUser);
+                                updateNpcs()
+                              }}
+                            />
+                            ({statsuser.def + statsuserequip.def})
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }} >
+
+                            <button type='button' onClick={() => {
+                              const updatedUser = { ...statsuser };
+                              updatedUser.health = updatedUser.maxHealth;
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
+                              updateNpcs()
+                            }} className={styles.pushable}>
+                              <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
+                              <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
+                                Encher Vida
+                              </span>
+                            </button>
+                            <button type='button' onClick={() => {
+                              const updatedUser = { ...statsuser };
+                              updatedUser.mana = updatedUser.maxMana;
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser);
+                              updateNpcs()
+                            }} className={styles.pushable}>
+                              <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
+                              <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
+                                Encher Mana
+                              </span>
+                            </button>
+                            <div style={{ display: 'flex' }} >
+
+                              <button  style={{display:ReqKeeper ? 'none' : 'flex'}} type='button' onClick={() => {
+                                updateNpcs1();
+                                setReqKeeper(true);
+
+
+                              }} className={styles.pushable}>
+                                <span style={{ fontSize: '10px', width: '116px' }} className={styles.edge}></span>
+                                <span style={{ fontSize: '12px', width: '90px', color: disableUpdate ? '#D70040' : 'white' }} className={styles.front}>
+                                  Salvar Informações
+                                </span>
+                              </button>
+                              <div style={{ position: 'relative', left: '10px', color: '#D70040' }} >
+
+                                {disableUpdate ? <KeyboardBackspaceIcon /> : null}
+                              </div>
                             </div>
                           </div>
                         </div>
+
+
+                      </div> : null}
+
+
+                  </div>
+                  {user?.id === playersid[0] ?
+                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
+                      <div style={{ display: 'flex', gap: '20px' }} >
+                        {statsuser.earing?.atk ?
+                          <div className={styles.slots} onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            const index = items.findIndex(item => item.name === statsuser.earing?.name);
+                            if (index !== -1) {
+
+                              updatedUser.earing = '';
+                              handleAddItem2(index);
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser)
+
+                              updateNpcs()
+
+
+                            } else {
+                              console.log('Item not found!');
+                            }
+
+                          }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                            <div> {statsuser.earing?.name} </div>
+                            <img src={statsuser?.earing?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                              <div  >
+                                <CloseFullscreenIcon />{statsuser.earing?.atk}
+                              </div>
+                              <div>
+                                <ShieldIcon />{statsuser.earing?.def}
+                              </div>
+
+                            </div>
+                            <div style={{ display: 'flex', alignSelf: 'center' }} >
+                              brinco
+                            </div>
+                          </div> :
+                          <div className={styles.slots} style={{
+                            width: '50px', height: '50px',
+                            display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          }} >
+                            Brinco </div>}
+
+
+                        {statsuser.head?.atk ?
+                          <div className={styles.slots} onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            const index = items.findIndex(item => item.name === statsuser.head?.name);
+                            if (index !== -1) {
+
+                              updatedUser.head = '';
+                              handleAddItem2(index);
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser)
+                              updateNpcs()
+                            } else {
+                              console.log('Item not found!');
+                            }
+
+                          }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                            <div> {statsuser.head?.name} </div>
+                            <img src={statsuser?.head?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                              <div  >
+                                <CloseFullscreenIcon />{statsuser.head?.atk}
+                              </div>
+                              <div>
+                                <ShieldIcon />{statsuser.head?.def}
+                              </div>
+
+                            </div>
+                            <div style={{ display: 'flex', alignSelf: 'center' }} >
+                              Capacete
+                            </div>
+                          </div> :
+                          <div className={styles.slots} style={{
+                            width: '50px', height: '50px',
+                            display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          }} >
+                            Capacete </div>}
+
                       </div>
+                      <div style={{ display: 'flex', gap: '20px' }} >
+
+                        {statsuser.lefthand?.atk ?
+                          <div className={styles.slots} onClick={() => {
+
+                            const updatedUser = { ...statsuser };
+                            const index = items.findIndex(item => item.name === statsuser.lefthand?.name);
+                            if (index !== -1) {
+
+
+
+                              updatedUser.lefthand = '';
+                              handleAddItem2(index);
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser)
+                              handleUpdateStats(updatedUser)
+                              console.log(updatedUser)
+                              updateNpcs()
+                            } else {
+                              console.log('Item not found!');
+                            }
+
+                          }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                            <div> {statsuser.lefthand?.name} </div>
+                            <img src={statsuser?.lefthand?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                              <div  >
+                                <CloseFullscreenIcon />{statsuser.lefthand?.atk}
+                              </div>
+                              <div>
+                                <ShieldIcon />{statsuser.lefthand?.def}
+                              </div>
+
+                            </div>
+                            <div style={{ display: 'flex', alignSelf: 'center' }} >
+                              Mão esquerda
+                            </div>
+                          </div> :
+                          <div className={styles.slots} style={{
+                            width: '50px', height: '50px',
+                            display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          }} >
+                            Mão esquerda </div>}
+
+
+                        {statsuser.chest?.atk ?
+                          <div className={styles.slots} onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            const index = items.findIndex(item => item.name === statsuser.chest?.name);
+                            if (index !== -1) {
+
+                              updatedUser.chest = '';
+                              handleAddItem2(index);
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser)
+                              updateNpcs()
+                            } else {
+                              console.log('Item not found!');
+                            }
+
+                          }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                            <div> {statsuser.chest?.name} </div>
+                            <img src={statsuser?.chest?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                              <div  >
+                                <CloseFullscreenIcon />{statsuser.chest?.atk}
+                              </div>
+                              <div>
+                                <ShieldIcon />{statsuser.chest?.def}
+                              </div>
+
+                            </div>
+                            <div style={{ display: 'flex', alignSelf: 'center' }} >
+                              Tronco
+                            </div>
+                          </div> :
+                          <div className={styles.slots} style={{
+                            width: '50px', height: '50px',
+                            display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          }} >
+                            Tronco </div>}
+
+
+
+                        {statsuser.righthand?.atk ?
+                          <div className={styles.slots} onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            const index = items.findIndex(item => item.name === statsuser.righthand?.name);
+                            if (index !== -1) {
+
+                              updatedUser.righthand = '';
+                              handleAddItem2(index);
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser)
+                              updateNpcs()
+                            } else {
+                              console.log('Item not found!');
+                            }
+
+                          }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                            <div> {statsuser.righthand?.name} </div>
+                            <img src={statsuser?.righthand?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                              <div  >
+                                <CloseFullscreenIcon />{statsuser.righthand?.atk}
+                              </div>
+                              <div>
+                                <ShieldIcon />{statsuser.righthand?.def}
+                              </div>
+
+                            </div>
+                            <div style={{ display: 'flex', alignSelf: 'center' }} >
+                              Mão direita
+                            </div>
+                          </div> :
+                          <div className={styles.slots} style={{
+                            width: '50px', height: '50px',
+                            display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          }} >
+                            Mão direita </div>}
+                      </div>
+                      <div style={{ display: 'flex', gap: '20px' }} >
+
+                        {statsuser.ringleft?.atk ?
+                          <div className={styles.slots} onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            const index = items.findIndex(item => item.name === statsuser.ringleft?.name);
+                            if (index !== -1) {
+
+                              updatedUser.ringleft = '';
+                              handleAddItem2(index);
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser)
+                              updateNpcs()
+                            } else {
+                              console.log('Item not found!');
+                            }
+
+                          }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                            <div> {statsuser.ringleft?.name} </div>
+                            <img src={statsuser?.ringleft?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                              <div  >
+                                <CloseFullscreenIcon />{statsuser.ringleft?.atk}
+                              </div>
+                              <div>
+                                <ShieldIcon />{statsuser.ringleft?.def}
+                              </div>
+
+                            </div>
+                            <div style={{ display: 'flex', alignSelf: 'center' }} >
+                              Anel esquerdo
+                            </div>
+                          </div> :
+                          <div className={styles.slots} style={{
+                            width: '50px', height: '50px',
+                            display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          }} >
+                            Anel esquerdo </div>}
+
+
+
+                        {statsuser.pants?.atk ?
+                          <div className={styles.slots} onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            const index = items.findIndex(item => item.name === statsuser.pants?.name);
+                            if (index !== -1) {
+                              updatedUser.pants = '';
+                              handleAddItem2(index);
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser)
+                              updateNpcs()
+                            } else {
+                              console.log('Item not found!');
+                            }
+
+                          }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                            <div> {statsuser.pants?.name} </div>
+                            <img src={statsuser?.pants?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                              <div  >
+                                <CloseFullscreenIcon />{statsuser.pants?.atk}
+                              </div>
+                              <div>
+                                <ShieldIcon />{statsuser.pants?.def}
+                              </div>
+
+                            </div>
+                            <div style={{ display: 'flex', alignSelf: 'center' }} >
+                              Calça
+                            </div>
+                          </div> :
+                          <div className={styles.slots} style={{
+                            width: '50px', height: '50px',
+                            display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          }} >
+                            Calça </div>}
+
+
+                        {statsuser.ringright?.atk ?
+                          <div className={styles.slots} onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            const index = items.findIndex(item => item.name === statsuser.ringright?.name);
+                            if (index !== -1) {
+
+                              updatedUser.ringright = '';
+                              handleAddItem2(index);
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser)
+                              updateNpcs()
+
+                            } else {
+                              console.log('Item not found!');
+                            }
+
+                          }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                            <div> {statsuser.ringright?.name} </div>
+                            <img src={statsuser?.ringright?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                              <div  >
+                                <CloseFullscreenIcon />{statsuser.ringright?.atk}
+                              </div>
+                              <div>
+                                <ShieldIcon />{statsuser.ringright?.def}
+                              </div>
+
+                            </div>
+                            <div style={{ display: 'flex', alignSelf: 'center' }} >
+                              Anel direito
+                            </div>
+                          </div> :
+                          <div className={styles.slots} style={{
+                            width: '50px', height: '50px',
+                            display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          }} >
+                            Anel direito </div>}
+                      </div>
+                      <div style={{ display: 'flex', gap: '20px' }} >
+
+                        {statsuser.othersleft?.atk ?
+                          <div className={styles.slots} onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            const index = items.findIndex(item => item.name === statsuser.othersleft?.name);
+                            if (index !== -1) {
+
+                              updatedUser.othersleft = '';
+                              handleAddItem2(index);
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser)
+                              updateNpcs()
+                            } else {
+                              console.log('Item not found!');
+                            }
+
+                          }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                            <div> {statsuser.othersleft?.name} </div>
+                            <img src={statsuser?.othersleft?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                              <div  >
+                                <CloseFullscreenIcon />{statsuser.othersleft?.atk}
+                              </div>
+                              <div>
+                                <ShieldIcon />{statsuser.othersleft?.def}
+                              </div>
+
+                            </div>
+                            <div style={{ display: 'flex', alignSelf: 'center' }} >
+                              Utensilios esquerdo
+                            </div>
+                          </div> :
+                          <div className={styles.slots} style={{
+                            width: '50px', height: '50px',
+                            display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          }} >
+                            Utensilios esquerdo </div>}
+
+
+
+
+                        {statsuser.shoes?.atk ?
+                          <div className={styles.slots} onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            const index = items.findIndex(item => item.name === statsuser.shoes?.name);
+                            if (index !== -1) {
+
+                              updatedUser.shoes = '';
+                              handleAddItem2(index);
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser)
+                              updateNpcs()
+
+                            } else {
+                              console.log('Item not found!');
+                            }
+
+                          }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                            <div> {statsuser.shoes?.name} </div>
+                            <img src={statsuser?.shoes?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                              <div  >
+                                <CloseFullscreenIcon />{statsuser.shoes?.atk}
+                              </div>
+                              <div>
+                                <ShieldIcon />{statsuser.shoes?.def}
+                              </div>
+
+                            </div>
+                            <div style={{ display: 'flex', alignSelf: 'center' }} >
+                              Sapato
+                            </div>
+                          </div> :
+                          <div className={styles.slots} style={{
+                            width: '50px', height: '50px',
+                            display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          }} >
+                            Sapato </div>}
+
+
+                        {statsuser.othersright?.atk ?
+                          <div className={styles.slots} onClick={() => {
+                            const updatedUser = { ...statsuser };
+                            const index = items.findIndex(item => item.name === statsuser.othersright?.name);
+                            if (index !== -1) {
+
+                              updatedUser.othersright = '';
+                              handleAddItem2(index);
+                              setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser)
+                              updateNpcs()
+
+                            } else {
+                              console.log('Item not found!');
+                            }
+
+                          }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
+                            <div> {statsuser.othersright?.name} </div>
+                            <img src={statsuser?.othersright?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                            <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
+                              <div  >
+                                <CloseFullscreenIcon />{statsuser.othersright?.atk}
+                              </div>
+                              <div>
+                                <ShieldIcon />{statsuser.othersright?.def}
+                              </div>
+
+                            </div>
+                            <div style={{ display: 'flex', alignSelf: 'center' }} >
+                              Utensilios direito
+                            </div>
+                          </div> :
+                          <div className={styles.slots} style={{
+                            width: '50px', height: '50px',
+                            display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
+                          }} >
+                            Utensilios direito </div>}
+                      </div>
+                    </div> : null}
+                  {user?.id === playersid[0] ?
+                    <div className={styles.rpgdiv1} style={{ position: 'absolute', top: '1400px', maxWidth: '1000px' }} >
+                      <h1 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > SEU INVENTARIO
+                        ({inventory?.length || 0} Items)</h1>
+                      <div>
+
+                        <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
+                          if (items.length > 0) {
+
+                            updateInventory()
+                          } else {
+                            alert('Por favor, crie um item primeiro, abaixo')
+                          }
+                        }}>Adicionar um item no inventario aleatoriamente</button>
+                        <select id="itemSelect" onChange={handleAddItem}>
+                          <option value="">Adicione um item</option>
+                          {items?.map((item, index) => (
+                            <option key={index} value={index}>{item.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className={styles.customScrollDiv} style={{ height: 'auto', width: '50vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
+                        <div style={{ minWidth: '1600px', display: 'flex', gap: '25px', flexWrap: 'wrap', transform: 'scaleY(-1)', position: 'relative', bottom: '10px', marginTop: '20px' }} >
+                          {inventory?.map((item, index) => (
+                            <div
+                              className={styles.slotsinv}
+                              style={{ maxHeight: '350px', maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
+                              {item?.item?.url ? (
+                                <div onClick={() => {
+                                  if (item?.item?.canequip) {
+                                    const types = item?.item?.typewear;
+                                    const updatedUser = { ...statsuser };
+                                    if (updatedUser[types]) {
+                                      alert('Desequipe primeiro o item!')
+                                    } else {
+                                      updatedUser[types] = inventory[index]?.item;
+                                      handleUpdateQuantity2(index, -1, updatedUser);
+                                      setStatsUser(updatedUser);
+                                      updateNpcs()
+                                    }
+                                  }
+                                }} style={{ display: 'flex', justifyContent: 'center' }} >
+                                  <img src={item?.item?.url} alt="Gear" style={{ maxWidth: '100px', height: 'auto' }} />
+
+                                </div>
+                              ) : null}
+
+                              <div>
+                                {item?.item?.name} (<span style={{ fontWeight: 'bold', fontSize: '22px' }}  >{item?.quantity} </span>Unidade(s))
+                              </div>
+                              {item?.item?.canequip ?
+                                <div>
+                                  <div>
+                                    <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                                      {item?.item?.typewear}
+                                    </span>
+
+                                  </div>
+                                  <div>
+                                    <CloseFullscreenIcon />  <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                                      {item?.item?.atk}
+                                    </span> de ATK
+                                  </div>
+                                  <div  >
+                                    <ShieldIcon /> <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                                      {item?.item?.def}
+                                    </span> de DEF
+                                  </div>
+                                </div> : null}
+                              {item?.item?.cantrade ?
+                                <div>
+                                  <div>
+                                    VALOR:  &nbsp;
+
+                                    <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                                      {item?.item?.value}
+                                    </span>
+                                    <PiCoinsBold size={20} color='rgb(133, 72, 7)' />
+                                  </div>
+                                  <div>
+                                    Peso:  &nbsp;
+
+                                    <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
+                                      {item?.item?.weight}
+                                    </span>
+                                    <FitnessCenterIcon size={20} color='rgb(133, 72, 7)' />
+                                  </div>
+
+
+                                </div> : null}
+
+                              <button onClick={() => handleUpdateQuantity(index, -item?.quantity)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
+                                Deletar
+                              </button>
+                              <div style={{ display: 'flex', gap: '5px' }}>
+                                <button onClick={() => handleUpdateQuantity(index, +1)} style={{ color: 'green', cursor: 'pointer' }}>
+                                  +1
+                                </button>
+                                <button onClick={() => handleUpdateQuantity(index, -1)} style={{ color: 'red', cursor: 'pointer' }}>
+                                  -1
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                      </div>
+
 
 
                     </div> : null}
 
-
                 </div>
-                {user?.id === playersid[0] ?
-                  <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
-                    <div style={{ display: 'flex', gap: '20px' }} >
-                      {statsuser.earing?.atk ?
-                        <div className={styles.slots} onClick={() => {
-                          const updatedUser = { ...statsuser };
-                          const index = items.findIndex(item => item.name === statsuser.earing?.name);
-                          if (index !== -1) {
 
-                            updatedUser.earing = '';
-                            handleAddItem2(index);
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser)
 
-                            updateNpcs()
 
+                : null}
 
-                          } else {
-                            console.log('Item not found!');
-                          }
-
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                          <div> {statsuser.earing?.name} </div>
-                          <img src={statsuser?.earing?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
-                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
-                            <div  >
-                              <CloseFullscreenIcon />{statsuser.earing?.atk}
-                            </div>
-                            <div>
-                              <ShieldIcon />{statsuser.earing?.def}
-                            </div>
-
-                          </div>
-                          <div style={{ display: 'flex', alignSelf: 'center' }} >
-                            brinco
-                          </div>
-                        </div> :
-                        <div className={styles.slots} style={{
-                          width: '50px', height: '50px',
-                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
-                        }} >
-                          Brinco </div>}
-
-
-                      {statsuser.head?.atk ?
-                        <div className={styles.slots} onClick={() => {
-                          const updatedUser = { ...statsuser };
-                          const index = items.findIndex(item => item.name === statsuser.head?.name);
-                          if (index !== -1) {
-
-                            updatedUser.head = '';
-                            handleAddItem2(index);
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser)
-                            updateNpcs()
-                          } else {
-                            console.log('Item not found!');
-                          }
-
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                          <div> {statsuser.head?.name} </div>
-                          <img src={statsuser?.head?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
-                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
-                            <div  >
-                              <CloseFullscreenIcon />{statsuser.head?.atk}
-                            </div>
-                            <div>
-                              <ShieldIcon />{statsuser.head?.def}
-                            </div>
-
-                          </div>
-                          <div style={{ display: 'flex', alignSelf: 'center' }} >
-                            Capacete
-                          </div>
-                        </div> :
-                        <div className={styles.slots} style={{
-                          width: '50px', height: '50px',
-                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
-                        }} >
-                          Capacete </div>}
-
-                    </div>
-                    <div style={{ display: 'flex', gap: '20px' }} >
-
-                      {statsuser.lefthand?.atk ?
-                        <div className={styles.slots} onClick={() => {
-
-                          const updatedUser = { ...statsuser };
-                          const index = items.findIndex(item => item.name === statsuser.lefthand?.name);
-                          if (index !== -1) {
-
-
-
-                            updatedUser.lefthand = '';
-                            handleAddItem2(index);
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser)
-                            handleUpdateStats(updatedUser)
-                            console.log(updatedUser)
-                            updateNpcs()
-                          } else {
-                            console.log('Item not found!');
-                          }
-
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                          <div> {statsuser.lefthand?.name} </div>
-                          <img src={statsuser?.lefthand?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
-                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
-                            <div  >
-                              <CloseFullscreenIcon />{statsuser.lefthand?.atk}
-                            </div>
-                            <div>
-                              <ShieldIcon />{statsuser.lefthand?.def}
-                            </div>
-
-                          </div>
-                          <div style={{ display: 'flex', alignSelf: 'center' }} >
-                            Mão esquerda
-                          </div>
-                        </div> :
-                        <div className={styles.slots} style={{
-                          width: '50px', height: '50px',
-                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
-                        }} >
-                          Mão esquerda </div>}
-
-
-                      {statsuser.chest?.atk ?
-                        <div className={styles.slots} onClick={() => {
-                          const updatedUser = { ...statsuser };
-                          const index = items.findIndex(item => item.name === statsuser.chest?.name);
-                          if (index !== -1) {
-
-                            updatedUser.chest = '';
-                            handleAddItem2(index);
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser)
-                            updateNpcs()
-                          } else {
-                            console.log('Item not found!');
-                          }
-
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                          <div> {statsuser.chest?.name} </div>
-                          <img src={statsuser?.chest?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
-                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
-                            <div  >
-                              <CloseFullscreenIcon />{statsuser.chest?.atk}
-                            </div>
-                            <div>
-                              <ShieldIcon />{statsuser.chest?.def}
-                            </div>
-
-                          </div>
-                          <div style={{ display: 'flex', alignSelf: 'center' }} >
-                            Tronco
-                          </div>
-                        </div> :
-                        <div className={styles.slots} style={{
-                          width: '50px', height: '50px',
-                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
-                        }} >
-                          Tronco </div>}
-
-
-
-                      {statsuser.righthand?.atk ?
-                        <div className={styles.slots} onClick={() => {
-                          const updatedUser = { ...statsuser };
-                          const index = items.findIndex(item => item.name === statsuser.righthand?.name);
-                          if (index !== -1) {
-
-                            updatedUser.righthand = '';
-                            handleAddItem2(index);
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser)
-                            updateNpcs()
-                          } else {
-                            console.log('Item not found!');
-                          }
-
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                          <div> {statsuser.righthand?.name} </div>
-                          <img src={statsuser?.righthand?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
-                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
-                            <div  >
-                              <CloseFullscreenIcon />{statsuser.righthand?.atk}
-                            </div>
-                            <div>
-                              <ShieldIcon />{statsuser.righthand?.def}
-                            </div>
-
-                          </div>
-                          <div style={{ display: 'flex', alignSelf: 'center' }} >
-                            Mão direita
-                          </div>
-                        </div> :
-                        <div className={styles.slots} style={{
-                          width: '50px', height: '50px',
-                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
-                        }} >
-                          Mão direita </div>}
-                    </div>
-                    <div style={{ display: 'flex', gap: '20px' }} >
-
-                      {statsuser.ringleft?.atk ?
-                        <div className={styles.slots} onClick={() => {
-                          const updatedUser = { ...statsuser };
-                          const index = items.findIndex(item => item.name === statsuser.ringleft?.name);
-                          if (index !== -1) {
-
-                            updatedUser.ringleft = '';
-                            handleAddItem2(index);
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser)
-                            updateNpcs()
-                          } else {
-                            console.log('Item not found!');
-                          }
-
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                          <div> {statsuser.ringleft?.name} </div>
-                          <img src={statsuser?.ringleft?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
-                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
-                            <div  >
-                              <CloseFullscreenIcon />{statsuser.ringleft?.atk}
-                            </div>
-                            <div>
-                              <ShieldIcon />{statsuser.ringleft?.def}
-                            </div>
-
-                          </div>
-                          <div style={{ display: 'flex', alignSelf: 'center' }} >
-                            Anel esquerdo
-                          </div>
-                        </div> :
-                        <div className={styles.slots} style={{
-                          width: '50px', height: '50px',
-                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
-                        }} >
-                          Anel esquerdo </div>}
-
-
-
-                      {statsuser.pants?.atk ?
-                        <div className={styles.slots} onClick={() => {
-                          const updatedUser = { ...statsuser };
-                          const index = items.findIndex(item => item.name === statsuser.pants?.name);
-                          if (index !== -1) {
-                            updatedUser.pants = '';
-                            handleAddItem2(index);
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser)
-                            updateNpcs()
-                          } else {
-                            console.log('Item not found!');
-                          }
-
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                          <div> {statsuser.pants?.name} </div>
-                          <img src={statsuser?.pants?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
-                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
-                            <div  >
-                              <CloseFullscreenIcon />{statsuser.pants?.atk}
-                            </div>
-                            <div>
-                              <ShieldIcon />{statsuser.pants?.def}
-                            </div>
-
-                          </div>
-                          <div style={{ display: 'flex', alignSelf: 'center' }} >
-                            Calça
-                          </div>
-                        </div> :
-                        <div className={styles.slots} style={{
-                          width: '50px', height: '50px',
-                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
-                        }} >
-                          Calça </div>}
-
-
-                      {statsuser.ringright?.atk ?
-                        <div className={styles.slots} onClick={() => {
-                          const updatedUser = { ...statsuser };
-                          const index = items.findIndex(item => item.name === statsuser.ringright?.name);
-                          if (index !== -1) {
-
-                            updatedUser.ringright = '';
-                            handleAddItem2(index);
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser)
-                            updateNpcs()
-
-                          } else {
-                            console.log('Item not found!');
-                          }
-
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                          <div> {statsuser.ringright?.name} </div>
-                          <img src={statsuser?.ringright?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
-                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
-                            <div  >
-                              <CloseFullscreenIcon />{statsuser.ringright?.atk}
-                            </div>
-                            <div>
-                              <ShieldIcon />{statsuser.ringright?.def}
-                            </div>
-
-                          </div>
-                          <div style={{ display: 'flex', alignSelf: 'center' }} >
-                            Anel direito
-                          </div>
-                        </div> :
-                        <div className={styles.slots} style={{
-                          width: '50px', height: '50px',
-                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
-                        }} >
-                          Anel direito </div>}
-                    </div>
-                    <div style={{ display: 'flex', gap: '20px' }} >
-
-                      {statsuser.othersleft?.atk ?
-                        <div className={styles.slots} onClick={() => {
-                          const updatedUser = { ...statsuser };
-                          const index = items.findIndex(item => item.name === statsuser.othersleft?.name);
-                          if (index !== -1) {
-
-                            updatedUser.othersleft = '';
-                            handleAddItem2(index);
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser)
-                            updateNpcs()
-                          } else {
-                            console.log('Item not found!');
-                          }
-
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                          <div> {statsuser.othersleft?.name} </div>
-                          <img src={statsuser?.othersleft?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
-                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
-                            <div  >
-                              <CloseFullscreenIcon />{statsuser.othersleft?.atk}
-                            </div>
-                            <div>
-                              <ShieldIcon />{statsuser.othersleft?.def}
-                            </div>
-
-                          </div>
-                          <div style={{ display: 'flex', alignSelf: 'center' }} >
-                            Utensilios esquerdo
-                          </div>
-                        </div> :
-                        <div className={styles.slots} style={{
-                          width: '50px', height: '50px',
-                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
-                        }} >
-                          Utensilios esquerdo </div>}
-
-
-
-
-                      {statsuser.shoes?.atk ?
-                        <div className={styles.slots} onClick={() => {
-                          const updatedUser = { ...statsuser };
-                          const index = items.findIndex(item => item.name === statsuser.shoes?.name);
-                          if (index !== -1) {
-
-                            updatedUser.shoes = '';
-                            handleAddItem2(index);
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser)
-                            updateNpcs()
-
-                          } else {
-                            console.log('Item not found!');
-                          }
-
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                          <div> {statsuser.shoes?.name} </div>
-                          <img src={statsuser?.shoes?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
-                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
-                            <div  >
-                              <CloseFullscreenIcon />{statsuser.shoes?.atk}
-                            </div>
-                            <div>
-                              <ShieldIcon />{statsuser.shoes?.def}
-                            </div>
-
-                          </div>
-                          <div style={{ display: 'flex', alignSelf: 'center' }} >
-                            Sapato
-                          </div>
-                        </div> :
-                        <div className={styles.slots} style={{
-                          width: '50px', height: '50px',
-                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
-                        }} >
-                          Sapato </div>}
-
-
-                      {statsuser.othersright?.atk ?
-                        <div className={styles.slots} onClick={() => {
-                          const updatedUser = { ...statsuser };
-                          const index = items.findIndex(item => item.name === statsuser.othersright?.name);
-                          if (index !== -1) {
-
-                            updatedUser.othersright = '';
-                            handleAddItem2(index);
-                            setStatsUser(updatedUser);
-                            handleUpdateStats(updatedUser)
-                            updateNpcs()
-
-                          } else {
-                            console.log('Item not found!');
-                          }
-
-                        }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                          <div> {statsuser.othersright?.name} </div>
-                          <img src={statsuser?.othersright?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
-                          <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
-                            <div  >
-                              <CloseFullscreenIcon />{statsuser.othersright?.atk}
-                            </div>
-                            <div>
-                              <ShieldIcon />{statsuser.othersright?.def}
-                            </div>
-
-                          </div>
-                          <div style={{ display: 'flex', alignSelf: 'center' }} >
-                            Utensilios direito
-                          </div>
-                        </div> :
-                        <div className={styles.slots} style={{
-                          width: '50px', height: '50px',
-                          display: 'flex', justifyContent: 'center', padding: '2px', fontSize: '12px'
-                        }} >
-                          Utensilios direito </div>}
-                    </div>
-                  </div> : null}
-                {user?.id === playersid[0] ?
-                  <div className={styles.rpgdiv1} style={{ position: 'absolute', top: '1400px', maxWidth: '1000px' }} >
-                    <h1 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > SEU INVENTARIO
-                      ({inventory?.length || 0} Items)</h1>
-                    <div>
-
-                      <button style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
-                        if (items.length > 0) {
-
-                          updateInventory()
-                        } else {
-                          alert('Por favor, crie um item primeiro, abaixo')
-                        }
-                      }}>Adicionar um item no inventario aleatoriamente</button>
-                      <select id="itemSelect" onChange={handleAddItem}>
-                        <option value="">Adicione um item</option>
-                        {items?.map((item, index) => (
-                          <option key={index} value={index}>{item.name}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className={styles.customScrollDiv} style={{ height: 'auto', width: '50vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
-                      <div style={{ minWidth: '1600px', display: 'flex', gap: '25px', flexWrap: 'wrap', transform: 'scaleY(-1)', position: 'relative', bottom: '10px', marginTop: '20px' }} >
-                        {inventory?.map((item, index) => (
-                          <div
-                            className={styles.slotsinv}
-                            style={{ maxHeight: '350px', maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
-                            {item?.item?.url ? (
-                              <div onClick={() => {
-                                if (item?.item?.canequip) {
-                                  const types = item?.item?.typewear;
-                                  const updatedUser = { ...statsuser };
-                                  if (updatedUser[types]) {
-                                    alert('Desequipe primeiro o item!')
-                                  } else {
-                                    updatedUser[types] = inventory[index]?.item;
-                                    handleUpdateQuantity2(index, -1, updatedUser);
-                                    setStatsUser(updatedUser);
-                                    updateNpcs()
-                                  }
-                                }
-                              }} style={{ display: 'flex', justifyContent: 'center' }} >
-                                <img src={item?.item?.url} alt="Gear" style={{ maxWidth: '100px', height: 'auto' }} />
-
-                              </div>
-                            ) : null}
-
-                            <div>
-                              {item?.item?.name} (<span style={{ fontWeight: 'bold', fontSize: '22px' }}  >{item?.quantity} </span>Unidade(s))
-                            </div>
-                            {item?.item?.canequip ?
-                              <div>
-                                <div>
-                                  <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                                    {item?.item?.typewear}
-                                  </span>
-
-                                </div>
-                                <div>
-                                  <CloseFullscreenIcon />  <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                                    {item?.item?.atk}
-                                  </span> de ATK
-                                </div>
-                                <div  >
-                                  <ShieldIcon /> <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                                    {item?.item?.def}
-                                  </span> de DEF
-                                </div>
-                              </div> : null}
-                            {item?.item?.cantrade ?
-                              <div>
-                                <div>
-                                  VALOR:  &nbsp;
-
-                                  <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                                    {item?.item?.value}
-                                  </span>
-                                  <PiCoinsBold size={20} color='rgb(133, 72, 7)' />
-                                </div>
-                                <div>
-                                  Peso:  &nbsp;
-
-                                  <span style={{ fontWeight: 'bold', fontSize: '22px' }}  >
-                                    {item?.item?.weight}
-                                  </span>
-                                  <FitnessCenterIcon size={20} color='rgb(133, 72, 7)' />
-                                </div>
-
-
-                              </div> : null}
-
-                            <button onClick={() => handleUpdateQuantity(index, -item?.quantity)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
-                              Deletar
-                            </button>
-                            <div style={{ display: 'flex', gap: '5px' }}>
-                              <button onClick={() => handleUpdateQuantity(index, +1)} style={{ color: 'green', cursor: 'pointer' }}>
-                                +1
-                              </button>
-                              <button onClick={() => handleUpdateQuantity(index, -1)} style={{ color: 'red', cursor: 'pointer' }}>
-                                -1
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                    </div>
-
-
-
-                  </div> : null}
-
-              </div>
             </div>
             :
             null
