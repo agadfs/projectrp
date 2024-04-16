@@ -12,6 +12,7 @@ import NpcCreate from '../components/npccreate';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 export default function SessionPage() {
+  const [cantupdate, setCantUpdate] = useState(false);
   const [images1, setImages1] = useState([]);
   const [images2, setImages2] = useState([]);
   const [images3, setImages3] = useState([]);
@@ -234,21 +235,6 @@ export default function SessionPage() {
 
     const interval = setInterval(() => {
       if (user.id) {
-        getChars()
-
-      } else {
-
-      }
-
-    }, 20000);
-
-    return () => clearInterval(interval);
-  }, [user]);
-
-  useEffect(() => {
-
-    const interval = setInterval(() => {
-      if (user.id) {
         setReqKeeper(false);
 
       } else {
@@ -464,10 +450,7 @@ export default function SessionPage() {
           getPlayers(data.players);
           setShowInfo(true);
           setPlayersid(data.players);
-          if (data.Npcs && looks.length === 0) {
-            getChars(data.Npcs)
 
-          }
 
 
         } else {
@@ -481,6 +464,19 @@ export default function SessionPage() {
     }
   }
 
+  useEffect(() => {
+    console.log(looks)
+    console.log(npcssession)
+    const timeout = setTimeout(() => {
+   
+      if (user.id && !cantupdate) {
+        getChars(npcssession);
+        setCantUpdate(true);
+      }
+    }, 1000);  
+  
+    return () => clearTimeout(timeout); 
+  }, [user, cantupdate, npcssession, looks]);
 
   async function updateSession(newData) {
 
@@ -1052,7 +1048,12 @@ export default function SessionPage() {
         const data = response.data;
         let newlook = { idofuser: data._id, thelooks: data.charCreate }
 
-        setLooks([...looks, newlook])
+        setLooks(prevLooks => {
+         
+          return [...prevLooks, newlook];
+        });
+        console.log([...looks, newlook])
+        
 
 
       }
@@ -1064,11 +1065,23 @@ export default function SessionPage() {
   function CharGet({ ownerId }) {
 
     let filterlooks = looks?.find(user => user.idofuser === ownerId)
+    
+    
     let headSliderimg;
     let torsoSliderimg;
     let lowerSliderimg;
 
     if (filterlooks) {
+      
+      if(filterlooks.thelooks[0] === null){
+        filterlooks.thelooks[0] = 1;
+      }
+      if(filterlooks.thelooks[1] === null){
+        filterlooks.thelooks[1] = 1;
+      }
+      if(filterlooks.thelooks[2] === null){
+        filterlooks.thelooks[2] = 1;
+      }
       const one = parseInt(filterlooks.thelooks[0])
       const two = parseInt(filterlooks.thelooks[1])
       const three = parseInt(filterlooks.thelooks[2])
@@ -2221,7 +2234,7 @@ export default function SessionPage() {
                         setTile(e.target.value)
                       }} />
                       <button onClick={() => {
-                        if (tile) {
+                        if (tile && inventory) {
 
                           AddPlayerToMap()
                         }
@@ -2428,6 +2441,7 @@ export default function SessionPage() {
                     </div>
                     :
                     <div
+                    key={player.npcmap.idtrack}
                       className={styles.gridPlayer}
                       style={{
                         backgroundImage: player.npcmap.Isnpc ? `url(${player.npcmap.NpcUrlPhoto})` : null,
