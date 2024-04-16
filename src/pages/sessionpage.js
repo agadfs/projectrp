@@ -164,7 +164,7 @@ export default function SessionPage() {
     }
     let posnpc = { npcmap: npcssession.find(player => player.ownerId === user?.id), tile }
     pos.push(posnpc)
-    console.log({ PlayersPos: pos })
+
     updateSession({ PlayersPos: pos })
     setTile('')
   }
@@ -465,8 +465,7 @@ export default function SessionPage() {
   }
 
   useEffect(() => {
-    console.log(looks)
-    console.log(npcssession)
+
     const timeout = setTimeout(() => {
    
       if (user.id && !cantupdate) {
@@ -1052,7 +1051,7 @@ export default function SessionPage() {
          
           return [...prevLooks, newlook];
         });
-        console.log([...looks, newlook])
+        
         
 
 
@@ -2651,7 +2650,7 @@ export default function SessionPage() {
 
                 <div style={{ display: 'flex', border: '1px solid black', marginTop: '10px' }} >
                   <p onClick={() => {
-                    console.log(playerlocation)
+                    
                   }} >Adicionar Npc no mapa</p>
                   <div>
                     Nome do NPC
@@ -3153,7 +3152,7 @@ export default function SessionPage() {
                               setStatsUser(updatedUser);
                               handleUpdateStats(updatedUser)
                               handleUpdateStats(updatedUser)
-                              console.log(updatedUser)
+                              
                               updateNpcs()
                             } else {
                               console.log('Item not found!');
