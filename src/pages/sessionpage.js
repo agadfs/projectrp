@@ -2283,8 +2283,16 @@ export default function SessionPage() {
                             Deletar Mapa Atual
                           </span>
                         </button>
+                       
+                        <button onClick={() => {
+                           updateSession({ PlayersPos: [] })
 
-
+                        }} className={styles.pushable}>
+                          <span className={styles.edge}></span>
+                          <span className={styles.front}>
+                            Limpar mapa
+                          </span>
+                        </button>
                         &nbsp;
                         <div> Escala do mapa: {scale}
                         </div>
