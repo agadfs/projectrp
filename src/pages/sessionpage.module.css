@@ -451,3 +451,20 @@ input[id="barh"]::-ms-tooltip {
 .pushable:focus:not(:focus-visible) {
   outline: none;
 }
+
+
+.rpgdiv3 {
+  border-width: 8px;
+  padding:5px; /* Largura da borda */
+  border-style: solid; /* Estilo da borda */
+  border-image-source: url('https://cdn.discordapp.com/attachments/643258663917715472/1229888250265468949/corobatido.png?ex=663151b1&is=661edcb1&hm=667cc6cf07ca58658709c02eae4c57382f8c45e202441075e77768c1de2c6775&'); 
+  border-image-slice: 4 4 4 4; 
+  background-color: rgb(173, 128, 61);
+  font-weight: bold;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+
+}

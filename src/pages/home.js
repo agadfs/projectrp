@@ -329,6 +329,9 @@ export default function Home() {
         <div>
           Usuários online procurando sessão: {userscountonline}
         </div>
+        <div style={{width:'62px', height:'62px'}} className={styles.rpgdiv3} >
+        
+        </div>
       </div>
 
       {user.id && sessions && userscount && userscountonline && !isLoading ?
