@@ -12,6 +12,10 @@ import NpcCreate from '../components/npccreate';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 export default function SessionPage() {
+  const [images1, setImages1] = useState([]);
+  const [images2, setImages2] = useState([]);
+  const [images3, setImages3] = useState([]);
+
   const [ReqKeeper, setReqKeeper] = useState(false);
   const [tile, setTile] = useState('');
   const [npcmap, setNpcMap] = useState({});
@@ -34,7 +38,7 @@ export default function SessionPage() {
   const [urlselectedmap, setUrlSelectedMap] = useState('');
   const [nameselectedmap, setNameSelectedMap] = useState('');
   const [imageWidth, setImageWidth] = useState(null);
-  const [tileselected, setTileSelected] = useState('');
+
   const gridItems = Array.from({ length: 4096 }); /* 64 x 64 */
   const [titulo, setTitulo] = useState('');
   const { sessionid } = useParams();
@@ -71,8 +75,8 @@ export default function SessionPage() {
   const [items, setItems] = useState();
   const [showinfo, setShowInfo] = useState(false);
   const [playerlocation, setPlayerLocation] = useState([
-
   ]);
+  const [looks, setLooks] = useState([])
   const [imgprev, setImgPrev] = useState('');
   const [statsuser, setStatsUser] = useState(
     {
@@ -164,11 +168,59 @@ export default function SessionPage() {
     setTile('')
   }
   useEffect(() => {
+    const importImages = async () => {
+      try {
+        const headImages = [];
+        for (let i = 1; i <= 3; i++) { 
+          const image = await import(`../components/head/head${i}.png`);
+          headImages.push(image.default);
+        }
+        setImages1(headImages);
+      } catch (error) {
+        console.error('Error importing images:', error);
+      }
+      
+     
+    };
+    const importImages1 = async () => {
+     
+      try {
+        const headImages = [];
+        for (let i = 1; i <= 3; i++) { 
+          const image = await import(`../components/torso/torso${i}.png`);
+          headImages.push(image.default);
+        }
+        setImages2(headImages);
+      } catch (error) {
+        console.error('Error importing images:', error);
+      }
+     
+    };
+    const importImages2 = async () => {
+     
+      try {
+        const headImages = [];
+        for (let i = 1; i <= 3; i++) { 
+          const image = await import(`../components/zlower/lower${i}.png`);
+          headImages.push(image.default);
+        }
+        setImages3(headImages);
+      } catch (error) {
+        console.error('Error importing images:', error);
+      }
+     
+    };
+
+    importImages();
+    importImages1();
+    importImages2();
+  }, []);
+  useEffect(() => {
 
     const interval = setInterval(() => {
       if (user.id) {
         getSession()
-
+        
       } else {
 
       }
@@ -177,6 +229,21 @@ export default function SessionPage() {
 
     return () => clearInterval(interval);
   }, [user, disableUpdate]);
+
+  useEffect(() => {
+
+    const interval = setInterval(() => {
+      if (user.id) {
+        getChars()
+
+      } else {
+
+      }
+
+    }, 20000);
+
+    return () => clearInterval(interval);
+  }, [user]);
 
   useEffect(() => {
 
@@ -213,7 +280,7 @@ export default function SessionPage() {
   async function deleteInventoryItem2(updateddata) {
     try {
       handleUpdateStats(updateddata);
-      
+
     } catch (error) {
       console.error('Error updating inventory:', error);
     }
@@ -348,11 +415,11 @@ export default function SessionPage() {
         }
       }
       if (JSON.stringify(playerlocation) !== JSON.stringify(olddata)) {
-      
+
         updateSession({ PlayersPos: updatedPlayerLocation });
-      
-     
-      } 
+
+
+      }
     }
   }, [user, playerlocation, npcssession]);
 
@@ -397,6 +464,10 @@ export default function SessionPage() {
           getPlayers(data.players);
           setShowInfo(true);
           setPlayersid(data.players);
+          if (data.Npcs && looks.length === 0) {
+            getChars(data.Npcs)
+
+          }
 
 
         } else {
@@ -570,9 +641,9 @@ export default function SessionPage() {
 
   useEffect(() => {
     if (user.id) {
-
-      getSession()
       getItems()
+      getSession()
+
     }
   }, [user])
 
@@ -711,7 +782,7 @@ export default function SessionPage() {
     const selectedId = event.target.value;
     handleAdd(selectedId)
     updateNpcs()
-   
+
 
   }
   function handleAddItem2(event) {
@@ -721,7 +792,7 @@ export default function SessionPage() {
 
   }
   const handleUpdateQuantity2 = (index, quantityChange, updateddata) => {
-    
+
     const updatedItems = inventory.map((item, itemIndex) => {
       if (itemIndex === index) {
         const newQuantity = item.quantity + quantityChange;
@@ -741,7 +812,7 @@ export default function SessionPage() {
     setInventory(updatedItems)
 
     deleteInventoryItem2(updatedItems, updateddata);
-    
+
 
 
   };
@@ -966,6 +1037,69 @@ export default function SessionPage() {
       return null;
     }
   }
+  function getChars(npcs) {
+    let chars = npcs?.filter(npc => npc.Isnpc === false);
+
+    chars?.forEach(async char => {
+
+      const response = await axios.get(`${urlrequest}/users/${char.ownerId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
+      if (response.data) {
+        const data = response.data;
+        let newlook = { idofuser: data._id, thelooks: data.charCreate }
+
+        setLooks([...looks, newlook])
+
+
+      }
+    });
+
+  }
+
+
+  function CharGet({ ownerId }) {
+
+    let filterlooks = looks?.find(user => user.idofuser === ownerId)
+    let headSliderimg;
+    let torsoSliderimg;
+    let lowerSliderimg;
+
+    if (filterlooks) {
+      const one = parseInt(filterlooks.thelooks[0])
+      const two = parseInt(filterlooks.thelooks[1])
+      const three = parseInt(filterlooks.thelooks[2])
+      headSliderimg = images1[one-1]
+      torsoSliderimg = images2[two-1]
+      lowerSliderimg = images3[three-1]
+  
+    }
+
+    return (
+      <div style={{ position: 'absolute', top: '25px', left: '16px' }} >
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}  >
+
+          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px' }}>
+            <img width={28} height={28} src={headSliderimg} alt={`head`} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-20px' }}>
+            <img width={28} height={28} src={torsoSliderimg} alt={`torso`} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+
+            <img width={28} height={28} src={lowerSliderimg} alt={`lower`} />
+          </div>
+
+
+
+        </div>
+      </div>
+    );
+  }
+
   function GoldCoinBag() {
     return (
       <img
@@ -1469,9 +1603,9 @@ export default function SessionPage() {
                             </button>
                             <div style={{ display: 'flex' }} >
 
-                              <button style={{display:ReqKeeper ? 'none' : 'flex'}} type='button' onClick={() => {
+                              <button style={{ display: ReqKeeper ? 'none' : 'flex' }} type='button' onClick={() => {
                                 updateNpcs1();
-                               
+
 
 
                               }} className={styles.pushable}>
@@ -2269,7 +2403,7 @@ export default function SessionPage() {
                     <div
                       className={styles.gridPlayer}
                       style={{
-                        backgroundImage: `url(${player.npcmap.NpcUrlPhoto})`,
+                        backgroundImage: player.npcmap.Isnpc ? `url(${player.npcmap.NpcUrlPhoto})` : null,
                         position: 'absolute',
                         borderRadius: '50%',
                         position: 'absolute',
@@ -2284,7 +2418,10 @@ export default function SessionPage() {
                     >
 
                       <div style={{ color: 'white', position: 'relative', top: '-30px' }} >
+                        {!player.npcmap.Isnpc ?
+                          <CharGet ownerId={player.npcmap.ownerId} />
 
+                          : null}
                         {player.npcmap.Npcname}
                         <HealthBar useridfind={player.npcmap.idtrack} />
                       </div>
@@ -2293,7 +2430,7 @@ export default function SessionPage() {
                     <div
                       className={styles.gridPlayer}
                       style={{
-                        backgroundImage: `url(${player.npcmap.NpcUrlPhoto})`,
+                        backgroundImage: player.npcmap.Isnpc ? `url(${player.npcmap.NpcUrlPhoto})` : null,
                         position: 'absolute',
                         borderRadius: '50%',
                         top: `calc(${Math.floor(parseInt(player.tile) / 64)} * (100% / 64))`,
@@ -2306,7 +2443,8 @@ export default function SessionPage() {
                     >
 
                       <div style={{ color: 'white', position: 'relative', top: '-30px' }} >
-
+                        {!player.npcmap.Isnpc ?
+                          <CharGet ownerId={player.npcmap.ownerId} /> : null}
                         {player.npcmap.Npcname}
                         <HealthBar useridfind={player.npcmap.idtrack} />
                       </div>
@@ -2879,7 +3017,7 @@ export default function SessionPage() {
                             </button>
                             <div style={{ display: 'flex' }} >
 
-                              <button  style={{display:ReqKeeper ? 'none' : 'flex'}} type='button' onClick={() => {
+                              <button style={{ display: ReqKeeper ? 'none' : 'flex' }} type='button' onClick={() => {
                                 updateNpcs1();
                                 setReqKeeper(true);
 

@@ -5,7 +5,16 @@ import { useAppContext } from '../AppContext';
 import Sessions from '../components/sessions';
 import CircularProgress from '@mui/material/CircularProgress';
 
+
 export default function Home() {
+  const [keeper, setKeeper] = useState(false);
+  const [headSlider, setHeadSlider] = useState(1);
+  const [torsoSlider, setTorsoSlider] = useState(1);
+  const [lowerSlider, setLowerSlider] = useState(1);
+  const [headSliderimg, setHeadSliderimg] = useState('');
+  const [torsoSliderimg, setTorsoSliderimg] = useState('');
+  const [lowerSliderimg, setLowerSliderimg] = useState('');
+
   const [randomText, setRandomText] = useState('');
   const [changed, setChanged] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -123,6 +132,9 @@ export default function Home() {
       const username = data.username;
       setNewName(username);
       setName(username);
+      setHeadSlider(parseInt(data.charCreate[0]))
+      setTorsoSlider(parseInt(data.charCreate[1]))
+      setLowerSlider(parseInt(data.charCreate[2]))
 
     }
   }
@@ -178,6 +190,18 @@ export default function Home() {
     }
   }, [user.id]);
 
+  useEffect(() => {
+    if (user.id) {
+
+      const intervalId = setInterval(async () => {
+        setKeeper(false);
+      }, 3000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [user.id]);
+
+
 
 
   async function createRandomSession() {
@@ -190,7 +214,7 @@ export default function Home() {
       };
 
       const response = await axios.post(`${urlrequest}/sessions`, randomSession);
-      if(response){
+      if (response) {
         window.location.reload()
       }
 
@@ -209,7 +233,43 @@ export default function Home() {
     return id;
   }
 
-
+  useEffect(() => {
+    import(`../components/head/head${headSlider}.png`)
+      .then(image => {
+        setHeadSliderimg(image.default);
+      })
+      .catch(error => {
+        console.error('Error loading head image:', error);
+      });
+  }, [headSlider])
+  useEffect(() => {
+    import(`../components/torso/torso${torsoSlider}.png`)
+      .then(image => {
+        setTorsoSliderimg(image.default);
+      })
+      .catch(error => {
+        console.error('Error loading head image:', error);
+      });
+  }, [torsoSlider])
+  useEffect(() => {
+    import(`../components/zlower/lower${lowerSlider}.png`)
+      .then(image => {
+        setLowerSliderimg(image.default);
+      })
+      .catch(error => {
+        console.error('Error loading head image:', error);
+      });
+  }, [lowerSlider])
+  async function saveOutfit() {
+    try {
+      const newOutfit = [headSlider, torsoSlider, lowerSlider]
+      console.log(newOutfit)
+      const response = await axios.post(`${urlrequest}/heartbeat`, { userId: user.id, charCreate: newOutfit });
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <div className={styles.body}>
@@ -228,9 +288,11 @@ export default function Home() {
 
               Nome da sessão nova
             </div>
-            <form style={{display:'flex', flexDirection:'column',justifyContent: 'center',
-            alignContent: 'center',
-            alignItems: 'center'}} onSubmit={(e) => {
+            <form style={{
+              display: 'flex', flexDirection: 'column', justifyContent: 'center',
+              alignContent: 'center',
+              alignItems: 'center'
+            }} onSubmit={(e) => {
               if (title) {
                 const existingSessionWithUser = sessions.find(session => session.players && session.players.length > 0 && session.players[0] === user.id)
                 if (!existingSessionWithUser) {
@@ -274,10 +336,81 @@ export default function Home() {
 
           {user.id ?
             <div className={styles.maincontainer}>
-              <div style={{ marginBottom: '10px' }} className={styles.rpgdiv1} > SEU NOME: <input  style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }} 
-              value={newName} onChange={(e) => { setNewName(e.target.value) }} /> 
-              Espere o nome a seguir,estar igual ao que você quer: 
-              <span style={{color:'white', padding:'5px', fontWeight:'bold'}} >{name}</span></div>
+              <div style={{ marginBottom: '10px' }} className={styles.rpgdiv1} > SEU NOME: <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }}
+                value={newName} onChange={(e) => { setNewName(e.target.value) }} />
+              <div style={{ display: 'flex' }} >
+
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent:'center', alignContent:'center', alignItems:'center' }}  >
+
+                  <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px' }}>
+                    <img width={30} height={30} src={headSliderimg} alt={`head${headSliderimg}`} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-20px' }}>
+                    <img width={30} height={30} src={torsoSliderimg} alt={`head${torsoSliderimg}`} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+
+                    <img width={30} height={30} src={lowerSliderimg} alt={`lower${lowerSliderimg}`} />
+                  </div>
+                 
+
+                  
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column' }}  >
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    Cabeça: {headSlider}
+                    <input
+                      type="range"
+                      min="1"
+                      max="3"
+                      value={headSlider}
+                      onChange={(e) => {
+                        setHeadSlider(e.target.value)
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    Torso {torsoSlider}
+                    <input
+                      type="range"
+                      min="1"
+                      max="3"
+                      value={torsoSlider}
+                      onChange={(e) => {
+                        setTorsoSlider(e.target.value)
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    Pernas {lowerSlider}
+                    <input
+                      type="range"
+                      min="1"
+                      max="3"
+                      value={lowerSlider}
+                      onChange={(e) => {
+                        setLowerSlider(e.target.value)
+                      }}
+                    />
+                  </div>
+
+
+                </div>
+                <button style={{ marginTop: '45px' }} disabled={keeper} type='button' onClick={() => {
+                    saveOutfit();
+                    setKeeper(true);
+                  }} className={styles.pushable}>
+                    <span className={styles.edge}></span>
+                    <span className={styles.front}>
+                    Salvar Skin
+                    </span>
+                  </button>
+              </div>
+                Espere o nome a seguir estar igual ao desejado:
+                <span style={{ color: 'white', padding: '5px', fontWeight: 'bold' }} >{name}</span></div>
+
+
               <div className={styles.maincontainertitle}> BEM VINDO AO PROJECTRP</div>
               {sessions ? <Sessions sessions={sessions} id={user.id} /> :
                 <div>
