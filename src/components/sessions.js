@@ -6,12 +6,12 @@ export default function Sessions(array, id) {
   const userid = array.id;
   const { user, setUser } = useAppContext();
   return (
-    <div>
+    <div style={{height:'100%'}} >
       {sessions?.map((session, index) =>
       (
         <div style={{ backgroundColor: session.players[0] === user.id ? 'rgb(223, 54, 14)' : 'rgb(173, 154, 124)'}} className={styles.sessionbody} key={index} >
           <div>{session.players[0] === user.id ? 'Entrar como MESTRE' : 'Entrar como JOGADOR'} </div>
-          <div>
+          <div style={{color:'white'}} >
 
             {session.title}
           </div>

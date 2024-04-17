@@ -395,7 +395,7 @@ export default function SessionPage() {
       }));
 
       for (let i = 0; i < updatedPlayerLocation.length; i++) {
-        const indexInNpcSession = npcssession.findIndex(npc => npc.idtrack === updatedPlayerLocation[i].npcmap.idtrack);
+        const indexInNpcSession = npcssession?.findIndex(npc => npc?.idtrack === updatedPlayerLocation[i].npcmap?.idtrack);
         if (indexInNpcSession !== -1) {
           updatedPlayerLocation[i].npcmap = npcssession[indexInNpcSession];
         }
@@ -2707,6 +2707,7 @@ export default function SessionPage() {
                   setStatsUser(npc?.Stats)
                   setInventory(npc?.Items)
                   setNpcId(npc?._id)
+                  updateNpcs()
                 }} style={{ marginBlock: '10px' }} key={index} value={npc}>
                   {npc?.Isnpc ? 'NPC ' : 'Player '}
                   {npc?.Npcname}

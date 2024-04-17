@@ -278,72 +278,16 @@ export default function Home() {
           <div style={{
             borderRadius: '5px',
             display: 'flex', padding: '5px', margin: '5px',
-            flexDirection: 'column', border: '3px solid hsl(34, 98%, 25%, 0.5)',
-            backgroundColor: '#592c16', boxShadow: '0px 0px 0px 4px hsl(34, 99%, 29%, 0.5)',
+            flexDirection: 'column',
             justifyContent: 'center',
             alignContent: 'center',
             alignItems: 'center'
           }}>
-            <div className={styles.textmedieval} style={{ color: 'white' }} >
-
-              Nome da sessão nova
-            </div>
-            <form style={{
-              display: 'flex', flexDirection: 'column', justifyContent: 'center',
-              alignContent: 'center',
-              alignItems: 'center'
-            }} onSubmit={(e) => {
-              if (title) {
-                const existingSessionWithUser = sessions.find(session => session.players && session.players.length > 0 && session.players[0] === user.id)
-                if (!existingSessionWithUser) {
-
-                  createRandomSession()
-                } else {
-                  alert('Você já tem uma sessão aberta')
-                }
-              } else {
-                alert('Por favor preencha o nome da sessão')
-              }
-              e.preventDefault();
-
-            }} >
-              <input
-
-                style={{ display: 'flex', marginBottom: '10px', borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }} value={title} onChange={(e) => {
-                  setTitle(e.target.value)
-                }} />
-
-              <button className={styles.pushable}>
-                <span className={styles.edge}></span>
-                <span className={styles.front}>
-                  Criar Sessão
-                </span>
-              </button>
-
-            </form>
-          </div> : null}
-
-        <div>
-          Total de usuários: {userscount}
-        </div>
-        <div>
-          Usuários online procurando sessão: {userscountonline}
-        </div>
-        <div style={{width:'62px', height:'62px'}} className={styles.rpgdiv3} >
-        
-        </div>
-      </div>
-
-      {user.id && sessions && userscount && userscountonline && !isLoading ?
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }} >
-
-          {user.id ?
-            <div className={styles.maincontainer}>
-              <div style={{ marginBottom: '10px' }} className={styles.rpgdiv1} > SEU NOME: <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }}
-                value={newName} onChange={(e) => { setNewName(e.target.value) }} />
+            <div style={{ width: '250px', padding: '5px', marginBottom: '10px' }} className={styles.rpgdiv4} > SEU NOME: <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }}
+              value={newName} onChange={(e) => { setNewName(e.target.value) }} />
               <div style={{ display: 'flex' }} >
 
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent:'center', alignContent:'center', alignItems:'center' }}  >
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}  >
 
                   <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px' }}>
                     <img width={30} height={30} src={headSliderimg} alt={`head${headSliderimg}`} />
@@ -355,9 +299,9 @@ export default function Home() {
 
                     <img width={30} height={30} src={lowerSliderimg} alt={`lower${lowerSliderimg}`} />
                   </div>
-                 
 
-                  
+
+
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column' }}  >
@@ -401,44 +345,163 @@ export default function Home() {
 
                 </div>
                 <button style={{ marginTop: '45px' }} disabled={keeper} type='button' onClick={() => {
-                    saveOutfit();
-                    setKeeper(true);
-                  }} className={styles.pushable}>
-                    <span className={styles.edge}></span>
-                    <span className={styles.front}>
+                  saveOutfit();
+                  setKeeper(true);
+                }} className={styles.pushable}>
+                  <span className={styles.edge}></span>
+                  <span className={styles.front}>
                     Salvar Skin
-                    </span>
-                  </button>
+                  </span>
+                </button>
               </div>
-                Espere o nome a seguir estar igual ao desejado:
-                <span style={{ color: 'white', padding: '5px', fontWeight: 'bold' }} >{name}</span></div>
-
-
-              <div className={styles.maincontainertitle}> BEM VINDO AO PROJECTRP</div>
-              {sessions ? <Sessions sessions={sessions} id={user.id} /> :
-                <div>
-
-                </div>}
-
+              Espere o nome em branco igual ao desejado:
+              <span style={{ color: 'white', padding: '5px', fontWeight: 'bold' }} >{name}</span>
             </div>
-            :
-            null}
+            <div style={{ width: '250px', padding: '5px' }} className={styles.rpgdiv4}>
 
-        </div> : <div style={{ display: 'flex', width: '100%', justifyContent: 'center', color: 'white' }} >
-          {user.id !== '' ? <div className={styles.rpgdiv2}>
-            <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} >
-              <CircularProgress />
-              Carregando...
+
+              <div className={styles.textmedieval} style={{ color: 'black', fontWeight: '1000', textAlign: 'center' }} >
+
+                Nome da sessão nova
+              </div>
+              <form style={{
+                display: 'flex', flexDirection: 'column', justifyContent: 'center',
+                alignContent: 'center',
+                alignItems: 'center'
+              }} onSubmit={(e) => {
+                if (title) {
+                  const existingSessionWithUser = sessions.find(session => session.players && session.players.length > 0 && session.players[0] === user.id)
+                  if (!existingSessionWithUser) {
+
+                    createRandomSession()
+                  } else {
+                    alert('Você já tem uma sessão aberta')
+                  }
+                } else {
+                  alert('Por favor preencha o nome da sessão')
+                }
+                e.preventDefault();
+
+              }} >
+                <input
+
+                  style={{ display: 'flex', marginBottom: '10px', borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }} value={title} onChange={(e) => {
+                    setTitle(e.target.value)
+                  }} />
+
+                <button className={styles.pushable}>
+                  <span className={styles.edge}></span>
+                  <span className={styles.front}>
+                    Criar Sessão
+                  </span>
+                </button>
+
+              </form>
             </div>
-            Dica: {randomText}
-          </div> : <div className={styles.rpgdiv2}>
-            <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} >
-              <CircularProgress />
-              Faça o login para ver as sessões!
-            </div>
-            Dica: {randomText}
+          </div> : null}
+
+        <div style={{ color: 'white' }} >
+          Total de usuários: {userscount}
+        </div>
+        <div style={{ color: 'white' }}>
+          Usuários online procurando sessão: {userscountonline}
+        </div>
+
+      </div>
+      <div className={styles.homecolumn}>
+
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '240px' }} >
+
+        {user.id && sessions && userscount && userscountonline && !isLoading ?
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }} >
+
+            {user.id ?
+              <div className={styles.maincontainer}>
+
+                <div className={styles.maincontainertitle}> BEM VINDO AO PROJECTRP</div>
+                <div style={{ overflowY: 'scroll', height: '200px', overflowX: 'hidden' }}  >
+
+                  {sessions ? <Sessions sessions={sessions} id={user.id} /> :
+                    <div>
+
+                    </div>}
+                </div>
+
+              </div>
+              :
+              null}
+
+          </div> : <div style={{ display: 'flex', width: '100%', justifyContent: 'center', color: 'white' }} >
+            {user.id !== '' ? <div className={styles.rpgdiv2}>
+              <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} >
+                <CircularProgress />
+                Carregando...
+              </div>
+              Dica: {randomText}
+            </div> : <div className={styles.rpgdiv2}>
+              <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} >
+                <CircularProgress />
+                Faça o login para ver as sessões!
+              </div>
+              Dica: {randomText}
+            </div>}
+
           </div>}
-        </div>}
+        <div style={{display:'flex', gap:'5%'}} >
+
+          <div className={styles.homechat}>
+            <div>
+              <h1 style={{ color: 'white', textAlign: 'center' }} >
+                Botões Úteis
+              </h1>
+              
+            </div>
+            
+          </div>
+          <div style={{maxWidth:'600px', width:'600px'}} className={styles.homechat}>
+            <div style={{width:'100%', display:'flex', flexDirection:'column'}} >
+              <h1 style={{ color: 'white', textAlign: 'center' }} >
+                CHAT
+              </h1>
+              <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} >
+                <div style={{
+                  color: 'white',
+                  border: '1px solid white',
+                  height: '160px', width: '100%',
+                  backgroundColor: 'grey', marginBottom: '10px'
+                }} >
+
+                </div>
+
+              </div>
+              <div>
+                <input style={{width:'85%', marginRight:'10px'}} placeholder='Escreva aqui' />
+                <button>Enviar</button>
+              </div>
+
+            </div>
+            <div style={{
+              color: 'white',
+              display: 'flex', flexDirection: 'column',
+              border: '1px solid blue', padding: '5px',
+              width:'100px', gap:'10px'
+            }}>
+
+              <div>
+                Amigo 1
+              </div>
+              <div>
+                Amigo 2
+              </div>
+              <div>
+                Amigo 3
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
 
 

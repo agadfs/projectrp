@@ -1,7 +1,7 @@
 .body {
   display: flex;
   top: 0;
-  margin-bottom: -120px;
+  margin-bottom: 230px;
   top: 0;
 
 }
@@ -12,9 +12,9 @@
   /* Largura da borda */
   border-style: solid;
   /* Estilo da borda */
-  border-image-source: url('https://ronenness.github.io/RPGUI/rpgui/img/border-image-golden.png');
-  border-image-slice: 4 4 4 4;
-  background-color: rgb(173, 128, 61);
+  border-image-source: url('https://cdn.discordapp.com/attachments/643258663917715472/1230211109869584425/borda_pro_serra_dtonee.png?ex=66327e60&is=66200960&hm=551c99c57360faf56201864595788302990b0192a29d5f949f4562a9dbdbe7f2&');
+  border-image-slice: 9 9 9 9;
+  background-color: rgb(167, 156, 143);
   font-weight: bold;
   font-family: sans-serif;
 
