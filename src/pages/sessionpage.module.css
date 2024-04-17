@@ -8,13 +8,13 @@
   
 }
 .infobody{
-  width: 25%;
-  max-width: 600px;
+  width: 100%;
+  max-width: 500px;
   min-width: 400px;
   height: 100%;
-  
   border-radius: 5px;
   padding:5px;
+  margin-top: -205px;
   
 }
 .mapbody{
@@ -27,7 +27,7 @@
   margin-inline: 5px;
   background-color: black;
   overflow: scroll;
-  max-height: 750px;
+  max-height: 900px;
   max-width: 1500px;
   z-index: 2;
   -webkit-touch-callout: none; /* iOS Safari */
@@ -45,7 +45,7 @@
   background-color: rgb(0, 0, 0);
   font-weight: bold;
   font-family: sans-serif;
-  margin-top: 100px;
+  margin-top: -200px;
 
 }
 .maptitle{
@@ -53,16 +53,18 @@
   align-items: center;
   justify-content: center;
   padding: 10px;
-  
   position: absolute;
-  top:75px;
+  top:1055px;
+  left: 5px;
+  z-index: 999;
+  
   
 }
 
 .mapcontainer{
   display: flex;
-  height: 100%;
-  width: 100%;
+  height: fit-content;
+  width: fit-content;
  
   
   
