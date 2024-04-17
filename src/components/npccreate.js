@@ -255,18 +255,18 @@ export default function NpcCreate({ userid, sessionid, items }) {
     <div>
 
 
-      <div style={{ marginTop: '10px' }} className={styles.rpgdiv1}>
+      <div style={{ marginTop: '10px' }} className={styles.rpgdiv5}>
         <h2 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} 
         className={styles.medievalsharp} >
           Adicionar NPC</h2>
-        <form onSubmit={handleSubmit}>
+        <form  onSubmit={handleSubmit}>
           <label htmlFor="Npcname">Nome:</label><br />
           <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="Npcname" name="Npcname"
             value={newNpc.Npcname} onChange={handleChange} required /><br />
 
-          <label htmlFor="description">Inventario:</label><br />
+         
 
-          <div className={styles.rpgdiv1} >
+          <div style={{marginBottom:'10px', marginTop:'10px'}} className={styles.rpgdiv4} >
             <h1 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > SEU INVENTARIO
               ({newNpc?.Items?.length} Items)</h1>
             <div>
@@ -381,8 +381,8 @@ export default function NpcCreate({ userid, sessionid, items }) {
 
           </div>
 
-          <label htmlFor="weight">Status:</label><br />
-          <div className={styles.rpgdiv1} style={{
+          
+          <div className={styles.rpgdiv4} style={{
             height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap',
             flexDirection: 'column'
           }}>
@@ -650,7 +650,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
 
             </div>
             {newNpc.Stats ?
-              <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
+              <div style={{color:'black', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
                 <div style={{ display: 'flex', gap: '20px' }} >
                   {newNpc.Stats.earing?.atk ?
                     <div className={styles.slots} onClick={() => {

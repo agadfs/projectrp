@@ -470,3 +470,28 @@ input[id="barh"]::-ms-tooltip {
 
 
 }
+
+.rpgdiv4 {
+  border-width: 8px;
+  padding:5px; /* Largura da borda */
+  border-style: solid; /* Estilo da borda */
+  border-image-source: url('https://cdn.discordapp.com/attachments/643258663917715472/1230205262212628520/borda_pro_serra_goldmeno.png?ex=663278ee&is=662003ee&hm=e1dd5e86e78956a3b2a374b0fe160a9d1a74badce91fa3240335492d2eb4e3cc&'); 
+  border-image-slice: 4 4 4 4; 
+  background-color: rgb(156, 138, 108);
+  font-weight: bold;
+  font-family: sans-serif;
+
+}
+
+.rpgdiv5 {
+  border-width: 8px;
+  padding:5px; /* Largura da borda */
+  border-style: solid; /* Estilo da borda */
+  border-image-source: url('https://media.discordapp.net/attachments/643258663917715472/1230208449716031579/borda_pro_serra_nose.png?ex=66327be6&is=662006e6&hm=8c88ac66e4d2faca94da881cf88984dded79f6c9f8ea588eb24c726f9736c288&=&format=webp&quality=lossless'); 
+  border-image-slice: 6 9 6 9; 
+  background-color: rgb(61, 38, 5);
+  font-weight: bold;
+  font-family: sans-serif;
+  color:white;
+
+}

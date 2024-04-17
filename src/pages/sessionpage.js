@@ -708,7 +708,7 @@ export default function SessionPage() {
               }
               return npc;
             });
-            updateSession({ Npcs: updatedNpcs });
+            
 
 
           }
@@ -727,6 +727,11 @@ export default function SessionPage() {
       console.error('Error updating inventory:', error);
     }
   };
+  useEffect(() => {
+    if(statsuser){
+      handleUpdateStats(statsuser)
+    }
+  },[statsuser])
   async function handleUpdateStats(stats) {
     let statsnew = stats;
     let equipstats = { ...statsnew };
@@ -754,24 +759,8 @@ export default function SessionPage() {
       }
     });
 
-
     setStatsUserEquip(equipstats);
 
-
-    try {
-
-      const response = await axios.post(`${urlrequest}/inventory/updateitems`, { userId: inventory._id, Stats: statsnew })
-
-      if (response.data) {
-
-
-
-      }
-
-
-    } catch (error) {
-      console.error('Error updating inventory:', error);
-    }
   };
   function handleAddItem(event) {
     const selectedId = event.target.value;
@@ -1141,11 +1130,11 @@ export default function SessionPage() {
   }
   return (
     <div className={styles.body} >
-      {user?.id === playersid[0] ?
+      {user?.id === playersid[0] && !isLoading ?
         <div style={{
           top: '1050px', left: '600px',
-          position: 'absolute', maxWidth:'700px', width:'100%'
-        }} className={styles.rpgdiv1}>
+          position: 'absolute', maxWidth:'700px', width:'100%', color:'white'
+        }}  className={styles.rpgdiv5}>
           Você é o <span style={{ fontWeight: 'bold', fontSize: '20px' }} >  MESTRE </span>
           Players e Npc's inseridos na sessão:
           <div>
@@ -1173,9 +1162,20 @@ export default function SessionPage() {
 
               </div>
 
-              <form style={{ display: 'flex' }} onSubmit={(e) => {
+              <form style={{ display: 'flex' }} onSubmit={async(e) => {
                 e.preventDefault()
-                let newnpcs = [...npcssession];
+                const response = await axios.get(`${urlrequest}/npcsGET`, {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                  }
+                });
+                let newnpcs = [];
+                if (response.data) {
+                  const data = response.data;
+                  newnpcs = data;
+          
+                }
                 newnpcs.push(selectedNpc);
                 updateSession({ Npcs: newnpcs })
               }} >
@@ -1275,11 +1275,11 @@ export default function SessionPage() {
             </div>
           ))}
           {npcid ?
-            <div className={styles.rpgdiv1} style={{
+            <div className={styles.rpgdiv4} style={{
               height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap',
               flexDirection: 'column'
             }}>
-              <div style={{ display: 'flex', flexDirection: 'column' }} >
+              <div style={{color:'black', display: 'flex', flexDirection: 'column' }} >
                 <h3 className={styles.medievalsharp}>Atributos do NPC </h3>
                 <p>{npcid}</p>
                 {user?.id === playersid[0] ?
@@ -1622,7 +1622,7 @@ export default function SessionPage() {
 
               </div>
               {user?.id === playersid[0] ?
-                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
+                <div style={{ color:'black',display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
                   <div style={{ display: 'flex', gap: '20px' }} >
                     {statsuser.earing?.atk ?
                       <div className={styles.slots} onClick={() => {
@@ -1718,7 +1718,7 @@ export default function SessionPage() {
                           handleAddItem2(index);
                           setStatsUser(updatedUser);
                           handleUpdateStats(updatedUser)
-                          handleUpdateStats(updatedUser)
+                         
 
                           updateNpcs()
                         } else {
@@ -2061,7 +2061,7 @@ export default function SessionPage() {
                   </div>
                 </div> : null}
               {user?.id === playersid[0] ?
-                <div className={styles.rpgdiv1} style={{ position: 'absolute', top: '1400px', maxWidth: '1000px' }} >
+                <div className={styles.rpgdiv4} style={{ position: 'absolute', top: '385px',right:'750px', maxWidth: '500px' }} >
                   <h1 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > SEU INVENTARIO
                     ({inventory?.length || 0} Items)</h1>
                   <div>
@@ -2082,12 +2082,14 @@ export default function SessionPage() {
                     </select>
                   </div>
 
-                  <div className={styles.customScrollDiv} style={{ height: 'auto', width: '50vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
+                  <div className={styles.customScrollDiv} style={{ height: 'auto', 
+                  width: '20vw', display: 'flex', 
+                  overflowX: 'scroll', transform: 'scaleY(-1)' }}>
                     <div style={{ minWidth: '1600px', display: 'flex', gap: '25px', flexWrap: 'wrap', transform: 'scaleY(-1)', position: 'relative', bottom: '10px', marginTop: '20px' }} >
                       {inventory?.map((item, index) => (
                         <div
                           className={styles.slotsinv}
-                          style={{ maxHeight: '350px', maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
+                          style={{color:'black', maxHeight: '350px', maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
                           {item?.item?.url ? (
                             <div onClick={() => {
                               if (item?.item?.canequip) {
@@ -2099,6 +2101,7 @@ export default function SessionPage() {
                                   updatedUser[types] = inventory[index]?.item;
                                   handleUpdateQuantity2(index, -1, updatedUser);
                                   setStatsUser(updatedUser);
+                                  handleUpdateStats(updatedUser);
                                   updateNpcs()
                                 }
                               }
@@ -2193,7 +2196,7 @@ export default function SessionPage() {
           <div className={styles.maptitle}>
             <div>
               {user?.id !== playersid[0] ?
-                <div className={styles.rpgdiv1} style={{ marginRight: '30px' }}>
+                <div className={styles.rpgdiv4} style={{ marginRight: '30px' }}>
                   {playerlocation?.find(obj => obj.npcmap.ownerId === user?.id) ?
                     <div>
 
@@ -2203,7 +2206,7 @@ export default function SessionPage() {
                     :
                     <div>
                       Adicionar personagem no mapa
-                      <input type='number' value={tile} onChange={(e) => {
+                      <input placeholder='numero do tile' type='number' value={tile} onChange={(e) => {
                         setTile(e.target.value)
                       }} />
                       <button onClick={() => {
@@ -2224,7 +2227,7 @@ export default function SessionPage() {
 
 
             </div>
-            <div style={{ bottom: '15px', position: 'relative' }} className={styles.rpgdiv1}>
+            <div style={{ bottom: '15px', position: 'relative' }} className={styles.rpgdiv5}>
 
               <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp}>
 
@@ -2450,7 +2453,7 @@ export default function SessionPage() {
             </div>
           </div>
           {user?.id !== playersid[0] ?
-            <div className={styles.rpgdiv1} style={{ position: 'absolute', top: '1080px', maxWidth: '1000px' }} >
+            <div className={styles.rpgdiv4} style={{ position: 'absolute', top: '1180px', maxWidth: '1000px' }} >
               <h1 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > SEU INVENTARIO
                 ({inventory?.length || 0} Items)</h1>
               <div>
@@ -2472,7 +2475,10 @@ export default function SessionPage() {
               </div>
 
               <div className={styles.customScrollDiv} style={{ height: 'auto', width: '50vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
-                <div style={{ minWidth: '1600px', display: 'flex', gap: '25px', flexWrap: 'wrap', transform: 'scaleY(-1)', position: 'relative', bottom: '10px', marginTop: '20px' }} >
+                <div style={{color:'black', minWidth: '1600px', 
+                display: 'flex', gap: '25px', flexWrap: 'wrap', 
+                transform: 'scaleY(-1)', position: 'relative', bottom: '10px', 
+                marginTop: '20px' }} >
                   {inventory?.map((item, index) => (
                     <div
                       className={styles.slotsinv}
@@ -2488,6 +2494,7 @@ export default function SessionPage() {
                               updatedUser[types] = inventory[index]?.item;
                               handleUpdateQuantity2(index, -1, updatedUser);
                               setStatsUser(updatedUser);
+                              handleUpdateStats(updatedUser)
                               updateNpcs()
                             }
                           }
@@ -2572,7 +2579,7 @@ export default function SessionPage() {
       {showinfo === true && !isLoading ?
 
         <div className={styles.infobody}>
-          <div className={styles.rpgdiv1}>
+          <div className={styles.rpgdiv4}>
             ID da sessão: {sessionid}
             {user?.id === playersid[0] ? <div>
               <button onClick={() => {
@@ -2587,7 +2594,7 @@ export default function SessionPage() {
 
             </div> : null}
           </div>
-          <div className={styles.rpgdiv1} style={{ marginTop: '10px' }}>
+          <div className={styles.rpgdiv4} style={{ marginTop: '10px' }}>
             <div style={{ justifyContent: 'center', width: '100%', display: 'flex' }} className={styles.medievalsharp}>
               Titulo do jogo: {title}
 
@@ -2665,7 +2672,7 @@ export default function SessionPage() {
               </div> : null}
           </div>
           <div style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
-            <div className={styles.rpgdiv1} style={{ height: '100%', display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div className={styles.rpgdiv4} style={{ height: '100%', display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
               <h1 style={{ justifyContent: 'center', width: '100%', display: 'flex' }} className={styles.medievalsharp}> Jogadores  </h1>
               {players?.map((player, index) => (
                 <div style={{
@@ -2681,7 +2688,7 @@ export default function SessionPage() {
               ))}
             </div>
             {user?.id === playersid[0] ?
-              <div className={styles.rpgdiv1} style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
+              <div className={styles.rpgdiv4} style={{ marginTop: '10px', gap: '10px', display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
                 <h1 style={{ justifyContent: 'center', width: '100%', display: 'flex' }} className={styles.medievalsharp}> Solicitações para entrar  </h1>
                 <div style={{ height: '100%', display: 'flex', gap: '10px', flexWrap: 'wrap', border: '3px solid black', padding: '10px', borderRadius: '5px' }}>
                   {request && request?.length > 0 && request?.map((player, index) => (
@@ -3067,7 +3074,7 @@ export default function SessionPage() {
 
                   </div>
                   {user?.id !== playersid[0] ?
-                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
+                    <div style={{color:'black', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
                       <div style={{ display: 'flex', gap: '20px' }} >
                         {statsuser.earing?.atk ?
                           <div className={styles.slots} onClick={() => {
@@ -3511,9 +3518,9 @@ export default function SessionPage() {
 
             </div> : null}
           {user?.id === playersid[0] ?
-            <div style={{ marginTop: '10px' }} className={styles.rpgdiv1}>
+            <div style={{ marginTop: '10px' }} className={styles.rpgdiv4}>
               <h2 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} >Adicionar Item</h2>
-              <form onSubmit={handleSubmit}>
+              <form style={{display:'flex', flexDirection:'column',alignItems:'center'}} onSubmit={handleSubmit}>
                 <label htmlFor="name">Nome:</label><br />
                 <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="name" name="name" value={formData.name} onChange={handleChange} required /><br />
 
@@ -3549,7 +3556,7 @@ export default function SessionPage() {
                 <label htmlFor="canequip">Pode ser equipado:</label><br />
                 <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="checkbox" id="canequip" name="canequip" checked={formData.canequip} onChange={handleChange} /><br />
                 {formData.canequip ?
-                  <div>
+                  <div >
                     <label htmlFor="typewear">Onde é equipavel:</label><br />
                     <select id="typewear" name="typewear" value={formData.typewear} onChange={handleChange}>
                       <option value="">Selecione uma opção</option>
