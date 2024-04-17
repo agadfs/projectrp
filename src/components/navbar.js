@@ -33,7 +33,7 @@ export default function Navbar() {
           </div> :
           null}
 
-        <button  onClick={() => {
+        <button onClick={() => {
           window.location.href = '/'
         }} className={styles.pushable}>
           <span style={{ width: '225px' }} className={styles.edge}></span>
@@ -41,46 +41,61 @@ export default function Navbar() {
             Ir para a pagina inicial
           </span>
         </button>
+
+
+        <div style={{
+          marginLeft: '130px', maxWidth: '250px', color: 'white', justifyContent: 'center',
+          alignContent: 'center', alignItems: 'center',
+          height: '100%', display: 'flex'
+        }} >
+
+          {urlrequest === process.env.REACT_APP_API_URL ?
+            <div  >
+              Servidor principal ON
+            </div> :
+            <div style={{ maxWidth: '350px', width: '100vw' }}
+            >
+              SERVIDOR PRINCIPAL ESTÁ OFF, É POSSÍVEL TER LAG, NÃO CLIQUE MUITAS VEZES NOS BOTÕES</div>}
+        </div>
         
 
-        <div style={{marginLeft: '130px', maxWidth: '250px', color:'white', justifyContent:'center', 
-        alignContent:'center', alignItems:'center', 
-        height:'100%', display:'flex' }} >
-
-          {urlrequest === process.env.REACT_APP_API_URL ? 
-          <div  >
-            Servidor principal ON
-          </div> : 
-          <div style={{ maxWidth: '350px', width: '100vw' }} 
-          >
-            SERVIDOR PRINCIPAL ESTÁ OFF, É POSSÍVEL TER LAG, NÃO CLIQUE MUITAS VEZES NOS BOTÕES</div>}
-        </div>
         {user.id ?
 
-<button style={{ marginLeft: '130px' }} onClick={() => {
-  setUser({ id: '' })
-  localStorage.removeItem('userid')
-  window.location.href = '/'
-}} className={styles.pushable}>
-  <span className={styles.edge}></span>
-  <span className={styles.front}>
-    Logout
-  </span>
-</button>
-:
+          <button style={{ marginLeft: '130px' }} onClick={() => {
+            setUser({ id: '' })
+            localStorage.removeItem('userid')
+            window.location.href = '/'
+          }} className={styles.pushable}>
+            <span className={styles.edge}></span>
+            <span className={styles.front}>
+              Logout
+            </span>
+          </button>
+          :
 
-<div  >
-  <button onClick={() => {
-    window.location.href = '/login'; // Corrected navigation
-  }} className={styles.pushable}>
-    <span className={styles.edge}></span>
-    <span className={styles.front}>
-      Faça o login aqui
-    </span>
-  </button>
-</div>}
+          <div  >
+            <button onClick={() => {
+              window.location.href = '/login'; // Corrected navigation
+            }} className={styles.pushable}>
+              <span className={styles.edge}></span>
+              <span className={styles.front}>
+                Faça o login aqui
+              </span>
+            </button>
+          </div>}
+          <div style={{
+          marginLeft: '130px', maxWidth: '250px', color: 'white', justifyContent: 'center',
+          alignContent: 'center', alignItems: 'center',
+          height: '100%', display: 'flex'
+        }} >
+
+
+          <div>
+           Version= Alfa  1.12
+          </div>
+        </div>
       </div>
-      
+
     </div>
   )
 }
