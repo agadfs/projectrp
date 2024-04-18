@@ -218,16 +218,26 @@ export default function SessionPage() {
     };
     const importImages3 = async () => {
 
-      try {
-        const headImages = [];
-        for (let i = 1; i <= 2; i++) {
+
+      const headImages = [];
+      for (let i = 1; i <= 3; i++) {
+        try {
           const image = await import(`../components/lefthand/lefthand${i}.png`);
           headImages.push(image.default);
+        } catch (pngError) {
+          console.error(`Error importing PNG image lefthand${i}.png:`, pngError);
+          try {
+            const gifImage = await import(`../components/lefthand/lefthand${i}.gif`);
+            headImages.push(gifImage.default);
+          } catch (gifError) {
+            console.error(`Error importing GIF image lefthand${i}.gif:`, gifError);
+            // Optionally, you can push a default image or null if both imports fail
+            headImages.push(null);
+          }
         }
-        setImages4(headImages);
-      } catch (error) {
-        console.error('Error importing images:', error);
       }
+      setImages4(headImages);
+
 
     };
     const importImages4 = async () => {
@@ -261,31 +271,48 @@ export default function SessionPage() {
     };
     const importImages6 = async () => {
 
-      try {
-        const headImages = [];
-        for (let i = 1; i <= 2; i++) {
+      const headImages = [];
+
+      for (let i = 1; i <= 3; i++) {
+        try {
           const image = await import(`../components/icons/icons${i}.png`);
           headImages.push(image.default);
+        } catch (pngError) {
+          console.error(`Error importing PNG image icons${i}.png:`, pngError);
+          try {
+            const gifImage = await import(`../components/icons/icons${i}.gif`);
+            headImages.push(gifImage.default);
+          } catch (gifError) {
+            console.error(`Error importing GIF image icons${i}.gif:`, gifError);
+            // Optionally, you can push a default image or null if both imports fail
+            headImages.push(null);
+          }
         }
-        setImages7(headImages);
-      } catch (error) {
-        console.error('Error importing images:', error);
       }
-
+        setImages7(headImages)
     };
     const importImages7 = async () => {
+      const headImages = [];
 
-      try {
-        const headImages = [];
-        for (let i = 1; i <= 1; i++) {
+      for (let i = 1; i <= 3; i++) {
+        try {
           const image = await import(`../components/pet/pet${i}.png`);
           headImages.push(image.default);
+        } catch (pngError) {
+          console.error(`Error importing PNG image pet${i}.png:`, pngError);
+          try {
+            const gifImage = await import(`../components/pet/pet${i}.gif`);
+            headImages.push(gifImage.default);
+          } catch (gifError) {
+            console.error(`Error importing GIF image pet${i}.gif:`, gifError);
+            // Optionally, you can push a default image or null if both imports fail
+            headImages.push(null);
+          }
         }
-        setImages8(headImages);
-      } catch (error) {
-        console.error('Error importing images:', error);
       }
 
+      // Assuming setImages8 is a useState setter from a functional component
+      setImages8(headImages);
     };
 
     importImages();
@@ -1010,8 +1037,8 @@ export default function SessionPage() {
     oldcolumn = newPosition % 64;
     newcolumn = updatedPlayerLocations[0].tile % 64;
 
-    horizontalMovement =  newcolumn -  oldcolumn;
-     verticalMovement  =  newrow - oldrow;
+    horizontalMovement = newcolumn - oldcolumn;
+    verticalMovement = newrow - oldrow;
 
     console.log("Vertical movement:", verticalMovement);
     console.log("Horizontal movement:", horizontalMovement);
@@ -1224,9 +1251,9 @@ export default function SessionPage() {
 
             <img width={28} height={28} src={lowerSliderimg} alt={`lower`} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '50px', left: '-15px', height: '0px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '60px', left: '-15px', height: '0px' }}>
 
-            <img width={30} height={30} src={lefthandSliderimg} alt={`lefthand${lefthandSliderimg}`} />
+            <img width={'auto'} height={45} src={lefthandSliderimg} alt={`lefthand${lefthandSliderimg}`} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '40px', left: '15px', height: '0px' }}>
 
@@ -1239,9 +1266,9 @@ export default function SessionPage() {
 
             <img width={30} height={30} src={iconSliderimg} alt={`icon${iconSliderimg}`} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '70px', left: '15px', height: '0px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '25px', left: '20px', height: '0px', width: '0px' }}>
 
-            <img width={30} height={30} src={petSliderimg} alt={`pet${petSliderimg}`} />
+            <img width={45} height={45} src={petSliderimg} alt={`pet${petSliderimg}`} />
           </div>
 
 

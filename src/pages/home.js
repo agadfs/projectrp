@@ -255,79 +255,166 @@ export default function Home() {
   }
 
   useEffect(() => {
-    import(`../components/head/head${headSlider}.png`)
-      .then(image => {
-        setHeadSliderimg(image.default);
-      })
-      .catch(error => {
-        console.error('Error loading head image:', error);
-      });
-  }, [headSlider])
+    const loadImage = (fileType) => {
+      return import(`../components/head/head${headSlider}.${fileType}`)
+        .then(image => {
+          setHeadSliderimg(image.default);
+          return true;
+        })
+        .catch(error => {
+          console.error(`Error loading ${fileType} image:`, error);
+          return false;
+        });
+    };
+  
+    loadImage('png').then(success => {
+      if (!success) {
+        loadImage('gif');
+      }
+    });
+  }, [headSlider]);
+
   useEffect(() => {
-    import(`../components/torso/torso${torsoSlider}.png`)
+  const loadImage = (fileType) => {
+    return import(`../components/torso/torso${torsoSlider}.${fileType}`)
       .then(image => {
         setTorsoSliderimg(image.default);
+        return true;
       })
       .catch(error => {
-        console.error('Error loading head image:', error);
+        console.error(`Error loading ${fileType} image:`, error);
+        return false;
       });
-  }, [torsoSlider])
-  useEffect(() => {
-    import(`../components/zlower/lower${lowerSlider}.png`)
+  };
+
+  loadImage('png').then(success => {
+    if (!success) {
+      loadImage('gif');
+    }
+  });
+}, [torsoSlider]);
+
+useEffect(() => {
+  const loadImage = (fileType) => {
+    return import(`../components/zlower/lower${lowerSlider}.${fileType}`)
       .then(image => {
         setLowerSliderimg(image.default);
+        return true;
       })
       .catch(error => {
-        console.error('Error loading head image:', error);
+        console.error(`Error loading ${fileType} image:`, error);
+        return false;
       });
-  }, [lowerSlider])
-  useEffect(() => {
-    import(`../components/lefthand/lefthand${lefthandSlider}.png`)
+  };
+
+  loadImage('png').then(success => {
+    if (!success) {
+      loadImage('gif');
+    }
+  });
+}, [lowerSlider]);
+
+useEffect(() => {
+  const loadImage = (fileType) => {
+    return import(`../components/lefthand/lefthand${lefthandSlider}.${fileType}`)
       .then(image => {
         setlefthandSliderimg(image.default);
+        return true;
       })
       .catch(error => {
-        console.error('Error loading head image:', error);
+        console.error(`Error loading ${fileType} image:`, error);
+        return false;
       });
-  }, [lefthandSlider])
-  useEffect(() => {
-    import(`../components/righthand/righthand${righthandSlider}.png`)
+  };
+
+  loadImage('png').then(success => {
+    if (!success) {
+      loadImage('gif');
+    }
+  });
+}, [lefthandSlider]);
+
+useEffect(() => {
+  const loadImage = (fileType) => {
+    return import(`../components/righthand/righthand${righthandSlider}.${fileType}`)
       .then(image => {
         setrighthandSliderimg(image.default);
+        return true;
       })
       .catch(error => {
-        console.error('Error loading head image:', error);
+        console.error(`Error loading ${fileType} image:`, error);
+        return false;
       });
-  }, [righthandSlider])
-  useEffect(() => {
-    import(`../components/icons/icons${iconSlider}.png`)
+  };
+
+  loadImage('png').then(success => {
+    if (!success) {
+      loadImage('gif');
+    }
+  });
+}, [righthandSlider]);
+
+useEffect(() => {
+  const loadImage = (fileType) => {
+    return import(`../components/icons/icons${iconSlider}.${fileType}`)
       .then(image => {
         setIconSliderimg(image.default);
+        return true;
       })
       .catch(error => {
-        console.error('Error loading head image:', error);
+        console.error(`Error loading ${fileType} image:`, error);
+        return false;
       });
-  }, [iconSlider])
+  };
 
-  useEffect(() => {
-    import(`../components/helmet/helmet${helmetSlider}.png`)
+  loadImage('png').then(success => {
+    if (!success) {
+      loadImage('gif');
+    }
+  });
+}, [iconSlider]);
+
+useEffect(() => {
+  const loadImage = (fileType) => {
+    return import(`../components/helmet/helmet${helmetSlider}.${fileType}`)
       .then(image => {
         setHelmetSliderimg(image.default);
+        return true;
       })
       .catch(error => {
-        console.error('Error loading head image:', error);
+        console.error(`Error loading ${fileType} image:`, error);
+        return false;
       });
-  }, [helmetSlider])
+  };
+
+  loadImage('png').then(success => {
+    if (!success) {
+      loadImage('gif');
+    }
+  });
+}, [helmetSlider]);
 
   useEffect(() => {
-    import(`../components/pet/pet${petSlider}.png`)
-      .then(image => {
-        setpetSliderimg(image.default);
-      })
-      .catch(error => {
-        console.error('Error loading head image:', error);
-      });
-  }, [petSlider])
+    // Function to attempt loading an image file
+    const loadImage = (fileType) => {
+      return import(`../components/pet/pet${petSlider}.${fileType}`)
+        .then(image => {
+          setpetSliderimg(image.default);
+          return true;  // Indicate success
+        })
+        .catch(error => {
+          console.error(`Error loading ${fileType} image:`, error);
+          return false;  // Indicate failure
+        });
+    };
+
+    // First try to load PNG, if it fails, then try GIF
+    loadImage('png').then(success => {
+      if (!success) {
+        loadImage('gif');
+      }
+    });
+  }, [petSlider]);
   async function saveOutfit() {
     try {
       const newOutfit = [headSlider, torsoSlider, lowerSlider, lefthandSlider, righthandSlider, helmetSlider, iconSlider, petSlider]
@@ -355,35 +442,35 @@ export default function Home() {
               value={newName} onChange={(e) => { setNewName(e.target.value) }} />
               <div style={{ display: 'flex' }} >
 
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center', marginRight:'60px', marginLeft:'10px' }}  >
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center', marginRight: '60px', marginLeft: '10px' }}  >
 
-                  <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px', zIndex:'101' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px', zIndex: '101' }}>
                     <img width={30} height={30} src={headSliderimg} alt={`head${headSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-20px', zIndex:'101' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-20px', zIndex: '101' }}>
                     <img width={30} height={30} src={torsoSliderimg} alt={`head${torsoSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', zIndex:'101' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', zIndex: '101' }}>
 
                     <img width={30} height={30} src={lowerSliderimg} alt={`lower${lowerSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', position:'relative', bottom:'50px', left:'-15px', zIndex:'102' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '60px', left: '-15px', zIndex: '102', height:'30px' }}>
 
-                    <img width={30} height={30} src={lefthandSliderimg} alt={`lefthand${lefthandSliderimg}`} />
+                    <img  width={'auto'} height={45} src={lefthandSliderimg} alt={`lefthand${lefthandSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', position:'relative', bottom:'70px', left:'15px', zIndex:'102' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '70px', left: '15px', zIndex: '102' }}>
 
                     <img width={30} height={30} src={righthandSliderimg} alt={`righthand${righthandSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', position:'relative', bottom:'70px', left:'15px', zIndex:'103' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '80px', left: '40px', zIndex: '103' }}>
 
-                    <img width={30} height={30} src={petSliderimg} alt={`pet${petSliderimg}`} />
+                    <img width={45} height={45} src={petSliderimg} alt={`pet${petSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', position:'relative', bottom:'180px', left:'40px', zIndex:'103' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '180px', left: '40px', zIndex: '103' }}>
 
                     <img width={30} height={30} src={iconSliderimg} alt={`icon${iconSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', position:'relative', bottom:'184px', left:'0px', zIndex:'102' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '184px', left: '0px', zIndex: '102' }}>
                     <img width={34} height={34} src={helmetSliderimg} alt={`helmet${helmetSliderimg}`} />
                   </div>
 
@@ -417,7 +504,7 @@ export default function Home() {
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Pernas {lowerSlider|| 1}
+                    Pernas {lowerSlider || 1}
                     <input
                       type="range"
                       min="1"
@@ -428,13 +515,13 @@ export default function Home() {
                       }}
                     />
                   </div>
-                  <div style={{textAlign:'center', marginBlock:'10px'}} > <ArrowDownwardIcon style={{color:'yellow'}} /> PREMIUM <ArrowDownwardIcon style={{color:'yellow'}} /> </div>
+                  <div style={{ textAlign: 'center', marginBlock: '10px' }} > <ArrowDownwardIcon style={{ color: 'yellow' }} /> PREMIUM <ArrowDownwardIcon style={{ color: 'yellow' }} /> </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Braço esquerdo {lefthandSlider|| 1}
+                    Braço esquerdo {lefthandSlider || 1}
                     <input
                       type="range"
                       min="1"
-                      max="2"
+                      max="3"
                       value={lefthandSlider || 1}
                       onChange={(e) => {
                         setlefthandSlider(e.target.value)
@@ -443,11 +530,11 @@ export default function Home() {
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Braço direito {righthandSlider|| 1}
+                    Braço direito {righthandSlider || 1}
                     <input
                       type="range"
                       min="1"
-                      max="2"
+                      max="3"
                       value={righthandSlider || 1}
                       onChange={(e) => {
                         setrighthandSlider(e.target.value)
@@ -456,11 +543,11 @@ export default function Home() {
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Capacete {helmetSlider|| 1}
+                    Capacete {helmetSlider || 1}
                     <input
                       type="range"
                       min="1"
-                      max="2"
+                      max="3"
                       value={helmetSlider || 1}
                       onChange={(e) => {
                         setHelmetSlider(e.target.value)
@@ -469,11 +556,11 @@ export default function Home() {
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Icone {iconSlider|| 1}
+                    Icone {iconSlider || 1}
                     <input
                       type="range"
                       min="1"
-                      max="2"
+                      max="3"
                       value={iconSlider || 1}
                       onChange={(e) => {
                         setIconSlider(e.target.value)
@@ -482,11 +569,11 @@ export default function Home() {
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Pet {petSlider|| 1}
+                    Pet {petSlider || 1}
                     <input
                       type="range"
                       min="1"
-                      max="2"
+                      max="3"
                       value={petSlider || 1}
                       onChange={(e) => {
                         setpetSlider(e.target.value)
@@ -509,14 +596,14 @@ export default function Home() {
                 </button>
               </div>
               <p>
-              Espere o nome em branco igual ao desejado:
+                Espere o nome em branco igual ao desejado:
 
-              <span style={{ color: 'white', padding: '5px', fontWeight: 'bold' }} >{name}</span>
+                <span style={{ color: 'white', padding: '5px', fontWeight: 'bold' }} >{name}</span>
               </p>
               <p>
-             Quer ser premium? basta apoiar o projeto!
+                Quer ser premium? basta apoiar o projeto!
 
-              
+
               </p>
             </div>
             <div style={{ width: '250px', padding: '5px' }} className={styles.rpgdiv4}>
