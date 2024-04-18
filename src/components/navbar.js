@@ -1,7 +1,6 @@
 import styles from './navbar.module.css';
 import { useAppContext } from '../AppContext';
 import { useEffect } from 'react';
-import { AwesomeButton } from 'react-awesome-button';
 
 export default function Navbar() {
   const currentYear = new Date().getFullYear();

@@ -16,6 +16,11 @@ export default function SessionPage() {
   const [images1, setImages1] = useState([]);
   const [images2, setImages2] = useState([]);
   const [images3, setImages3] = useState([]);
+  const [images4, setImages4] = useState([]);
+  const [images5, setImages5] = useState([]);
+  const [images6, setImages6] = useState([]);
+  const [images7, setImages7] = useState([]);
+  const [images8, setImages8] = useState([]);
 
   const [ReqKeeper, setReqKeeper] = useState(false);
   const [tile, setTile] = useState('');
@@ -211,10 +216,86 @@ export default function SessionPage() {
       }
 
     };
+    const importImages3 = async () => {
+
+      try {
+        const headImages = [];
+        for (let i = 1; i <= 2; i++) {
+          const image = await import(`../components/lefthand/lefthand${i}.png`);
+          headImages.push(image.default);
+        }
+        setImages4(headImages);
+      } catch (error) {
+        console.error('Error importing images:', error);
+      }
+
+    };
+    const importImages4 = async () => {
+
+      try {
+        const headImages = [];
+        for (let i = 1; i <= 2; i++) {
+          const image = await import(`../components/righthand/righthand${i}.png`);
+          headImages.push(image.default);
+        }
+        setImages5(headImages);
+      } catch (error) {
+        console.error('Error importing images:', error);
+      }
+
+    };
+    
+    const importImages5 = async () => {
+
+      try {
+        const headImages = [];
+        for (let i = 1; i <= 2; i++) {
+          const image = await import(`../components/helmet/helmet${i}.png`);
+          headImages.push(image.default);
+        }
+        setImages6(headImages);
+      } catch (error) {
+        console.error('Error importing images:', error);
+      }
+
+    };
+    const importImages6 = async () => {
+
+      try {
+        const headImages = [];
+        for (let i = 1; i <= 2; i++) {
+          const image = await import(`../components/icons/icons${i}.png`);
+          headImages.push(image.default);
+        }
+        setImages7(headImages);
+      } catch (error) {
+        console.error('Error importing images:', error);
+      }
+
+    };
+    const importImages7 = async () => {
+
+      try {
+        const headImages = [];
+        for (let i = 1; i <= 1; i++) {
+          const image = await import(`../components/pet/pet${i}.png`);
+          headImages.push(image.default);
+        }
+        setImages8(headImages);
+      } catch (error) {
+        console.error('Error importing images:', error);
+      }
+
+    };
 
     importImages();
     importImages1();
     importImages2();
+    importImages3();
+    importImages4();
+    importImages5();
+    importImages6();
+    importImages7();
   }, []);
   useEffect(() => {
 
@@ -708,7 +789,7 @@ export default function SessionPage() {
               }
               return npc;
             });
-            
+
 
 
           }
@@ -728,10 +809,10 @@ export default function SessionPage() {
     }
   };
   useEffect(() => {
-    if(statsuser){
+    if (statsuser) {
       handleUpdateStats(statsuser)
     }
-  },[statsuser])
+  }, [statsuser])
   async function handleUpdateStats(stats) {
     let statsnew = stats;
     let equipstats = { ...statsnew };
@@ -1053,11 +1134,16 @@ export default function SessionPage() {
   function CharGet({ ownerId }) {
 
     let filterlooks = looks?.find(user => user.idofuser === ownerId)
-
+    
 
     let headSliderimg;
     let torsoSliderimg;
     let lowerSliderimg;
+    let lefthandSliderimg;
+    let righthandSliderimg;
+    let petSliderimg;
+    let iconSliderimg;
+    let helmetSliderimg;
 
     if (filterlooks) {
 
@@ -1070,17 +1156,44 @@ export default function SessionPage() {
       if (filterlooks.thelooks[2] === null) {
         filterlooks.thelooks[2] = 1;
       }
+      if (filterlooks.thelooks[3] === null) {
+        filterlooks.thelooks[3] = 1;
+      }
+      if (filterlooks.thelooks[4] === null) {
+        filterlooks.thelooks[4] = 1;
+      }
+      if (filterlooks.thelooks[5] === null) {
+        filterlooks.thelooks[5] = 1;
+      }
+      if (filterlooks.thelooks[6] === null) {
+        filterlooks.thelooks[6] = 1;
+      }
+      if (filterlooks.thelooks[7] === null) {
+        filterlooks.thelooks[7] = 1;
+      }
+      
       const one = parseInt(filterlooks.thelooks[0])
       const two = parseInt(filterlooks.thelooks[1])
       const three = parseInt(filterlooks.thelooks[2])
+      const four = parseInt(filterlooks.thelooks[3])
+      const five = parseInt(filterlooks.thelooks[4])
+      const six = parseInt(filterlooks.thelooks[5])
+      const seven = parseInt(filterlooks.thelooks[6])
+      const eight = parseInt(filterlooks.thelooks[7])
       headSliderimg = images1[one - 1]
       torsoSliderimg = images2[two - 1]
       lowerSliderimg = images3[three - 1]
+      lefthandSliderimg = images4[four - 1]
+      righthandSliderimg = images5[five - 1]
+      helmetSliderimg = images6[six - 1]
+      iconSliderimg = images7[seven - 1]
+      petSliderimg = images8[eight - 1]
+      
 
     }
 
     return (
-      <div style={{ position: 'absolute', top: '25px', left: '16px' }} >
+      <div style={{ position: 'absolute', top: '25px', left: '16px',zIndex:'999' }} >
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}  >
 
           <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px' }}>
@@ -1093,6 +1206,26 @@ export default function SessionPage() {
 
             <img width={28} height={28} src={lowerSliderimg} alt={`lower`} />
           </div>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '50px', left: '-15px' }}>
+
+            <img width={30} height={30} src={lefthandSliderimg} alt={`lefthand${lefthandSliderimg}`} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '70px', left: '15px' }}>
+
+            <img width={30} height={30} src={righthandSliderimg} alt={`righthand${righthandSliderimg}`} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '120px', left: '0px' }}>
+            <img width={32} height={32} src={helmetSliderimg} alt={`helmet${helmetSliderimg}`} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '180px', left: '40px' }}>
+
+            <img width={30} height={30} src={iconSliderimg} alt={`icon${iconSliderimg}`} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '70px', left: '15px' }}>
+
+            <img width={30} height={30} src={petSliderimg} alt={`pet${petSliderimg}`} />
+          </div>
+         
 
 
 
@@ -1133,8 +1266,8 @@ export default function SessionPage() {
       {user?.id === playersid[0] && !isLoading ?
         <div style={{
           top: '1050px', left: '600px',
-          position: 'absolute', maxWidth:'700px', width:'100%', color:'white'
-        }}  className={styles.rpgdiv5}>
+          position: 'absolute', maxWidth: '700px', width: '100%', color: 'white'
+        }} className={styles.rpgdiv5}>
           Você é o <span style={{ fontWeight: 'bold', fontSize: '20px' }} >  MESTRE </span>
           Players e Npc's inseridos na sessão:
           <div>
@@ -1162,7 +1295,7 @@ export default function SessionPage() {
 
               </div>
 
-              <form style={{ display: 'flex' }} onSubmit={async(e) => {
+              <form style={{ display: 'flex' }} onSubmit={async (e) => {
                 e.preventDefault()
                 const response = await axios.get(`${urlrequest}/npcsGET`, {
                   headers: {
@@ -1174,12 +1307,12 @@ export default function SessionPage() {
                 if (response.data) {
                   const data = response.data;
                   newnpcs = data;
-          
+
                 }
                 newnpcs.push(selectedNpc);
                 updateSession({ Npcs: newnpcs })
               }} >
-                <div style={{display:'flex', flexDirection:'column', marginRight:'15px'}} >
+                <div style={{ display: 'flex', flexDirection: 'column', marginRight: '15px' }} >
                   Selecione o npc criado de {bookrpg}
                   <select style={{
                     borderRadius: '5px',
@@ -1198,7 +1331,7 @@ export default function SessionPage() {
                     ))}
                   </select>
                 </div>
-                <div style={{display:'flex', flexDirection:'column'}}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
                   NPC selecionado: {selectedNpc.Npcname}
 
                   <button className={styles.pushable}>
@@ -1218,7 +1351,7 @@ export default function SessionPage() {
               <p onClick={() => {
 
               }} >Adicionar Npc no mapa</p>
-              <div style={{display:'flex', flexDirection:'column'}}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
                 Nome do NPC
                 <select style={{
                   borderRadius: '5px',
@@ -1237,7 +1370,7 @@ export default function SessionPage() {
                   ))}
                 </select>
               </div>
-              <div style={{display:'flex', flexDirection:'column'}}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
                 Tile para spawnar npc
 
 
@@ -1279,7 +1412,7 @@ export default function SessionPage() {
               height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap',
               flexDirection: 'column'
             }}>
-              <div style={{color:'black', display: 'flex', flexDirection: 'column' }} >
+              <div style={{ color: 'black', display: 'flex', flexDirection: 'column' }} >
                 <h3 className={styles.medievalsharp}>Atributos do NPC </h3>
                 <p>{npcid}</p>
                 {user?.id === playersid[0] ?
@@ -1622,7 +1755,7 @@ export default function SessionPage() {
 
               </div>
               {user?.id === playersid[0] ?
-                <div style={{ color:'black',display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
+                <div style={{ color: 'black', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
                   <div style={{ display: 'flex', gap: '20px' }} >
                     {statsuser.earing?.atk ?
                       <div className={styles.slots} onClick={() => {
@@ -1718,7 +1851,7 @@ export default function SessionPage() {
                           handleAddItem2(index);
                           setStatsUser(updatedUser);
                           handleUpdateStats(updatedUser)
-                         
+
 
                           updateNpcs()
                         } else {
@@ -2061,7 +2194,7 @@ export default function SessionPage() {
                   </div>
                 </div> : null}
               {user?.id === playersid[0] ?
-                <div className={styles.rpgdiv4} style={{ position: 'absolute', top: '385px',right:'750px', maxWidth: '500px' }} >
+                <div className={styles.rpgdiv4} style={{ position: 'absolute', top: '385px', right: '750px', maxWidth: '500px' }} >
                   <h1 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > SEU INVENTARIO
                     ({inventory?.length || 0} Items)</h1>
                   <div>
@@ -2082,14 +2215,16 @@ export default function SessionPage() {
                     </select>
                   </div>
 
-                  <div className={styles.customScrollDiv} style={{ height: 'auto', 
-                  width: '20vw', display: 'flex', 
-                  overflowX: 'scroll', transform: 'scaleY(-1)' }}>
+                  <div className={styles.customScrollDiv} style={{
+                    height: 'auto',
+                    width: '20vw', display: 'flex',
+                    overflowX: 'scroll', transform: 'scaleY(-1)'
+                  }}>
                     <div style={{ minWidth: '1600px', display: 'flex', gap: '25px', flexWrap: 'wrap', transform: 'scaleY(-1)', position: 'relative', bottom: '10px', marginTop: '20px' }} >
                       {inventory?.map((item, index) => (
                         <div
                           className={styles.slotsinv}
-                          style={{color:'black', maxHeight: '350px', maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
+                          style={{ color: 'black', maxHeight: '350px', maxWidth: '200px', gap: '5px', padding: '5px', borderRadius: '5px', justifyContent: 'space-between', display: 'flex', flexDirection: 'column' }} key={index}>
                           {item?.item?.url ? (
                             <div onClick={() => {
                               if (item?.item?.canequip) {
@@ -2475,10 +2610,12 @@ export default function SessionPage() {
               </div>
 
               <div className={styles.customScrollDiv} style={{ height: 'auto', width: '50vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
-                <div style={{color:'black', minWidth: '1600px', 
-                display: 'flex', gap: '25px', flexWrap: 'wrap', 
-                transform: 'scaleY(-1)', position: 'relative', bottom: '10px', 
-                marginTop: '20px' }} >
+                <div style={{
+                  color: 'black', minWidth: '1600px',
+                  display: 'flex', gap: '25px', flexWrap: 'wrap',
+                  transform: 'scaleY(-1)', position: 'relative', bottom: '10px',
+                  marginTop: '20px'
+                }} >
                   {inventory?.map((item, index) => (
                     <div
                       className={styles.slotsinv}
@@ -3074,7 +3211,7 @@ export default function SessionPage() {
 
                   </div>
                   {user?.id !== playersid[0] ?
-                    <div style={{color:'black', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
+                    <div style={{ color: 'black', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
                       <div style={{ display: 'flex', gap: '20px' }} >
                         {statsuser.earing?.atk ?
                           <div className={styles.slots} onClick={() => {
@@ -3520,7 +3657,7 @@ export default function SessionPage() {
           {user?.id === playersid[0] ?
             <div style={{ marginTop: '10px' }} className={styles.rpgdiv4}>
               <h2 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} >Adicionar Item</h2>
-              <form style={{display:'flex', flexDirection:'column',alignItems:'center'}} onSubmit={handleSubmit}>
+              <form style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} onSubmit={handleSubmit}>
                 <label htmlFor="name">Nome:</label><br />
                 <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="name" name="name" value={formData.name} onChange={handleChange} required /><br />
 

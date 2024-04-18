@@ -11,10 +11,20 @@ export default function Home() {
   const [headSlider, setHeadSlider] = useState(1);
   const [torsoSlider, setTorsoSlider] = useState(1);
   const [lowerSlider, setLowerSlider] = useState(1);
+  const [lefthandSlider, setlefthandSlider] = useState(1);
+  const [righthandSlider, setrighthandSlider] = useState(1);
+  const [petSlider, setpetSlider] = useState(1);
+  const [helmetSlider, setHelmetSlider] = useState(1);
+  const [iconSlider, setIconSlider] = useState(1);
+  const [lefthandSliderimg, setlefthandSliderimg] = useState('');
+  const [righthandSliderimg, setrighthandSliderimg] = useState('');
+  const [petSliderimg, setpetSliderimg] = useState('');
+  const [helmetSliderimg, setHelmetSliderimg] = useState('');
+  const [iconSliderimg, setIconSliderimg] = useState('');
   const [headSliderimg, setHeadSliderimg] = useState('');
   const [torsoSliderimg, setTorsoSliderimg] = useState('');
   const [lowerSliderimg, setLowerSliderimg] = useState('');
-
+  const [isPremium, setIsPremium] = useState(false);
   const [randomText, setRandomText] = useState('');
   const [changed, setChanged] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -135,6 +145,15 @@ export default function Home() {
       setHeadSlider(parseInt(data.charCreate[0]))
       setTorsoSlider(parseInt(data.charCreate[1]))
       setLowerSlider(parseInt(data.charCreate[2]))
+      setlefthandSlider(parseInt(data.charCreate[3]))
+      setrighthandSlider(parseInt(data.charCreate[4]))
+      setHelmetSlider(parseInt(data.charCreate[5]))
+      setIconSlider(parseInt(data.charCreate[6]))
+      setpetSlider(parseInt(data.charCreate[7]))
+      if (data.premium) {
+
+        setIsPremium(data.premium)
+      }
 
     }
   }
@@ -260,9 +279,56 @@ export default function Home() {
         console.error('Error loading head image:', error);
       });
   }, [lowerSlider])
+  useEffect(() => {
+    import(`../components/lefthand/lefthand${lefthandSlider}.png`)
+      .then(image => {
+        setlefthandSliderimg(image.default);
+      })
+      .catch(error => {
+        console.error('Error loading head image:', error);
+      });
+  }, [lefthandSlider])
+  useEffect(() => {
+    import(`../components/righthand/righthand${righthandSlider}.png`)
+      .then(image => {
+        setrighthandSliderimg(image.default);
+      })
+      .catch(error => {
+        console.error('Error loading head image:', error);
+      });
+  }, [righthandSlider])
+  useEffect(() => {
+    import(`../components/icons/icons${iconSlider}.png`)
+      .then(image => {
+        setIconSliderimg(image.default);
+      })
+      .catch(error => {
+        console.error('Error loading head image:', error);
+      });
+  }, [iconSlider])
+
+  useEffect(() => {
+    import(`../components/helmet/helmet${helmetSlider}.png`)
+      .then(image => {
+        setHelmetSliderimg(image.default);
+      })
+      .catch(error => {
+        console.error('Error loading head image:', error);
+      });
+  }, [helmetSlider])
+
+  useEffect(() => {
+    import(`../components/pet/pet${petSlider}.png`)
+      .then(image => {
+        setpetSliderimg(image.default);
+      })
+      .catch(error => {
+        console.error('Error loading head image:', error);
+      });
+  }, [petSlider])
   async function saveOutfit() {
     try {
-      const newOutfit = [headSlider, torsoSlider, lowerSlider]
+      const newOutfit = [headSlider, torsoSlider, lowerSlider, lefthandSlider, righthandSlider, helmetSlider, iconSlider, petSlider]
       console.log(newOutfit)
       const response = await axios.post(`${urlrequest}/heartbeat`, { userId: user.id, charCreate: newOutfit });
     }
@@ -283,21 +349,40 @@ export default function Home() {
             alignContent: 'center',
             alignItems: 'center'
           }}>
-            <div style={{ width: '250px', padding: '5px', marginBottom: '10px' }} className={styles.rpgdiv4} > SEU NOME: <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }}
+            <div style={{ width: '350px', padding: '5px', marginBottom: '10px' }} className={styles.rpgdiv4} > SEU NOME: <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }}
               value={newName} onChange={(e) => { setNewName(e.target.value) }} />
               <div style={{ display: 'flex' }} >
 
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}  >
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center', marginRight:'60px', marginLeft:'10px' }}  >
 
-                  <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px', zIndex:'101' }}>
                     <img width={30} height={30} src={headSliderimg} alt={`head${headSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-20px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-20px', zIndex:'101' }}>
                     <img width={30} height={30} src={torsoSliderimg} alt={`head${torsoSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', zIndex:'101' }}>
 
                     <img width={30} height={30} src={lowerSliderimg} alt={`lower${lowerSliderimg}`} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', position:'relative', bottom:'50px', left:'-15px', zIndex:'102' }}>
+
+                    <img width={30} height={30} src={lefthandSliderimg} alt={`lefthand${lefthandSliderimg}`} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', position:'relative', bottom:'70px', left:'15px', zIndex:'102' }}>
+
+                    <img width={30} height={30} src={righthandSliderimg} alt={`righthand${righthandSliderimg}`} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', position:'relative', bottom:'70px', left:'15px', zIndex:'103' }}>
+
+                    <img width={30} height={30} src={petSliderimg} alt={`pet${petSliderimg}`} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', position:'relative', bottom:'180px', left:'40px', zIndex:'103' }}>
+
+                    <img width={30} height={30} src={iconSliderimg} alt={`icon${iconSliderimg}`} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', position:'relative', bottom:'184px', left:'0px', zIndex:'102' }}>
+                    <img width={34} height={34} src={helmetSliderimg} alt={`helmet${helmetSliderimg}`} />
                   </div>
 
 
@@ -341,10 +426,71 @@ export default function Home() {
                       }}
                     />
                   </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    Braço esquerdo {lefthandSlider}
+                    <input
+                      type="range"
+                      min="1"
+                      max="2"
+                      value={lefthandSlider}
+                      onChange={(e) => {
+                        setlefthandSlider(e.target.value)
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    Braço direito {righthandSlider}
+                    <input
+                      type="range"
+                      min="1"
+                      max="2"
+                      value={righthandSlider}
+                      onChange={(e) => {
+                        setrighthandSlider(e.target.value)
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    Capacete {helmetSlider}
+                    <input
+                      type="range"
+                      min="1"
+                      max="2"
+                      value={helmetSlider}
+                      onChange={(e) => {
+                        setHelmetSlider(e.target.value)
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    Icone {iconSlider}
+                    <input
+                      type="range"
+                      min="1"
+                      max="2"
+                      value={iconSlider}
+                      onChange={(e) => {
+                        setIconSlider(e.target.value)
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    Pet {petSlider}
+                    <input
+                      type="range"
+                      min="1"
+                      max="2"
+                      value={petSlider}
+                      onChange={(e) => {
+                        setpetSlider(e.target.value)
+                      }}
+                    />
+                  </div>
+
 
 
                 </div>
-                <button style={{ marginTop: '45px' }} disabled={keeper} type='button' onClick={() => {
+                <button style={{ maxHeight: '60px', marginTop: '45px' }} disabled={keeper} type='button' onClick={() => {
                   saveOutfit();
                   setKeeper(true);
                 }} className={styles.pushable}>
@@ -448,19 +594,19 @@ export default function Home() {
             </div>}
 
           </div>}
-        <div style={{display:'flex', gap:'5%'}} >
+        <div style={{ display: 'flex', gap: '5%' }} >
 
           <div className={styles.homechat}>
             <div>
               <h1 style={{ color: 'white', textAlign: 'center' }} >
                 Botões Úteis
               </h1>
-              
+
             </div>
-            
+
           </div>
-          <div style={{maxWidth:'600px', width:'600px'}} className={styles.homechat}>
-            <div style={{width:'100%', display:'flex', flexDirection:'column'}} >
+          <div style={{ maxWidth: '600px', width: '600px' }} className={styles.homechat}>
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }} >
               <h1 style={{ color: 'white', textAlign: 'center' }} >
                 CHAT
               </h1>
@@ -476,7 +622,7 @@ export default function Home() {
 
               </div>
               <div>
-                <input style={{width:'85%', marginRight:'10px'}} placeholder='Escreva aqui' />
+                <input style={{ width: '85%', marginRight: '10px' }} placeholder='Escreva aqui' />
                 <button>Enviar</button>
               </div>
 
@@ -485,7 +631,7 @@ export default function Home() {
               color: 'white',
               display: 'flex', flexDirection: 'column',
               border: '1px solid blue', padding: '5px',
-              width:'100px', gap:'10px'
+              width: '100px', gap: '10px'
             }}>
 
               <div>
