@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useAppContext } from '../AppContext';
 import Sessions from '../components/sessions';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 export default function Home() {
   const [keeper, setKeeper] = useState(false);
@@ -150,13 +150,15 @@ export default function Home() {
       setHelmetSlider(parseInt(data.charCreate[5]))
       setIconSlider(parseInt(data.charCreate[6]))
       setpetSlider(parseInt(data.charCreate[7]))
-      if (data.premium) {
+      if (data.premium === true) {
 
         setIsPremium(data.premium)
       }
 
     }
   }
+
+
 
   useEffect(() => {
     if (changed === true) {
@@ -396,94 +398,100 @@ export default function Home() {
                       type="range"
                       min="1"
                       max="3"
-                      value={headSlider}
+                      value={headSlider || 1}
                       onChange={(e) => {
                         setHeadSlider(e.target.value)
                       }}
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Torso {torsoSlider}
+                    Torso {torsoSlider || 1}
                     <input
                       type="range"
                       min="1"
                       max="3"
-                      value={torsoSlider}
+                      value={torsoSlider || 1}
                       onChange={(e) => {
                         setTorsoSlider(e.target.value)
                       }}
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Pernas {lowerSlider}
+                    Pernas {lowerSlider|| 1}
                     <input
                       type="range"
                       min="1"
                       max="3"
-                      value={lowerSlider}
+                      value={lowerSlider || 1}
                       onChange={(e) => {
                         setLowerSlider(e.target.value)
                       }}
                     />
                   </div>
+                  <div style={{textAlign:'center', marginBlock:'10px'}} > <ArrowDownwardIcon style={{color:'yellow'}} /> PREMIUM <ArrowDownwardIcon style={{color:'yellow'}} /> </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Braço esquerdo {lefthandSlider}
+                    Braço esquerdo {lefthandSlider|| 1}
                     <input
                       type="range"
                       min="1"
                       max="2"
-                      value={lefthandSlider}
+                      value={lefthandSlider || 1}
                       onChange={(e) => {
                         setlefthandSlider(e.target.value)
                       }}
+                      disabled={!isPremium}
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Braço direito {righthandSlider}
+                    Braço direito {righthandSlider|| 1}
                     <input
                       type="range"
                       min="1"
                       max="2"
-                      value={righthandSlider}
+                      value={righthandSlider || 1}
                       onChange={(e) => {
                         setrighthandSlider(e.target.value)
                       }}
+                      disabled={!isPremium}
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Capacete {helmetSlider}
+                    Capacete {helmetSlider|| 1}
                     <input
                       type="range"
                       min="1"
                       max="2"
-                      value={helmetSlider}
+                      value={helmetSlider || 1}
                       onChange={(e) => {
                         setHelmetSlider(e.target.value)
                       }}
+                      disabled={!isPremium}
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Icone {iconSlider}
+                    Icone {iconSlider|| 1}
                     <input
                       type="range"
                       min="1"
                       max="2"
-                      value={iconSlider}
+                      value={iconSlider || 1}
                       onChange={(e) => {
                         setIconSlider(e.target.value)
                       }}
+                      disabled={!isPremium}
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    Pet {petSlider}
+                    Pet {petSlider|| 1}
                     <input
                       type="range"
                       min="1"
                       max="2"
-                      value={petSlider}
+                      value={petSlider || 1}
                       onChange={(e) => {
                         setpetSlider(e.target.value)
                       }}
+                      disabled={!isPremium}
                     />
                   </div>
 
@@ -500,8 +508,16 @@ export default function Home() {
                   </span>
                 </button>
               </div>
+              <p>
               Espere o nome em branco igual ao desejado:
+
               <span style={{ color: 'white', padding: '5px', fontWeight: 'bold' }} >{name}</span>
+              </p>
+              <p>
+             Quer ser premium? basta apoiar o projeto!
+
+              
+              </p>
             </div>
             <div style={{ width: '250px', padding: '5px' }} className={styles.rpgdiv4}>
 

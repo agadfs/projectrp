@@ -244,7 +244,7 @@ export default function SessionPage() {
       }
 
     };
-    
+
     const importImages5 = async () => {
 
       try {
@@ -998,6 +998,24 @@ export default function SessionPage() {
     }
 
 
+    let verticalMovement;
+    let horizontalMovement;
+    let oldrow;
+    let newrow;
+    let oldcolumn;
+    let newcolumn;
+
+    oldrow = Math.floor(newPosition / 64);
+    newrow = Math.floor(updatedPlayerLocations[0].tile / 64);
+    oldcolumn = newPosition % 64;
+    newcolumn = updatedPlayerLocations[0].tile % 64;
+
+    horizontalMovement =  newcolumn -  oldcolumn;
+     verticalMovement  =  newrow - oldrow;
+
+    console.log("Vertical movement:", verticalMovement);
+    console.log("Horizontal movement:", horizontalMovement);
+
     setPlayerLocation(updatedPlayerLocations);
     updateSession({ PlayersPos: updatedPlayerLocations });
   };
@@ -1134,7 +1152,7 @@ export default function SessionPage() {
   function CharGet({ ownerId }) {
 
     let filterlooks = looks?.find(user => user.idofuser === ownerId)
-    
+
 
     let headSliderimg;
     let torsoSliderimg;
@@ -1171,7 +1189,7 @@ export default function SessionPage() {
       if (filterlooks.thelooks[7] === null) {
         filterlooks.thelooks[7] = 1;
       }
-      
+
       const one = parseInt(filterlooks.thelooks[0])
       const two = parseInt(filterlooks.thelooks[1])
       const three = parseInt(filterlooks.thelooks[2])
@@ -1188,12 +1206,12 @@ export default function SessionPage() {
       helmetSliderimg = images6[six - 1]
       iconSliderimg = images7[seven - 1]
       petSliderimg = images8[eight - 1]
-      
+
 
     }
 
     return (
-      <div style={{ position: 'absolute', top: '25px', left: '16px',zIndex:'999' }} >
+      <div style={{ position: 'absolute', top: '25px', left: '16px', zIndex: '999' }} >
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}  >
 
           <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px' }}>
@@ -1206,26 +1224,26 @@ export default function SessionPage() {
 
             <img width={28} height={28} src={lowerSliderimg} alt={`lower`} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '50px', left: '-15px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '50px', left: '-15px', height: '0px' }}>
 
             <img width={30} height={30} src={lefthandSliderimg} alt={`lefthand${lefthandSliderimg}`} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '70px', left: '15px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '40px', left: '15px', height: '0px' }}>
 
             <img width={30} height={30} src={righthandSliderimg} alt={`righthand${righthandSliderimg}`} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '120px', left: '0px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '60px', left: '0px', height: '0px' }}>
             <img width={32} height={32} src={helmetSliderimg} alt={`helmet${helmetSliderimg}`} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '180px', left: '40px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '70px', left: '40px', height: '0px' }}>
 
             <img width={30} height={30} src={iconSliderimg} alt={`icon${iconSliderimg}`} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '70px', left: '15px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '70px', left: '15px', height: '0px' }}>
 
             <img width={30} height={30} src={petSliderimg} alt={`pet${petSliderimg}`} />
           </div>
-         
+
 
 
 
@@ -2545,6 +2563,7 @@ export default function SessionPage() {
                         width: '60px', // Adjust as needed
                         height: '60px', // Adjust as needed
                         border: player.npcmap.ownerId === user.id ? '1px solid red' : '1px solid blue',
+                        transition: 'top 1.5s, left 1.5s 1.5s',
                       }}
                       draggable
                       onDragStart={(e) => handleDragStart(e, parseInt(player.tile))}
@@ -2572,6 +2591,7 @@ export default function SessionPage() {
                         width: '60px', // Adjust as needed
                         height: '60px', // Adjust as needed
                         border: player.npcmap.ownerId === user.id ? '1px solid red' : '1px solid blue',
+                        transition: 'top 1.5s, left 1.5s 1.5s',
                       }}
                       onDragStart={(e) => handleDragStart(e, parseInt(player.tile))}
                     >
