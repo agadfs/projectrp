@@ -263,3 +263,10 @@
   height: 300px;
  
 }
+
+.fontplay{
+  font-family: "Press Start 2P", system-ui;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 18px;
+}

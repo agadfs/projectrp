@@ -5,7 +5,7 @@ import { useAppContext } from '../AppContext';
 import Sessions from '../components/sessions';
 import CircularProgress from '@mui/material/CircularProgress';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-
+import coin from './staticcoin.png'
 export default function Home() {
   const [keeper, setKeeper] = useState(false);
   const [headSlider, setHeadSlider] = useState(1);
@@ -266,7 +266,7 @@ export default function Home() {
           return false;
         });
     };
-  
+
     loadImage('png').then(success => {
       if (!success) {
         loadImage('gif');
@@ -275,124 +275,124 @@ export default function Home() {
   }, [headSlider]);
 
   useEffect(() => {
-  const loadImage = (fileType) => {
-    return import(`../components/torso/torso${torsoSlider}.${fileType}`)
-      .then(image => {
-        setTorsoSliderimg(image.default);
-        return true;
-      })
-      .catch(error => {
-        console.error(`Error loading ${fileType} image:`, error);
-        return false;
-      });
-  };
+    const loadImage = (fileType) => {
+      return import(`../components/torso/torso${torsoSlider}.${fileType}`)
+        .then(image => {
+          setTorsoSliderimg(image.default);
+          return true;
+        })
+        .catch(error => {
+          console.error(`Error loading ${fileType} image:`, error);
+          return false;
+        });
+    };
 
-  loadImage('png').then(success => {
-    if (!success) {
-      loadImage('gif');
-    }
-  });
-}, [torsoSlider]);
+    loadImage('png').then(success => {
+      if (!success) {
+        loadImage('gif');
+      }
+    });
+  }, [torsoSlider]);
 
-useEffect(() => {
-  const loadImage = (fileType) => {
-    return import(`../components/zlower/lower${lowerSlider}.${fileType}`)
-      .then(image => {
-        setLowerSliderimg(image.default);
-        return true;
-      })
-      .catch(error => {
-        console.error(`Error loading ${fileType} image:`, error);
-        return false;
-      });
-  };
+  useEffect(() => {
+    const loadImage = (fileType) => {
+      return import(`../components/zlower/lower${lowerSlider}.${fileType}`)
+        .then(image => {
+          setLowerSliderimg(image.default);
+          return true;
+        })
+        .catch(error => {
+          console.error(`Error loading ${fileType} image:`, error);
+          return false;
+        });
+    };
 
-  loadImage('png').then(success => {
-    if (!success) {
-      loadImage('gif');
-    }
-  });
-}, [lowerSlider]);
+    loadImage('png').then(success => {
+      if (!success) {
+        loadImage('gif');
+      }
+    });
+  }, [lowerSlider]);
 
-useEffect(() => {
-  const loadImage = (fileType) => {
-    return import(`../components/lefthand/lefthand${lefthandSlider}.${fileType}`)
-      .then(image => {
-        setlefthandSliderimg(image.default);
-        return true;
-      })
-      .catch(error => {
-        console.error(`Error loading ${fileType} image:`, error);
-        return false;
-      });
-  };
+  useEffect(() => {
+    const loadImage = (fileType) => {
+      return import(`../components/lefthand/lefthand${lefthandSlider}.${fileType}`)
+        .then(image => {
+          setlefthandSliderimg(image.default);
+          return true;
+        })
+        .catch(error => {
+          console.error(`Error loading ${fileType} image:`, error);
+          return false;
+        });
+    };
 
-  loadImage('png').then(success => {
-    if (!success) {
-      loadImage('gif');
-    }
-  });
-}, [lefthandSlider]);
+    loadImage('png').then(success => {
+      if (!success) {
+        loadImage('gif');
+      }
+    });
+  }, [lefthandSlider]);
 
-useEffect(() => {
-  const loadImage = (fileType) => {
-    return import(`../components/righthand/righthand${righthandSlider}.${fileType}`)
-      .then(image => {
-        setrighthandSliderimg(image.default);
-        return true;
-      })
-      .catch(error => {
-        console.error(`Error loading ${fileType} image:`, error);
-        return false;
-      });
-  };
+  useEffect(() => {
+    const loadImage = (fileType) => {
+      return import(`../components/righthand/righthand${righthandSlider}.${fileType}`)
+        .then(image => {
+          setrighthandSliderimg(image.default);
+          return true;
+        })
+        .catch(error => {
+          console.error(`Error loading ${fileType} image:`, error);
+          return false;
+        });
+    };
 
-  loadImage('png').then(success => {
-    if (!success) {
-      loadImage('gif');
-    }
-  });
-}, [righthandSlider]);
+    loadImage('png').then(success => {
+      if (!success) {
+        loadImage('gif');
+      }
+    });
+  }, [righthandSlider]);
 
-useEffect(() => {
-  const loadImage = (fileType) => {
-    return import(`../components/icons/icons${iconSlider}.${fileType}`)
-      .then(image => {
-        setIconSliderimg(image.default);
-        return true;
-      })
-      .catch(error => {
-        console.error(`Error loading ${fileType} image:`, error);
-        return false;
-      });
-  };
+  useEffect(() => {
+    const loadImage = (fileType) => {
+      return import(`../components/icons/icons${iconSlider}.${fileType}`)
+        .then(image => {
+          setIconSliderimg(image.default);
+          return true;
+        })
+        .catch(error => {
+          console.error(`Error loading ${fileType} image:`, error);
+          return false;
+        });
+    };
 
-  loadImage('png').then(success => {
-    if (!success) {
-      loadImage('gif');
-    }
-  });
-}, [iconSlider]);
+    loadImage('png').then(success => {
+      if (!success) {
+        loadImage('gif');
+      }
+    });
+  }, [iconSlider]);
 
-useEffect(() => {
-  const loadImage = (fileType) => {
-    return import(`../components/helmet/helmet${helmetSlider}.${fileType}`)
-      .then(image => {
-        setHelmetSliderimg(image.default);
-        return true;
-      })
-      .catch(error => {
-        console.error(`Error loading ${fileType} image:`, error);
-        return false;
-      });
-  };
+  useEffect(() => {
+    const loadImage = (fileType) => {
+      return import(`../components/helmet/helmet${helmetSlider}.${fileType}`)
+        .then(image => {
+          setHelmetSliderimg(image.default);
+          return true;
+        })
+        .catch(error => {
+          console.error(`Error loading ${fileType} image:`, error);
+          return false;
+        });
+    };
 
-  loadImage('png').then(success => {
-    if (!success) {
-      loadImage('gif');
-    }
-  });
-}, [helmetSlider]);
+    loadImage('png').then(success => {
+      if (!success) {
+        loadImage('gif');
+      }
+    });
+  }, [helmetSlider]);
 
   useEffect(() => {
     // Function to attempt loading an image file
@@ -438,6 +438,70 @@ useEffect(() => {
             alignContent: 'center',
             alignItems: 'center'
           }}>
+            <div className={styles.rpgdiv4} >
+              Status da conta:
+              {isPremium ?
+                <div style={{ display: 'flex' }} >
+
+
+                  <div style={{ position: 'relative' }}>
+                    <img src={coin} width={50} height={50} style={{ display: 'block' }} />
+                    <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
+                      P
+                      </span>
+                  </div>
+                  <div style={{ position: 'relative' }}>
+                    <img src={coin} width={50} height={50} style={{ display: 'block' }} />
+                    <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
+                      R
+                      </span>
+                  </div>
+                  <div style={{ position: 'relative' }}>
+                    <img src={coin} width={50} height={50} style={{ display: 'block' }} />
+                    <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
+                      E
+                      </span>
+                  </div>
+                  <div style={{position: 'relative' }}>
+                    <img src={coin} width={50} height={50} style={{ display: 'block' }} />
+                    <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
+                      M
+                      </span>
+                  </div>
+                  <div style={{ position: 'relative' }}>
+                    <img src={coin} width={50} height={50} style={{ display: 'block' }} />
+                    <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
+                      I
+                      </span>
+                  </div>
+                  <div style={{position: 'relative' }}>
+                    <img src={coin} width={50} height={50} style={{ display: 'block' }} />
+                    <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
+                      U
+                      </span>
+                  </div>
+                  <div style={{position: 'relative' }}>
+                    <img src={coin} width={50} height={50} style={{ display: 'block' }} />
+                    <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
+                     M
+                      </span>
+                  </div>
+
+                </div>
+
+
+                :
+                <div style={{ display: 'flex' }} >
+
+
+                  <div style={{ margin: '10px' }} className={styles.fontplay}  >
+                    F R E E
+                  </div>
+
+                </div>
+              }
+
+            </div>
             <div style={{ width: '350px', padding: '5px', marginBottom: '10px' }} className={styles.rpgdiv4} > SEU NOME: <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }}
               value={newName} onChange={(e) => { setNewName(e.target.value) }} />
               <div style={{ display: 'flex' }} >
@@ -445,20 +509,20 @@ useEffect(() => {
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center', marginRight: '60px', marginLeft: '10px' }}  >
 
                   <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px', zIndex: '101' }}>
-                    <img width={25} height={25} src={headSliderimg} alt={`head${headSliderimg}`} />
+                    <img width={30} height={30} src={headSliderimg} alt={`head${headSliderimg}`} />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-20px', zIndex: '102' }}>
-                    <img width={30} height={30} src={torsoSliderimg} alt={`head${torsoSliderimg}`} />
+                    <img width={30} height={30} src={torsoSliderimg} alt={`torso${torsoSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', zIndex: '101',position: 'relative', bottom:'-20px', zIndex: '101' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', zIndex: '101', position: 'relative', bottom: '-20px', zIndex: '101' }}>
 
                     <img width={30} height={20} src={lowerSliderimg} alt={`lower${lowerSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '60px', left: '-15px', zIndex: '102', height:'30px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '60px', left: '-15px', zIndex: '103', height: '30px' }}>
 
-                    <img  width={'auto'} height={45} src={lefthandSliderimg} alt={`lefthand${lefthandSliderimg}`} />
+                    <img width={'auto'} height={45} src={lefthandSliderimg} alt={`lefthand${lefthandSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '70px', left: '15px', zIndex: '102' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '70px', left: '15px', zIndex: '103' }}>
 
                     <img width={30} height={30} src={righthandSliderimg} alt={`righthand${righthandSliderimg}`} />
                   </div>
@@ -470,7 +534,7 @@ useEffect(() => {
 
                     <img width={30} height={30} src={iconSliderimg} alt={`icon${iconSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '203px', left: '0px', zIndex: '101' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '195px', left: '0px', zIndex: '102' }}>
                     <img width={37} height={37} src={helmetSliderimg} alt={`helmet${helmetSliderimg}`} />
                   </div>
 
@@ -484,12 +548,12 @@ useEffect(() => {
                     <input
                       type="range"
                       min="1"
-                      max="4"
+                      max="7"
                       value={headSlider || 1}
                       onChange={(e) => {
                         setHeadSlider(e.target.value)
                       }}
-                     
+
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -497,7 +561,7 @@ useEffect(() => {
                     <input
                       type="range"
                       min="1"
-                      max="4"
+                      max="6"
                       value={torsoSlider || 1}
                       onChange={(e) => {
                         setTorsoSlider(e.target.value)
@@ -658,9 +722,7 @@ useEffect(() => {
         </div>
 
       </div>
-      <div className={styles.homecolumn}>
 
-      </div>
       <div style={{ display: 'flex', flexDirection: 'column', marginLeft: '240px' }} >
 
         {user.id && sessions && userscount && userscountonline && !isLoading ?

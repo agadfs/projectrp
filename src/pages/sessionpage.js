@@ -177,7 +177,7 @@ export default function SessionPage() {
     const importImages = async () => {
       try {
         const headImages = [];
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 1; i <= 7; i++) {
           const image = await import(`../components/head/head${i}.png`);
           headImages.push(image.default);
         }
@@ -192,7 +192,7 @@ export default function SessionPage() {
 
       try {
         const headImages = [];
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 1; i <= 6; i++) {
           const image = await import(`../components/torso/torso${i}.png`);
           headImages.push(image.default);
         }
@@ -242,16 +242,24 @@ export default function SessionPage() {
     };
     const importImages4 = async () => {
 
-      try {
-        const headImages = [];
-        for (let i = 1; i <= 2; i++) {
+      const headImages = [];
+      for (let i = 1; i <= 4; i++) {
+        try {
           const image = await import(`../components/righthand/righthand${i}.png`);
           headImages.push(image.default);
+        } catch (pngError) {
+          console.error(`Error importing PNG image righthand${i}.png:`, pngError);
+          try {
+            const gifImage = await import(`../components/righthand/righthand${i}.gif`);
+            headImages.push(gifImage.default);
+          } catch (gifError) {
+            console.error(`Error importing GIF image righthand${i}.gif:`, gifError);
+            // Optionally, you can push a default image or null if both imports fail
+            headImages.push(null);
+          }
         }
-        setImages5(headImages);
-      } catch (error) {
-        console.error('Error importing images:', error);
       }
+      setImages5(headImages);
 
     };
 
@@ -1251,7 +1259,7 @@ export default function SessionPage() {
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}  >
 
           <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px' }}>
-            <img width={28} height={28} src={headSliderimg} alt={`head`} />
+            <img width={26} height={26} src={headSliderimg} alt={`head`} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '0px' }}>
             <img width={28} height={28} src={torsoSliderimg} alt={`torso`} />
@@ -1260,16 +1268,16 @@ export default function SessionPage() {
 
             <img width={28} height={20} src={lowerSliderimg} alt={`lower`} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '60px', left: '-15px', height: '0px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '60px', left: '-13px', height: '0px',zIndex:'2' }}>
 
             <img width={'auto'} height={45} src={lefthandSliderimg} alt={`lefthand${lefthandSliderimg}`} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '40px', left: '15px', height: '0px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '50px', left: '13px', height: '0px' }}>
 
             <img width={30} height={30} src={righthandSliderimg} alt={`righthand${righthandSliderimg}`} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '60px', left: '0px', height: '0px' }}>
-            <img width={32} height={32} src={helmetSliderimg} alt={`helmet${helmetSliderimg}`} />
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '75px', left: '0px', height: '0px' }}>
+            <img width={35} height={35} src={helmetSliderimg} alt={`helmet${helmetSliderimg}`} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '70px', left: '40px', height: '0px' }}>
 
