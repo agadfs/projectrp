@@ -177,7 +177,7 @@ export default function SessionPage() {
     const importImages = async () => {
       try {
         const headImages = [];
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 4; i++) {
           const image = await import(`../components/head/head${i}.png`);
           headImages.push(image.default);
         }
@@ -192,7 +192,7 @@ export default function SessionPage() {
 
       try {
         const headImages = [];
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 4; i++) {
           const image = await import(`../components/torso/torso${i}.png`);
           headImages.push(image.default);
         }
@@ -206,7 +206,7 @@ export default function SessionPage() {
 
       try {
         const headImages = [];
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 4; i++) {
           const image = await import(`../components/zlower/lower${i}.png`);
           headImages.push(image.default);
         }
@@ -220,7 +220,7 @@ export default function SessionPage() {
 
 
       const headImages = [];
-      for (let i = 1; i <= 3; i++) {
+      for (let i = 1; i <= 4; i++) {
         try {
           const image = await import(`../components/lefthand/lefthand${i}.png`);
           headImages.push(image.default);
@@ -257,16 +257,25 @@ export default function SessionPage() {
 
     const importImages5 = async () => {
 
-      try {
-        const headImages = [];
-        for (let i = 1; i <= 2; i++) {
+      const headImages = [];
+
+      for (let i = 1; i <= 4; i++) {
+        try {
           const image = await import(`../components/helmet/helmet${i}.png`);
           headImages.push(image.default);
+        } catch (pngError) {
+          console.error(`Error importing PNG image helmet${i}.png:`, pngError);
+          try {
+            const gifImage = await import(`../components/helmet/helmet${i}.gif`);
+            headImages.push(gifImage.default);
+          } catch (gifError) {
+            console.error(`Error importing GIF image helmet${i}.gif:`, gifError);
+            // Optionally, you can push a default image or null if both imports fail
+            headImages.push(null);
+          }
         }
-        setImages6(headImages);
-      } catch (error) {
-        console.error('Error importing images:', error);
       }
+      setImages6(headImages)
 
     };
     const importImages6 = async () => {
@@ -1244,12 +1253,12 @@ export default function SessionPage() {
           <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px' }}>
             <img width={28} height={28} src={headSliderimg} alt={`head`} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-20px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '0px' }}>
             <img width={28} height={28} src={torsoSliderimg} alt={`torso`} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
 
-            <img width={28} height={28} src={lowerSliderimg} alt={`lower`} />
+            <img width={28} height={20} src={lowerSliderimg} alt={`lower`} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '60px', left: '-15px', height: '0px' }}>
 

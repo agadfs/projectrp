@@ -445,14 +445,14 @@ useEffect(() => {
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center', marginRight: '60px', marginLeft: '10px' }}  >
 
                   <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-6px', zIndex: '101' }}>
-                    <img width={30} height={30} src={headSliderimg} alt={`head${headSliderimg}`} />
+                    <img width={25} height={25} src={headSliderimg} alt={`head${headSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-20px', zIndex: '101' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '-20px', zIndex: '102' }}>
                     <img width={30} height={30} src={torsoSliderimg} alt={`head${torsoSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', zIndex: '101' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', zIndex: '101',position: 'relative', bottom:'-20px', zIndex: '101' }}>
 
-                    <img width={30} height={30} src={lowerSliderimg} alt={`lower${lowerSliderimg}`} />
+                    <img width={30} height={20} src={lowerSliderimg} alt={`lower${lowerSliderimg}`} />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '60px', left: '-15px', zIndex: '102', height:'30px' }}>
 
@@ -470,8 +470,8 @@ useEffect(() => {
 
                     <img width={30} height={30} src={iconSliderimg} alt={`icon${iconSliderimg}`} />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '184px', left: '0px', zIndex: '102' }}>
-                    <img width={34} height={34} src={helmetSliderimg} alt={`helmet${helmetSliderimg}`} />
+                  <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '203px', left: '0px', zIndex: '101' }}>
+                    <img width={37} height={37} src={helmetSliderimg} alt={`helmet${helmetSliderimg}`} />
                   </div>
 
 
@@ -484,11 +484,12 @@ useEffect(() => {
                     <input
                       type="range"
                       min="1"
-                      max="3"
+                      max="4"
                       value={headSlider || 1}
                       onChange={(e) => {
                         setHeadSlider(e.target.value)
                       }}
+                     
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -496,7 +497,7 @@ useEffect(() => {
                     <input
                       type="range"
                       min="1"
-                      max="3"
+                      max="4"
                       value={torsoSlider || 1}
                       onChange={(e) => {
                         setTorsoSlider(e.target.value)
@@ -508,7 +509,7 @@ useEffect(() => {
                     <input
                       type="range"
                       min="1"
-                      max="3"
+                      max="4"
                       value={lowerSlider || 1}
                       onChange={(e) => {
                         setLowerSlider(e.target.value)
@@ -521,7 +522,7 @@ useEffect(() => {
                     <input
                       type="range"
                       min="1"
-                      max="3"
+                      max="4"
                       value={lefthandSlider || 1}
                       onChange={(e) => {
                         setlefthandSlider(e.target.value)
@@ -547,7 +548,7 @@ useEffect(() => {
                     <input
                       type="range"
                       min="1"
-                      max="3"
+                      max="4"
                       value={helmetSlider || 1}
                       onChange={(e) => {
                         setHelmetSlider(e.target.value)
