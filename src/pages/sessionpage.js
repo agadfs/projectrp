@@ -1330,9 +1330,7 @@ export default function SessionPage() {
     }
   }
   return (
-    <div onWheel={(e) => {
-      e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })
-    }} className={styles.body} >
+    <div  className={styles.body} >
       {user?.id === playersid[0] && !isLoading ?
         <div style={{
           top: '10px', left: '0px', zIndex: '9999',
@@ -2680,12 +2678,12 @@ export default function SessionPage() {
             </div>
           </div>
           {user?.id !== playersid[0] ?
-            <div className={styles.rpgdiv4} style={{ zIndex: '9999', position: 'fixed', top: '0px', maxWidth: '1100px', left: '450px', display: buttonShowInvInfo ? 'block' : 'none' }} >
+            <div className={styles.rpgdiv4} style={{ zIndex: '9999', position: 'fixed', top: '0px', maxWidth: '1100px', left: '850px', display: buttonShowInvInfo ? 'block' : 'none' }} >
               <h1 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > SEU INVENTARIO
                 ({inventory?.length || 0} Items)</h1>
               <div>
 
-                <select id="itemSelect" onChange={handleAddItem}>
+                <select disabled={!npcssession.some(npc => npc.ownerId === user.id)} id="itemSelect" onChange={handleAddItem}>
                   <option value="">Adicione um item</option>
                   {items?.map((item, index) => (
                     <option key={index} value={index}>{item.name}</option>
@@ -2937,9 +2935,9 @@ export default function SessionPage() {
               </div> : null}
           </div>
           {user?.id !== playersid[0] ?
-            <div style={{ border: '5px solid red', position: 'fixed', top: '0px', display: buttonShowInvInfo ? 'block' : 'none', zIndex: '9999' }} >
+            <div style={{position: 'fixed', top: '0px',left:'10px', display: buttonShowInvInfo ? 'block' : 'none', zIndex: '9999' }} >
               {!npcssession.some(npc => npc.ownerId === user.id) ?
-                <div>
+                <div className={styles.rpgdiv5} >
                   <input placeholder='Seu Nome' value={nameuser} onChange={(e) => { setNameUser(e.target.value) }} />
                   <input disabled={!nameuser} placeholder='Foto do personagem' value={urlphotouser} onChange={(e) => { setUrlPhotoUser(e.target.value) }} />
                   {urlphotouser !== '' ?
@@ -2952,7 +2950,7 @@ export default function SessionPage() {
                 :
                 <div className={styles.rpgdiv1} style={{
                   height: '100%', display: 'flex', maxWidth: '100%', gap: '5px', flexWrap: 'wrap',
-                  flexDirection: 'column', position: 'relative', right: '420px'
+                  flexDirection: 'column', position: 'relative', right: '0px'
                 }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }} >
                     <div className={styles.medievalsharp}>Seus Atributos </div>
@@ -3875,9 +3873,9 @@ export default function SessionPage() {
                     </div>}
                 </div> : <div> Por favor, faça o login para poder interagir com as sessões </div>}
             </div>}</div>}
-      <div style={{ position: 'fixed', bottom: '0px', width: '100%', zIndex: '9999', display: 'flex', height: '50px', gap: '20px', justifyContent: 'center', marginBottom: '50px' }} >
+      <div style={{ position: 'fixed', bottom: '0px', width: '100%', zIndex: '9999', display:isLoading ? 'none' : 'flex', height: '50px', gap: '20px', justifyContent: 'center', marginBottom: '50px' }} >
 
-        <button style={{display:user?.id !== playersid[0] ? 'block' : 'none'}} disabled={user?.id === playersid[0]} onClick={() => {
+        <button style={{ display: user?.id !== playersid[0] ? 'block' : 'none' }} disabled={user?.id === playersid[0]} onClick={() => {
           setButtonShowInvInfo(!buttonShowInvInfo)
         }} type='button' className={styles.pushable2}>
           <span className={styles.edge2}></span>
@@ -3885,50 +3883,50 @@ export default function SessionPage() {
             Inventário
           </span>
         </button>
-        
-        <button  onClick={() => {
+
+        <button onClick={() => {
           setButtonShowMapInfo(!buttonShowMapInfo)
         }} type='button' className={styles.pushable2}>
           <span className={styles.edge2}></span>
           <span className={styles.front2}>
-          Info mapa
+            Info mapa
           </span>
         </button>
-        <button  onClick={() => {
+        <button onClick={() => {
           setButtonInfoSession(!buttonInfoSession)
         }} type='button' className={styles.pushable2}>
           <span className={styles.edge2}></span>
           <span className={styles.front2}>
-          Info sessão
+            Info sessão
           </span>
         </button>
 
 
-        <button style={{display:user?.id === playersid[0] ? 'block' : 'none'}} disabled={user?.id !== playersid[0]} 
-        onClick={() => {
-          setButtonAddItem(!buttonAddItem)
-        }} type='button' className={styles.pushable2}>
+        <button style={{ display: user?.id === playersid[0] ? 'block' : 'none' }} disabled={user?.id !== playersid[0]}
+          onClick={() => {
+            setButtonAddItem(!buttonAddItem)
+          }} type='button' className={styles.pushable2}>
           <span className={styles.edge2}></span>
           <span className={styles.front2}>
-           Criar Item
+            Criar Item
           </span>
         </button>
-        <button style={{display:user?.id === playersid[0] ? 'block' : 'none'}} 
-        disabled={user?.id !== playersid[0]} onClick={() => {
-          setButtonAddNpc(!buttonAddNpc)
-        }} type='button' className={styles.pushable2}>
+        <button style={{ display: user?.id === playersid[0] ? 'block' : 'none' }}
+          disabled={user?.id !== playersid[0]} onClick={() => {
+            setButtonAddNpc(!buttonAddNpc)
+          }} type='button' className={styles.pushable2}>
           <span className={styles.edge2}></span>
           <span className={styles.front2}>
-           Criar Personagem
+            Criar Personagem
           </span>
         </button>
-        <button style={{display:user?.id === playersid[0] ? 'block' : 'none'}} 
-        disabled={user?.id !== playersid[0]} onClick={() => {
-          setButtonPlaceNpc(!buttonPlaceNpc)
-        }} type='button' className={styles.pushable2}>
+        <button style={{ display: user?.id === playersid[0] ? 'block' : 'none' }}
+          disabled={user?.id !== playersid[0]} onClick={() => {
+            setButtonPlaceNpc(!buttonPlaceNpc)
+          }} type='button' className={styles.pushable2}>
           <span className={styles.edge2}></span>
           <span className={styles.front2}>
-          Editar ou adicionar personagem no jogo
+            Editar ou adicionar personagem no jogo
           </span>
         </button>
 
