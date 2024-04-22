@@ -7,6 +7,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import coin from './staticcoin.png'
 export default function Home() {
+
+
   const [keeper, setKeeper] = useState(false);
   const [headSlider, setHeadSlider] = useState(1);
   const [torsoSlider, setTorsoSlider] = useState(1);

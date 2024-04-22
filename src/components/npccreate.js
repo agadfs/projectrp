@@ -48,33 +48,33 @@ export default function NpcCreate({ userid, sessionid, items }) {
 
   });
   const [statsuserequip, setStatsUserEquip] = useState({
-      level: 0,
-      experience: 0,
-      health: 0,
-      maxHealth: 0,
-      mana: 0,
-      maxMana: 0,
-      strength: 0,
-      dexterity: 0,
-      constitution: 0,
-      intelligence: 0,
-      wisdom: 0,
-      charisma: 0,
-      atk: 0,
-      def: 0,
-      earing: '',
-      head: '',
-      lefthand: '',
-      righthand: '',
-      chest: '',
-      ringleft: '',
-      ringright: '',
-      pants: '',
-      othersleft: '',
-      othersright: '',
-      shoes: ''
+    level: 0,
+    experience: 0,
+    health: 0,
+    maxHealth: 0,
+    mana: 0,
+    maxMana: 0,
+    strength: 0,
+    dexterity: 0,
+    constitution: 0,
+    intelligence: 0,
+    wisdom: 0,
+    charisma: 0,
+    atk: 0,
+    def: 0,
+    earing: '',
+    head: '',
+    lefthand: '',
+    righthand: '',
+    chest: '',
+    ringleft: '',
+    ringright: '',
+    pants: '',
+    othersleft: '',
+    othersright: '',
+    shoes: ''
 
-    });
+  });
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewNpc({ ...newNpc, [name]: value });
@@ -84,14 +84,14 @@ export default function NpcCreate({ userid, sessionid, items }) {
     e.preventDefault();
     try {
 
-       const response = await axios.post(`${urlrequest}/npcscreate`, newNpc); 
+      const response = await axios.post(`${urlrequest}/npcscreate`, newNpc);
 
 
       console.log(newNpc)
-      if(response.data){
+      if (response.data) {
         console.log('Npc Criado com Sucesso!')
         window.location.reload()
-      }else{
+      } else {
         console.log('Criação do Npc deu errado, tente novamente!')
       }
 
@@ -103,7 +103,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
   function handleAddItem2(event) {
     const selectedId = event;
     handleAdd(selectedId);
-    
+
   }
   async function handleAdd(index) {
 
@@ -124,7 +124,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
         newNpc.Items.push(newItem);
       }
 
-      
+
     } catch (error) {
       console.error('Error updating newNpc:', error);
     }
@@ -158,7 +158,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
   function handleAddItem(event) {
     const selectedId = event.target.value;
     handleAdd(selectedId);
-    
+
   }
   const handleUpdateQuantity2 = (index, quantityChange, updateddata) => {
 
@@ -171,7 +171,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
         } else {
 
           return {
-            ...item,  
+            ...item,
             quantity: newQuantity
           };
         }
@@ -216,7 +216,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
   useEffect(() => {
     handleUpdateStats(newNpc.Stats);
 
-  },[newNpc.Items, newNpc.Stats])
+  }, [newNpc.Items, newNpc.Stats])
 
   async function handleUpdateStats(stats) {
     let statsnew = stats;
@@ -256,22 +256,40 @@ export default function NpcCreate({ userid, sessionid, items }) {
 
 
       <div style={{ marginTop: '10px' }} className={styles.rpgdiv5}>
-        <h2 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} 
-        className={styles.medievalsharp} >
-          Adicionar NPC</h2>
-        <form  onSubmit={handleSubmit}>
+        <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }}
+          className={styles.medievalsharp} >
+          Adicionar NPC</div>
+         <form onSubmit={handleSubmit}>
+
+          <div style={{display:'flex', gap:'5px'}} >
           <label htmlFor="Npcname">Nome:</label><br />
           <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="Npcname" name="Npcname"
             value={newNpc.Npcname} onChange={handleChange} required /><br />
+            <label htmlFor="NpcBook">Para qual livro de rpg é esse npc?:</label><br />
+            <select id="NpcBook" name="NpcBook"
+              value={newNpc.NpcBook} onChange={handleChange}>
+              <option value="">Selecione uma opção</option>
+              <option value="generic">Genérico</option>
+              <option value="d&d">D&D</option>
 
-         
+            </select>
+          <label htmlFor="NpcUrlPhoto">Url da foto do npc:</label><br />
+          <textarea id="NpcUrlPhoto" name="NpcUrlPhoto"
+            value={newNpc.NpcUrlPhoto} onChange={handleChange} /><br />
 
-          <div style={{marginBottom:'10px', marginTop:'10px'}} className={styles.rpgdiv4} >
-            <h1 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > SEU INVENTARIO
-              ({newNpc?.Items?.length} Items)</h1>
+          <button onClick={handleSubmit} type="button">Enviar</button>
+          
+          </div>
+
+
+
+
+          <div className={styles.rpgdiv4} >
+            <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > INVENTARIO DO NPC
+              ({newNpc?.Items?.length} Items)</div>
             <div>
 
-              <button type='button' style={{ marginTop: '10px', marginBottom: '20px' }} onClick={() => {
+              <button type='button' style={{ marginTop: '5px', marginBottom: '10px' }} onClick={() => {
                 if (items.length > 0) {
 
                   updatenewNpc()
@@ -360,14 +378,14 @@ export default function NpcCreate({ userid, sessionid, items }) {
 
 
 
-                    <button  type='button' onClick={() => handleDelete(index)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
+                    <button type='button' onClick={() => handleDelete(index)} style={{ backgroundColor: 'red', color: 'white', cursor: 'pointer' }}>
                       Deletar
                     </button>
                     <div style={{ display: 'flex', gap: '5px' }}>
-                      <button  type='button' onClick={() => handleUpdateQuantity(index, +1)} style={{ color: 'green', cursor: 'pointer' }}>
+                      <button type='button' onClick={() => handleUpdateQuantity(index, +1)} style={{ color: 'green', cursor: 'pointer' }}>
                         +1
                       </button>
-                      <button  type='button' onClick={() => handleUpdateQuantity(index, -1)} style={{ color: 'red', cursor: 'pointer' }}>
+                      <button type='button' onClick={() => handleUpdateQuantity(index, -1)} style={{ color: 'red', cursor: 'pointer' }}>
                         -1
                       </button>
                     </div>
@@ -381,7 +399,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
 
           </div>
 
-          
+
           <div className={styles.rpgdiv4} style={{
             height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap',
             flexDirection: 'column'
@@ -615,42 +633,42 @@ export default function NpcCreate({ userid, sessionid, items }) {
                       />
                       ({newNpc.Stats.def + statsuserequip?.def})
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }} >
 
-                      <button type='button' onClick={() => {
-                        const updatedUser = { ...newNpc.Stats };
-                        updatedUser.health = updatedUser.maxHealth;
-                        setNewNpc({ ...newNpc, Stats: updatedUser })
-
-                      }} className={styles.pushable}>
-                        <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
-                        <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
-                          Encher Vida
-                        </span>
-                      </button>
-                      <button type='button' onClick={() => {
-                        const updatedUser = { ...newNpc.Stats };
-                        updatedUser.mana = updatedUser.maxMana;
-                        setNewNpc({ ...newNpc, Stats: updatedUser })
-
-                      }} className={styles.pushable}>
-                        <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
-                        <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
-                          Encher Mana
-                        </span>
-                      </button>
-
-
-                    </div>
                   </div>
 
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }} >
 
+                    <button type='button' onClick={() => {
+                      const updatedUser = { ...newNpc.Stats };
+                      updatedUser.health = updatedUser.maxHealth;
+                      setNewNpc({ ...newNpc, Stats: updatedUser })
+
+                    }} className={styles.pushable}>
+                      <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
+                      <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
+                        Encher Vida
+                      </span>
+                    </button>
+                    <button type='button' onClick={() => {
+                      const updatedUser = { ...newNpc.Stats };
+                      updatedUser.mana = updatedUser.maxMana;
+                      setNewNpc({ ...newNpc, Stats: updatedUser })
+
+                    }} className={styles.pushable}>
+                      <span style={{ fontSize: '10px', width: '96px' }} className={styles.edge}></span>
+                      <span style={{ fontSize: '12px', width: '70px' }} className={styles.front}>
+                        Encher Mana
+                      </span>
+                    </button>
+
+
+                  </div>
                 </div> : null}
 
 
             </div>
             {newNpc.Stats ?
-              <div style={{color:'black', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
+              <div style={{ color: 'black', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
                 <div style={{ display: 'flex', gap: '20px' }} >
                   {newNpc.Stats.earing?.atk ?
                     <div className={styles.slots} onClick={() => {
@@ -1080,22 +1098,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
               </div> : null}
 
           </div>
-          <div>
-            <label htmlFor="NpcBook">Para qual livro de rpg é esse npc?:</label><br />
-            <select id="NpcBook" name="NpcBook"
-              value={newNpc.NpcBook} onChange={handleChange}>
-              <option value="">Selecione uma opção</option>
-              <option value="generic">Genérico</option>
-              <option value="d&d">D&D</option>
-
-            </select>
-          </div>
-
-          <label htmlFor="NpcUrlPhoto">Url da foto do npc:</label><br />
-          <textarea id="NpcUrlPhoto" name="NpcUrlPhoto"
-            value={newNpc.NpcUrlPhoto} onChange={handleChange} /><br />
-
-          <button onClick={handleSubmit} type="button">Enviar</button>
+          
         </form>
       </div>
 

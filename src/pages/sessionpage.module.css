@@ -8,9 +8,9 @@
   
 }
 .infobody{
-  width: 100%;
+  width: 0%;
   max-width: 500px;
-  min-width: 400px;
+  min-width: 0px;
   height: 100%;
   border-radius: 5px;
   padding:5px;
@@ -28,7 +28,7 @@
   background-color: black;
   overflow: scroll;
   max-height: 900px;
-  max-width: 1500px;
+  max-width: 100%;
   z-index: 2;
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
