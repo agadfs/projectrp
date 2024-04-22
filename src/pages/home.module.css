@@ -13,9 +13,8 @@
   border-width: 8px;
   padding:5px; /* Largura da borda */
   border-style: solid; /* Estilo da borda */
-  border-image-source: url('https://media.discordapp.net/attachments/643258663917715472/1230208449716031579/borda_pro_serra_nose.png?ex=66327be6&is=662006e6&hm=8c88ac66e4d2faca94da881cf88984dded79f6c9f8ea588eb24c726f9736c288&=&format=webp&quality=lossless'); 
-  border-image-slice: 6 9 6 9; 
-  background-color: rgb(61, 38, 5);
+  border-image-source: url('../components/borders/blueborder.png');   border-image-slice: 6 9 6 9; 
+  background-color:  #1e0b1d;
   font-weight: bold;
   font-family: sans-serif;
   display: flex;
@@ -44,9 +43,8 @@
   border-width: 8px;
   padding:5px; /* Largura da borda */
   border-style: solid; /* Estilo da borda */
-  border-image-source: url('https://media.discordapp.net/attachments/643258663917715472/1230208449716031579/borda_pro_serra_nose.png?ex=66327be6&is=662006e6&hm=8c88ac66e4d2faca94da881cf88984dded79f6c9f8ea588eb24c726f9736c288&=&format=webp&quality=lossless'); 
-  border-image-slice: 6 9 6 9; 
-  background-color: rgb(61, 38, 5);
+  border-image-source: url('../components/borders/blueborder.png');   border-image-slice: 6 9 6 9; 
+  background-color:  #1e0b1d;
   font-weight: bold;
   font-family: sans-serif;
   align-items: center;
@@ -74,8 +72,8 @@
   border-radius: 5px;
   border-width: 8px;
   border-style: solid; /* Estilo da borda */
-  border-image-source: url('https://cdn.discordapp.com/attachments/643258663917715472/1230205262212628520/borda_pro_serra_goldmeno.png?ex=663278ee&is=662003ee&hm=e1dd5e86e78956a3b2a374b0fe160a9d1a74badce91fa3240335492d2eb4e3cc&'); 
-  border-image-slice: 4 4 4 4; 
+  border-image-source: url('../components/borders/blueborder2.png');
+    border-image-slice: 4 4 4 4; 
   background-color: rgb(173, 128, 61);
   font-weight: bold;
   font-family: sans-serif;
@@ -137,10 +135,10 @@
   width: 100%;
   border-radius: 8px;
   background: linear-gradient(to right,
-      hsl(29, 98%, 21%) 0%,
-      hsl(32, 99%, 30%) 22%,
-      hsl(34, 97%, 31%) 72%,
-      hsl(34, 100%, 15%) 100%);
+  #1f3835 0%,
+  #1b534c 22%,
+  #196e64 72%,
+  #138679 100%);
 }
 
 .front {
@@ -161,9 +159,9 @@
   border-width: 8px;
   padding:5px; /* Largura da borda */
   border-style: solid; /* Estilo da borda */
-  border-image-source: url('https://ronenness.github.io/RPGUI/rpgui/img/border-image-golden.png'); 
+  border-image-source: url('../components/borders/blueborder3.png'); 
   border-image-slice: 4 4 4 4; 
-  background-color: rgb(173, 128, 61);
+  background-color: #1b534c;
   font-weight: bold;
   font-family: sans-serif;
 }
@@ -210,8 +208,9 @@
   border-width: 8px;
   padding:5px; /* Largura da borda */
   border-style: solid; /* Estilo da borda */
-  border-image-source: url('https://cdn.discordapp.com/attachments/643258663917715472/1230196167917441155/borda_pro_serra_azul.png?ex=66327076&is=661ffb76&hm=79823efce64ac375d553eb47a8ce897c221399aa453db43122d24ec19c0bdcd8&'); 
+  border-image-source: url('../components/borders/blueborder2.png');
   border-image-slice: 4 4 4 4; 
+
   background-color: rgb(173, 128, 61);
   font-weight: bold;
   font-family: sans-serif;
@@ -222,9 +221,9 @@
   border-width: 8px;
   padding:5px; /* Largura da borda */
   border-style: solid; /* Estilo da borda */
-  border-image-source: url('https://cdn.discordapp.com/attachments/643258663917715472/1230205262212628520/borda_pro_serra_goldmeno.png?ex=663278ee&is=662003ee&hm=e1dd5e86e78956a3b2a374b0fe160a9d1a74badce91fa3240335492d2eb4e3cc&'); 
-  border-image-slice: 4 4 4 4; 
-  background-color: rgb(156, 138, 108);
+  border-image-source: url('../components/borders/blueborder2.png');
+    border-image-slice: 4 4 4 4; 
+  background-color: #8cb6ab;
   font-weight: bold;
   font-family: sans-serif;
 
@@ -235,9 +234,8 @@
   height: 800px;
   border-width: 8px;
   border-style: solid; 
-  border-image-source: url('https://media.discordapp.net/attachments/643258663917715472/1230208449716031579/borda_pro_serra_nose.png?ex=66327be6&is=662006e6&hm=8c88ac66e4d2faca94da881cf88984dded79f6c9f8ea588eb24c726f9736c288&=&format=webp&quality=lossless'); 
-  border-image-slice: 6 9 6 9; 
-  background-color: rgb(61, 38, 5);
+  border-image-source: url('../components/borders/blueborder.png');   border-image-slice: 6 9 6 9; 
+  background-color:  #1e0b1d;
   font-weight: bold;
   font-family: sans-serif;
   display: flex;
@@ -252,9 +250,9 @@
  
   border-width: 8px;
   border-style: solid; 
-  border-image-source: url('https://media.discordapp.net/attachments/643258663917715472/1230208449716031579/borda_pro_serra_nose.png?ex=66327be6&is=662006e6&hm=8c88ac66e4d2faca94da881cf88984dded79f6c9f8ea588eb24c726f9736c288&=&format=webp&quality=lossless'); 
-  border-image-slice: 6 9 6 9; 
-  background-color: rgb(61, 38, 5);
+  border-image-source: url('../components/borders/blueborder.png'); 
+  border-image-slice: 4 4 4 4; 
+  background-color:  #1e0b1d;
   margin-top: 70px;
   display: flex;
   gap:10px;

@@ -115,21 +115,7 @@ export default function Home() {
 
   async function setname() {
     let namenew = newName;
-    if (newName === '' || newName.length < 3 && name !== '') {
-      namenew = 'Player'
-      const response = await axios.post(`${urlrequest}/users/update/${user.id}`, { username: namenew });
-      if (response) {
-        setNewName('Player')
-        alert('Por favor, insira um nome maior que 2 caracteres, seu nome provisório será Player')
-      }
-    }
-    else {
-      const response = await axios.post(`${urlrequest}/users/update/${user.id}`, { username: namenew });
-      if (response) {
-        setName(newName);
-      }
-    }
-
+    const response = await axios.post(`${urlrequest}/users/update/${user.id}`, { username: namenew });
 
   }
   async function getname0() {
@@ -161,14 +147,6 @@ export default function Home() {
   }
 
 
-
-  useEffect(() => {
-    if (changed === true) {
-
-      setname();
-      setChanged(false);
-    }
-  }, [changed])
 
   useEffect(() => {
     if (user.id) {
@@ -450,43 +428,43 @@ export default function Home() {
                     <img src={coin} width={50} height={50} style={{ display: 'block' }} />
                     <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
                       P
-                      </span>
+                    </span>
                   </div>
                   <div style={{ position: 'relative' }}>
                     <img src={coin} width={50} height={50} style={{ display: 'block' }} />
                     <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
                       R
-                      </span>
+                    </span>
                   </div>
                   <div style={{ position: 'relative' }}>
                     <img src={coin} width={50} height={50} style={{ display: 'block' }} />
                     <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
                       E
-                      </span>
+                    </span>
                   </div>
-                  <div style={{position: 'relative' }}>
+                  <div style={{ position: 'relative' }}>
                     <img src={coin} width={50} height={50} style={{ display: 'block' }} />
                     <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
                       M
-                      </span>
+                    </span>
                   </div>
                   <div style={{ position: 'relative' }}>
                     <img src={coin} width={50} height={50} style={{ display: 'block' }} />
                     <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
                       I
-                      </span>
+                    </span>
                   </div>
-                  <div style={{position: 'relative' }}>
+                  <div style={{ position: 'relative' }}>
                     <img src={coin} width={50} height={50} style={{ display: 'block' }} />
                     <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
                       U
-                      </span>
+                    </span>
                   </div>
-                  <div style={{position: 'relative' }}>
+                  <div style={{ position: 'relative' }}>
                     <img src={coin} width={50} height={50} style={{ display: 'block' }} />
                     <span className={styles.fontplay} style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
-                     M
-                      </span>
+                      M
+                    </span>
                   </div>
 
                 </div>
@@ -504,7 +482,7 @@ export default function Home() {
               }
 
             </div>
-            <div style={{ width: '350px', padding: '5px', marginBottom: '10px' }} className={styles.rpgdiv4} > SEU NOME: <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }}
+            <div style={{ width: '370px', padding: '5px', marginBottom: '10px' }} className={styles.rpgdiv4} > SEU NOME: <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }}
               value={newName} onChange={(e) => { setNewName(e.target.value) }} />
               <div style={{ display: 'flex' }} >
 
@@ -655,18 +633,18 @@ export default function Home() {
                 <button style={{ maxHeight: '60px', marginTop: '45px' }} disabled={keeper} type='button' onClick={() => {
                   saveOutfit();
                   setKeeper(true);
+                  if(newName !== undefined && newName){
+
+                    setname()
+                  }
                 }} className={styles.pushable}>
                   <span className={styles.edge}></span>
-                  <span className={styles.front}>
-                    Salvar Skin
+                  <span style={{fontSize:'12px'}} className={styles.front}>
+                    Salvar Skin/Nome
                   </span>
                 </button>
               </div>
-              <p>
-                Espere o nome em branco igual ao desejado:
-
-                <span style={{ color: 'white', padding: '5px', fontWeight: 'bold' }} >{name}</span>
-              </p>
+            
               <p>
                 Quer ser premium? basta apoiar o projeto!
 

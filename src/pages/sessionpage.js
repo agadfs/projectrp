@@ -312,7 +312,7 @@ export default function SessionPage() {
           }
         }
       }
-        setImages7(headImages)
+      setImages7(headImages)
     };
     const importImages7 = async () => {
       const headImages = [];
@@ -1274,7 +1274,7 @@ export default function SessionPage() {
 
             <img width={28} height={20} src={lowerSliderimg} alt={`lower`} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '60px', left: '-13px', height: '0px',zIndex:'2' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', bottom: '60px', left: '-13px', height: '0px', zIndex: '2' }}>
 
             <img width={'auto'} height={45} src={lefthandSliderimg} alt={`lefthand${lefthandSliderimg}`} />
           </div>
@@ -1330,11 +1330,13 @@ export default function SessionPage() {
     }
   }
   return (
-    <div className={styles.body} >
+    <div onWheel={(e) => {
+      e.target.addEventListener("wheel", function (e) { e.preventDefault() }, { passive: false })
+    }} className={styles.body} >
       {user?.id === playersid[0] && !isLoading ?
         <div style={{
-          top: '10px', left: '0px',zIndex:'9999',
-          position: 'fixed', maxWidth: '700px', width: '460px', color: 'white', display:buttonPlaceNpc ? 'block' : 'none'
+          top: '10px', left: '0px', zIndex: '9999',
+          position: 'fixed', maxWidth: '700px', width: '460px', color: 'white', display: buttonPlaceNpc ? 'block' : 'none'
         }} className={styles.rpgdiv5}>
           Você é o <span style={{ fontWeight: 'bold', fontSize: '20px' }} >  MESTRE </span>
           Players e Npc's inseridos na sessão:
@@ -1354,7 +1356,7 @@ export default function SessionPage() {
 
 
           <div style={{ margin: '5px', padding: '5px' }} >
-            <div style={{ display: 'flex', border: '1px solid black' }} >
+            <div className={styles.rpgdiv5} style={{ display: 'flex' }} >
               <div style={{ display: 'flex', flexDirection: 'column' }} >
                 <span style={{ fontWeight: 'bold', fontSize: '20px' }} > Crie NPC'S aqui </span>
                 <button onClick={() => {
@@ -1365,7 +1367,7 @@ export default function SessionPage() {
 
               <form style={{ display: 'flex' }} onSubmit={async (e) => {
                 e.preventDefault()
-                if(selectedNpc.Npcname){
+                if (selectedNpc.Npcname) {
 
                   const response = await axios.get(`${urlrequest}/npcsGET`, {
                     headers: {
@@ -1377,12 +1379,12 @@ export default function SessionPage() {
                   if (response.data) {
                     const data = response.data;
                     newnpcs = data;
-  
+
                   }
                   newnpcs.push(selectedNpc);
                   updateSession({ Npcs: newnpcs })
-                }else{
-                 alert('Selecione o npc!')
+                } else {
+                  alert('Selecione o npc!')
                 }
 
               }} >
@@ -1421,7 +1423,7 @@ export default function SessionPage() {
 
             </div>
 
-            <div style={{ display: 'flex', border: '1px solid black', marginTop: '10px' }} >
+            <div className={styles.rpgdiv5} style={{ display: 'flex', marginTop: '10px' }} >
               <p onClick={() => {
 
               }} >Adicionar Npc no mapa</p>
@@ -1454,27 +1456,28 @@ export default function SessionPage() {
               </div>
 
             </div>
-              <button type='button' onClick={() => {
-                if(npcmap.Npcname && tile){
-                  
-                  let pos = playerlocation;
-                  let posnpc = { npcmap, tile }
-                  pos.push(posnpc)
-                  updateSession({ PlayersPos: pos }) 
-                }
-                else{
-                  alert('Selecione um npc e um tile para spawnar!')
-                }
+            <button type='button' onClick={() => {
+              if (npcmap.Npcname && tile) {
 
-              }} className={styles.pushable}>
-                <span className={styles.edge}></span>
-                <span className={styles.front}>
-                  Adicionar npc: {npcmap.Npcname} no tile {tile}
-                </span>
-              </button>
+                let pos = playerlocation;
+                let posnpc = { npcmap, tile }
+                pos.push(posnpc)
+                updateSession({ PlayersPos: pos })
+              }
+              else {
+                alert('Selecione um npc e um tile para spawnar!')
+              }
+
+            }} className={styles.pushable}>
+              <span className={styles.edge}></span>
+              <span className={styles.front}>
+                Adicionar npc: {npcmap.Npcname} no tile {tile}
+              </span>
+            </button>
           </div>
+          Clique abaixo para abrir inventário do npc
           {npcssession?.filter(npc => npc.Isnpc && npc.NpcBook === bookrpg).map((npc, index) => (
-            <div onClick={() => {
+            <div className={styles.rpgdiv1} onClick={() => {
               setStatsUser(npc?.Stats)
               setInventory(npc?.Items)
               setNpcId(npc?._id)
@@ -1490,7 +1493,7 @@ export default function SessionPage() {
           {npcid ?
             <div className={styles.rpgdiv4} style={{
               height: '100%', maxWidth: '100%', gap: '10px', flexWrap: 'wrap',
-              flexDirection: 'column', position:'fixed', zIndex:'9999', top:'0', right:'0px', marginBottom:'30px',
+              flexDirection: 'column', position: 'fixed', zIndex: '9999', top: '0', right: '0px', marginBottom: '30px',
             }}>
               <div style={{ color: 'black', display: 'flex', flexDirection: 'column' }} >
                 <h3 className={styles.medievalsharp}>Atributos do NPC </h3>
@@ -1782,8 +1785,10 @@ export default function SessionPage() {
                         />
                         ({statsuser.def + statsuserequip.def})
                       </div>
-                      <div style={{ display: 'flex',
-                      gap: '15px', marginTop: '20px', position:'relative', top:'-350px' }} >
+                      <div style={{
+                        display: 'flex',
+                        gap: '15px', marginTop: '20px', position: 'relative', top: '-350px'
+                      }} >
 
                         <button type='button' onClick={() => {
                           const updatedUser = { ...statsuser };
@@ -1836,8 +1841,10 @@ export default function SessionPage() {
 
               </div>
               {user?.id === playersid[0] ?
-                <div style={{ color: 'black', display: 'flex', justifyContent: 'center', flexDirection: 'column', 
-                alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px', position:'relative', bottom:'200px', left:'100px' }}>
+                <div style={{
+                  color: 'black', display: 'flex', justifyContent: 'center', flexDirection: 'column',
+                  alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px', position: 'relative', bottom: '200px', left: '100px'
+                }}>
                   <div style={{ display: 'flex', gap: '20px' }} >
                     {statsuser.earing?.atk ?
                       <div className={styles.slots} onClick={() => {
@@ -2413,7 +2420,7 @@ export default function SessionPage() {
           <div className={styles.maptitle}>
             <div>
               {user?.id !== playersid[0] ?
-                <div className={styles.rpgdiv4} style={{ marginRight: '30px', position:'fixed', zIndex:'9999', top:'0px', display:buttonShowMapInfo ? 'block' : 'none'}}>
+                <div className={styles.rpgdiv4} style={{ marginRight: '30px', position: 'fixed', zIndex: '9999', top: '0px', display: buttonShowMapInfo ? 'block' : 'none' }}>
                   {playerlocation?.find(obj => obj.npcmap.ownerId === user?.id) ?
                     <div>
 
@@ -2444,7 +2451,7 @@ export default function SessionPage() {
 
 
             </div>
-            <div style={{ position:'fixed', zIndex:'9999', top:'0px', left:'600px', display:buttonShowMapInfo ? 'block' : 'none' }} className={styles.rpgdiv5}>
+            <div style={{ position: 'fixed', zIndex: '9999', top: '0px', left: '600px', display: buttonShowMapInfo ? 'block' : 'none' }} className={styles.rpgdiv5}>
 
               <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp}>
 
@@ -2606,6 +2613,7 @@ export default function SessionPage() {
                     border: showGrid ? '1px solid rgba(236, 233, 233, 0.718)' : 'none',
 
                   }}
+
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, index)}
                 >
@@ -2672,11 +2680,11 @@ export default function SessionPage() {
             </div>
           </div>
           {user?.id !== playersid[0] ?
-            <div className={styles.rpgdiv4} style={{zIndex:'9999', position: 'fixed', top: '0px', maxWidth: '1100px',left:'450px', display: buttonShowInvInfo ? 'block' : 'none' }} >
+            <div className={styles.rpgdiv4} style={{ zIndex: '9999', position: 'fixed', top: '0px', maxWidth: '1100px', left: '450px', display: buttonShowInvInfo ? 'block' : 'none' }} >
               <h1 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > SEU INVENTARIO
                 ({inventory?.length || 0} Items)</h1>
               <div>
-              
+
                 <select id="itemSelect" onChange={handleAddItem}>
                   <option value="">Adicione um item</option>
                   {items?.map((item, index) => (
@@ -2792,7 +2800,7 @@ export default function SessionPage() {
       {showinfo === true && !isLoading ?
 
         <div className={styles.infobody}>
-          <div style={{position:'fixed', zIndex:'9999', bottom:'70px', left:'0', display:buttonInfoSession ? 'block' : 'none'}}  className={styles.rpgdiv4}>
+          <div style={{ position: 'fixed', zIndex: '9999', bottom: '70px', left: '0', display: buttonInfoSession ? 'block' : 'none' }} className={styles.rpgdiv4}>
             ID da sessão: {sessionid}
             {user?.id === playersid[0] ? <div>
               <button onClick={() => {
@@ -2807,7 +2815,7 @@ export default function SessionPage() {
 
             </div> : null}
           </div>
-          <div className={styles.rpgdiv4} style={{ marginTop: '10px', position:'fixed', zIndex:'9999', bottom:'265px', left:'520px', display:buttonInfoSession ? 'block' : 'none' }}>
+          <div className={styles.rpgdiv4} style={{ marginTop: '10px', position: 'fixed', zIndex: '9999', bottom: '265px', left: '520px', display: buttonInfoSession ? 'block' : 'none' }}>
             <div style={{ justifyContent: 'center', width: '100%', display: 'flex' }} className={styles.medievalsharp}>
               Titulo do jogo: {title}
 
@@ -2884,7 +2892,7 @@ export default function SessionPage() {
                 </form>
               </div> : null}
           </div>
-          <div style={{ marginTop: '10px', gap: '10px', flexDirection: 'column', marginBottom: '10px',position:'fixed', zIndex:'9999', bottom:'220px',maxWidth:'500px', left:'0', display:buttonInfoSession ? 'flex' : 'none' }}>
+          <div style={{ marginTop: '10px', gap: '10px', flexDirection: 'column', marginBottom: '10px', position: 'fixed', zIndex: '9999', bottom: '220px', maxWidth: '500px', left: '0', display: buttonInfoSession ? 'flex' : 'none' }}>
             <div className={styles.rpgdiv4} style={{ height: '100%', display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
               <h1 style={{ justifyContent: 'center', width: '100%', display: 'flex' }} className={styles.medievalsharp}> Jogadores  </h1>
               {players?.map((player, index) => (
@@ -2901,7 +2909,7 @@ export default function SessionPage() {
               ))}
             </div>
             {user?.id === playersid[0] ?
-              <div className={styles.rpgdiv4} style={{marginTop: '10px', gap: '10px', flexDirection: 'column', marginBottom: '10px', position:'fixed', zIndex:'9999', bottom:'70px', left:'400px', display:buttonInfoSession ? 'flex' : 'none' }}>
+              <div className={styles.rpgdiv4} style={{ marginTop: '10px', gap: '10px', flexDirection: 'column', marginBottom: '10px', position: 'fixed', zIndex: '9999', bottom: '70px', left: '400px', display: buttonInfoSession ? 'flex' : 'none' }}>
                 <h1 style={{ justifyContent: 'center', width: '100%', display: 'flex' }} className={styles.medievalsharp}> Solicitações para entrar  </h1>
                 <div style={{ height: '100%', display: 'flex', gap: '10px', flexWrap: 'wrap', border: '3px solid black', padding: '10px', borderRadius: '5px' }}>
                   {request && request?.length > 0 && request?.map((player, index) => (
@@ -2929,7 +2937,7 @@ export default function SessionPage() {
               </div> : null}
           </div>
           {user?.id !== playersid[0] ?
-            <div style={{ border:'5px solid red', position:'fixed', top:'0px', display:buttonShowInvInfo ? 'block' : 'none', zIndex:'9999'}} >
+            <div style={{ border: '5px solid red', position: 'fixed', top: '0px', display: buttonShowInvInfo ? 'block' : 'none', zIndex: '9999' }} >
               {!npcssession.some(npc => npc.ownerId === user.id) ?
                 <div>
                   <input placeholder='Seu Nome' value={nameuser} onChange={(e) => { setNameUser(e.target.value) }} />
@@ -2944,7 +2952,7 @@ export default function SessionPage() {
                 :
                 <div className={styles.rpgdiv1} style={{
                   height: '100%', display: 'flex', maxWidth: '100%', gap: '5px', flexWrap: 'wrap',
-                  flexDirection: 'column', position:'relative', right:'420px'
+                  flexDirection: 'column', position: 'relative', right: '420px'
                 }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }} >
                     <div className={styles.medievalsharp}>Seus Atributos </div>
@@ -3731,7 +3739,7 @@ export default function SessionPage() {
 
             </div> : null}
           {user?.id === playersid[0] ?
-            <div style={{ marginTop: '10px', zIndex:'9999', position: 'fixed', top: '0px', maxWidth: '1100px',right:'0px', display: buttonAddItem ? 'block' : 'none'  }} className={styles.rpgdiv4}>
+            <div style={{ marginTop: '10px', zIndex: '9999', position: 'fixed', top: '0px', maxWidth: '1100px', right: '0px', display: buttonAddItem ? 'block' : 'none' }} className={styles.rpgdiv4}>
               <h2 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} >Adicionar Item</h2>
               <form style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} onSubmit={handleSubmit}>
                 <label htmlFor="name">Nome:</label><br />
@@ -3833,16 +3841,16 @@ export default function SessionPage() {
               </form>
             </div>
             : null}
-          {user?.id === playersid[0] ? 
-          <div style={{display:'flex', position:'fixed', top:'0px', right:'300px', zIndex:'9999'}} >
-            {buttonAddNpc ?  
-            <NpcCreate items={items} userid={user.id} sessionid={sessionid} /> 
-            : null}
+          {user?.id === playersid[0] ?
+            <div style={{ display: 'flex', position: 'fixed', top: '0px', right: '300px', zIndex: '9999' }} >
+              {buttonAddNpc ?
+                <NpcCreate items={items} userid={user.id} sessionid={sessionid} />
+                : null}
 
-         
-          </div>
-          
-          : null}
+
+            </div>
+
+            : null}
         </div>
         :
         <div>
@@ -3867,39 +3875,64 @@ export default function SessionPage() {
                     </div>}
                 </div> : <div> Por favor, faça o login para poder interagir com as sessões </div>}
             </div>}</div>}
-            <div style={{position:'fixed', bottom:'0px', border:'5px solid red', width:'100%', zIndex:'9999', display:'flex', height:'50px', gap:'20px'}} >
-              <button disabled={user?.id === playersid[0]} onClick={() => {
-                setButtonShowInvInfo(!buttonShowInvInfo)
-              }} type='button' >
-                Inventário
-              </button>
-              <button onClick={() => {
-                setButtonShowMapInfo(!buttonShowMapInfo)
-              }} type='button' >
-                Info mapa
-              </button>
-              <button onClick={() => {
-                setButtonInfoSession(!buttonInfoSession)
-              }} type='button' >
-                Info Sessão
-              </button>
-              
-              <button disabled={user?.id !== playersid[0]} onClick={() => {
-                setButtonAddItem(!buttonAddItem)
-              }} type='button' >
-                Criar Item
-              </button>
-              <button disabled={user?.id !== playersid[0]} onClick={() => {
-                setButtonAddNpc(!buttonAddNpc)
-              }} type='button' >
-                Criar personagem
-              </button>
-              <button disabled={user?.id !== playersid[0]} onClick={() => {
-               setButtonPlaceNpc(!buttonPlaceNpc)
-              }} type='button' >
-                Editar ou adicionar personagem no jogo
-              </button>
-            </div>
+      <div style={{ position: 'fixed', bottom: '0px', width: '100%', zIndex: '9999', display: 'flex', height: '50px', gap: '20px', justifyContent: 'center', marginBottom: '50px' }} >
+
+        <button style={{display:user?.id !== playersid[0] ? 'block' : 'none'}} disabled={user?.id === playersid[0]} onClick={() => {
+          setButtonShowInvInfo(!buttonShowInvInfo)
+        }} type='button' className={styles.pushable2}>
+          <span className={styles.edge2}></span>
+          <span className={styles.front2}>
+            Inventário
+          </span>
+        </button>
+        
+        <button  onClick={() => {
+          setButtonShowMapInfo(!buttonShowMapInfo)
+        }} type='button' className={styles.pushable2}>
+          <span className={styles.edge2}></span>
+          <span className={styles.front2}>
+          Info mapa
+          </span>
+        </button>
+        <button  onClick={() => {
+          setButtonInfoSession(!buttonInfoSession)
+        }} type='button' className={styles.pushable2}>
+          <span className={styles.edge2}></span>
+          <span className={styles.front2}>
+          Info sessão
+          </span>
+        </button>
+
+
+        <button style={{display:user?.id === playersid[0] ? 'block' : 'none'}} disabled={user?.id !== playersid[0]} 
+        onClick={() => {
+          setButtonAddItem(!buttonAddItem)
+        }} type='button' className={styles.pushable2}>
+          <span className={styles.edge2}></span>
+          <span className={styles.front2}>
+           Criar Item
+          </span>
+        </button>
+        <button style={{display:user?.id === playersid[0] ? 'block' : 'none'}} 
+        disabled={user?.id !== playersid[0]} onClick={() => {
+          setButtonAddNpc(!buttonAddNpc)
+        }} type='button' className={styles.pushable2}>
+          <span className={styles.edge2}></span>
+          <span className={styles.front2}>
+           Criar Personagem
+          </span>
+        </button>
+        <button style={{display:user?.id === playersid[0] ? 'block' : 'none'}} 
+        disabled={user?.id !== playersid[0]} onClick={() => {
+          setButtonPlaceNpc(!buttonPlaceNpc)
+        }} type='button' className={styles.pushable2}>
+          <span className={styles.edge2}></span>
+          <span className={styles.front2}>
+          Editar ou adicionar personagem no jogo
+          </span>
+        </button>
+
+      </div>
 
     </div>
   )
