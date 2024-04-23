@@ -184,7 +184,7 @@ export default function Home() {
 
       return () => clearInterval(intervalId);
     }
-  }, [user.id]);
+  }, [user.id, updateUser]);
 
   useEffect(() => {
     if (user.id) {
@@ -713,6 +713,8 @@ export default function Home() {
 
 
                 </div>
+                <div>
+
                 <button style={{ maxHeight: '60px', marginTop: '45px' }} disabled={keeper} type='button' onClick={() => {
                   saveOutfit();
                   setKeeper(true);
@@ -735,6 +737,7 @@ export default function Home() {
                   <div style={{color:'red'}}>
                     Informações NÃO estão salvas
                   </div>}
+                  </div>
               </div>
 
               <p>
