@@ -728,11 +728,11 @@ export default function Home() {
                   </span>
                 </button>
                 {updateUser === true ?
-                  <div>
+                  <div style={{color:'blue'}} >
                     Informações estão salvas
                   </div>
                   :
-                  <div>
+                  <div style={{color:'red'}}>
                     Informações NÃO estão salvas
                   </div>}
               </div>
