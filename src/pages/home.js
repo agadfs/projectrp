@@ -9,6 +9,7 @@ import coin from './staticcoin.png'
 import DangerousIcon from '@mui/icons-material/Dangerous';
 import CheckIcon from '@mui/icons-material/Check';
 export default function Home() {
+  const [updateUser, setUpdateUser] = useState(true);
   const [inputtomsg, setInputToMsg] = useState('');
   const [idToAdd, setIdToAdd] = useState('');
   const [friendlist, setfriendlist] = useState([]);
@@ -169,7 +170,12 @@ export default function Home() {
           getusers();
           getusersonline();
           getsessions();
-          getname0();
+          if (updateUser === true) {
+            getname0();
+            updateUser(false);
+
+          }
+
 
         } catch (error) {
           console.error('Error sending heartbeat:', error);
@@ -547,7 +553,12 @@ export default function Home() {
 
             </div>
             <div style={{ width: '370px', padding: '5px', marginBottom: '10px' }} className={styles.rpgdiv4} > SEU NOME: <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold' }}
-              value={newName} onChange={(e) => { setNewName(e.target.value) }} />
+              value={newName} onChange={(e) => {
+
+                setUpdateUser(false);
+                setNewName(e.target.value)
+
+              }} />
               <div style={{ display: 'flex' }} >
 
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center', marginRight: '60px', marginLeft: '10px' }}  >
@@ -596,6 +607,7 @@ export default function Home() {
                       value={headSlider || 1}
                       onChange={(e) => {
                         setHeadSlider(e.target.value)
+                        setUpdateUser(false);
                       }}
 
                     />
@@ -609,6 +621,7 @@ export default function Home() {
                       value={torsoSlider || 1}
                       onChange={(e) => {
                         setTorsoSlider(e.target.value)
+                        setUpdateUser(false);
                       }}
                     />
                   </div>
@@ -621,6 +634,7 @@ export default function Home() {
                       value={lowerSlider || 1}
                       onChange={(e) => {
                         setLowerSlider(e.target.value)
+                        setUpdateUser(false);
                       }}
                     />
                   </div>
@@ -634,6 +648,7 @@ export default function Home() {
                       value={lefthandSlider || 1}
                       onChange={(e) => {
                         setlefthandSlider(e.target.value)
+                        setUpdateUser(false);
                       }}
                       disabled={!isPremium}
                     />
@@ -647,6 +662,7 @@ export default function Home() {
                       value={righthandSlider || 1}
                       onChange={(e) => {
                         setrighthandSlider(e.target.value)
+                        setUpdateUser(false);
                       }}
                       disabled={!isPremium}
                     />
@@ -660,6 +676,7 @@ export default function Home() {
                       value={helmetSlider || 1}
                       onChange={(e) => {
                         setHelmetSlider(e.target.value)
+                        setUpdateUser(false);
                       }}
                       disabled={!isPremium}
                     />
@@ -673,6 +690,7 @@ export default function Home() {
                       value={iconSlider || 1}
                       onChange={(e) => {
                         setIconSlider(e.target.value)
+                        setUpdateUser(false);
                       }}
                       disabled={!isPremium}
                     />
@@ -686,6 +704,7 @@ export default function Home() {
                       value={petSlider || 1}
                       onChange={(e) => {
                         setpetSlider(e.target.value)
+                        setUpdateUser(false);
                       }}
                       disabled={!isPremium}
                     />
@@ -700,6 +719,7 @@ export default function Home() {
                   if (newName !== undefined && newName) {
 
                     setname()
+                    setUpdateUser(true);
                   }
                 }} className={styles.pushable}>
                   <span className={styles.edge}></span>
@@ -707,6 +727,14 @@ export default function Home() {
                     Salvar Skin/Nome
                   </span>
                 </button>
+                {updateUser === true ?
+                  <div>
+                    Informações estão salvas
+                  </div>
+                  :
+                  <div>
+                    Informações NÃO estão salvas
+                  </div>}
               </div>
 
               <p>
