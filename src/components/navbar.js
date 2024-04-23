@@ -90,7 +90,7 @@ export default function Navbar() {
 
 
           <div>
-           Version= Alfa  1.21
+           Version= Alfa  1.25
           </div>
         </div>
       </div>

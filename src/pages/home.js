@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './home.module.css';
 import axios from 'axios';
 import { useAppContext } from '../AppContext';
@@ -6,9 +6,15 @@ import Sessions from '../components/sessions';
 import CircularProgress from '@mui/material/CircularProgress';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import coin from './staticcoin.png'
+import DangerousIcon from '@mui/icons-material/Dangerous';
+import CheckIcon from '@mui/icons-material/Check';
 export default function Home() {
-
-
+  const [inputtomsg, setInputToMsg] = useState('');
+  const [idToAdd, setIdToAdd] = useState('');
+  const [friendlist, setfriendlist] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [friendtomsg, setFriendToMsg] = useState({ name: '', id: '' })
+  const [friendrequests, setFriendrequests] = useState([]);
   const [keeper, setKeeper] = useState(false);
   const [headSlider, setHeadSlider] = useState(1);
   const [torsoSlider, setTorsoSlider] = useState(1);
@@ -28,7 +34,6 @@ export default function Home() {
   const [lowerSliderimg, setLowerSliderimg] = useState('');
   const [isPremium, setIsPremium] = useState(false);
   const [randomText, setRandomText] = useState('');
-  const [changed, setChanged] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState('')
   const { user, urlrequest, randomStrings } = useAppContext();
@@ -138,6 +143,9 @@ export default function Home() {
       setHelmetSlider(parseInt(data.charCreate[5]))
       setIconSlider(parseInt(data.charCreate[6]))
       setpetSlider(parseInt(data.charCreate[7]))
+      setFriendrequests(data.FriendsRequests)
+      setfriendlist(data.Friends)
+
       if (data.premium === true) {
 
         setIsPremium(data.premium)
@@ -147,30 +155,11 @@ export default function Home() {
   }
 
 
-
-  useEffect(() => {
-    if (user.id) {
-      getname0();
-      const intervalId = setInterval(async () => {
-        try {
-
-          // Assuming you're updating the user's activity status in your backend
-          await axios.post(`${urlrequest}/heartbeat`, { userId: user.id, lastActiveAt: new Date });
-          setChanged(true);
-
-        } catch (error) {
-          console.error('Error sending heartbeat:', error);
-        }
-      }, 5000);
-
-      return () => clearInterval(intervalId);
-    }
-  }, [user.id]);
-
   useEffect(() => {
     if (user.id) {
       getusers();
       getusersonline();
+      getname0();
       const intervalId = setInterval(async () => {
         try {
 
@@ -180,7 +169,7 @@ export default function Home() {
           getusers();
           getusersonline();
           getsessions();
-
+          getname0();
 
         } catch (error) {
           console.error('Error sending heartbeat:', error);
@@ -190,6 +179,21 @@ export default function Home() {
       return () => clearInterval(intervalId);
     }
   }, [user.id]);
+
+  useEffect(() => {
+    if (user.id) {
+
+      if (friendtomsg.id) {
+
+        const intervalId = setInterval(async () => {
+          loadmessages(friendtomsg.id)
+        }, 3000);
+
+        return () => clearInterval(intervalId);
+      }
+
+    }
+  }, [user, friendtomsg])
 
   useEffect(() => {
     if (user.id) {
@@ -406,6 +410,66 @@ export default function Home() {
     }
   }
 
+  async function sendRequest(idtoadd) {
+    try {
+
+      const response = await axios.post(`${urlrequest}/sendFriendRequest/${idtoadd}`, { idrequest: user.id, namerequest: newName });
+
+    }
+    catch (error) {
+      console.log(error)
+    }
+
+  }
+  async function manageFriendRequest(decision, idrequest) {
+
+    try {
+
+      setFriendrequests(friendrequests.filter(user => user.idrequest !== idrequest))
+      const response = await axios.post(`${urlrequest}/manageFriendRequest/${user.id}/${decision}/${idrequest}`);
+      console.log(response.data)
+    }
+    catch (error) {
+      console.log(error)
+    }
+
+  }
+  async function loadmessages(id) {
+
+    try {
+
+      const response = await axios.post(`${urlrequest}/loadmessages/${user.id}/${id}`);
+      setMessages(response.data)
+
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function sendAMessage() {
+
+    try {
+
+      const response = await axios.post(`${urlrequest}/sendmessage/${user.id}/${friendtomsg.id}`, { message: { id: user.id, message: inputtomsg } });
+      setMessages(response.data)
+
+    }
+    catch (error) {
+      console.log(error)
+    }
+
+    setInputToMsg('')
+  }
+  const messagesEndRef = useRef(null);
+  const prevMessagesLengthRef = useRef(messages.length);
+  const scrollToBottom = () => {
+    if (prevMessagesLengthRef.current < messages.length) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+    prevMessagesLengthRef.current = messages.length;
+  }
+  useEffect(scrollToBottom, [messages]);
   return (
     <div className={styles.body}>
       <div className={styles.datashow}>
@@ -633,18 +697,18 @@ export default function Home() {
                 <button style={{ maxHeight: '60px', marginTop: '45px' }} disabled={keeper} type='button' onClick={() => {
                   saveOutfit();
                   setKeeper(true);
-                  if(newName !== undefined && newName){
+                  if (newName !== undefined && newName) {
 
                     setname()
                   }
                 }} className={styles.pushable}>
                   <span className={styles.edge}></span>
-                  <span style={{fontSize:'12px'}} className={styles.front}>
+                  <span style={{ fontSize: '12px' }} className={styles.front}>
                     Salvar Skin/Nome
                   </span>
                 </button>
               </div>
-            
+
               <p>
                 Quer ser premium? basta apoiar o projeto!
 
@@ -740,7 +804,7 @@ export default function Home() {
             </div>}
 
           </div>}
-        <div style={{ display: 'flex', gap: '5%' }} >
+        <div style={{ display: user.id && !isLoading ? 'flex' : 'none', gap: '5%', }} >
 
           <div className={styles.homechat}>
             <div>
@@ -751,26 +815,127 @@ export default function Home() {
             </div>
 
           </div>
-          <div style={{ maxWidth: '600px', width: '600px' }} className={styles.homechat}>
+          <div style={{ maxWidth: '700px', width: '700px', maxHeight: '600px' }} className={styles.homechat}>
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }} >
-              <h1 style={{ color: 'white', textAlign: 'center' }} >
-                CHAT
-              </h1>
-              <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} >
-                <div style={{
-                  color: 'white',
-                  border: '1px solid white',
-                  height: '160px', width: '100%',
-                  backgroundColor: 'grey', marginBottom: '10px'
-                }} >
+              <div style={{ color: 'white' }}>
+                Mandar solicitação de amizade
+                <input value={idToAdd} onChange={(e) => {
+                  setIdToAdd(e.target.value)
+                }} placeholder='digite o id aqui' />
+                <button onClick={() => {
+                  if (idToAdd !== user.id) {
+                    if (friendlist.includes(idToAdd)) {
+                      alert('Você já tem adicionado esse usuário')
+                    } else {
+
+                      sendRequest(idToAdd)
+                      setIdToAdd('')
+                      console.log(friendlist.includes(idToAdd))
+
+                    }
+
+                  } else {
+                    alert('Você não pode se adicionar!')
+                  }
+                }} type='button' >
+                  Enviar
+                </button>
+              </div>
+              <div style={{ color: 'white', textAlign: 'center' }} >
+                {friendtomsg.name ?
+                  <div>
+                    CHAT com {friendtomsg.name}
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} >
+                      <div style={{
+                        color: 'white',
+                        border: '1px solid white',
+                        height: '160px', width: '100%',
+                        backgroundColor: 'grey', marginBottom: '10px', overflowY: 'scroll', overflowX: 'hidden', padding: '5px', gap: '5px', display: 'flex', flexDirection: 'column'
+                      }} >
+                        {messages.map((message, index) => (
+                          message.id === user.id ?
+                            <div style={{
+                              display: 'flex',
+                              position: 'relative',
+                              left: '65%',
+                              width: 'fit-content',
+                              maxWidth: '120px',
+                              height: 'auto',
+                              padding: '10px',
+                              fontSize: '20px',
+                              fontWeight: '600',
+                              borderRadius: '15px',
+                              backgroundColor: 'blue',
+                              overflowWrap: 'break-word',
+                              wordBreak: 'break-word',
+                              justifyContent: 'end'
+                            }} key={index} >
+                              {message.message}
+                            </div> :
+                            <div style={{
+                              display: 'flex',
+                              position: 'relative',
+                              left: '5%',
+                              width: 'fit-content',
+                              maxWidth: '120px',
+                              height: 'auto',
+                              padding: '10px',
+                              fontSize: '20px',
+                              fontWeight: '600',
+                              borderRadius: '15px',
+                              backgroundColor: 'green',
+                              overflowWrap: 'break-word',
+                              wordBreak: 'break-word',
+                              justifyContent: 'end'
+                            }} key={index}>
+                              {message.message}
+                            </div>
+                        ))}
+                        <div ref={messagesEndRef} />
+                      </div>
+
+                    </div>
+                    <div>
+                      <form onSubmit={(e) => {
+                        e.preventDefault();
+                        if (inputtomsg !== '') {
+                          sendAMessage();
+                        }
+                      }}>
+                        <input
+                          value={inputtomsg}
+                          onChange={(e) => setInputToMsg(e.target.value)}
+                          style={{ width: '85%', marginRight: '10px' }}
+                          placeholder='Escreva sua mensagem aqui'
+                        />
+                        <button type="submit">Enviar</button>
+                      </form>
+                    </div>
+                  </div>
+                  : <div> Clique em algum amigo para abrir a conversar </div>
+                }
+
+              </div>
+
+
+            </div>
+            <div style={{
+              color: 'white',
+              display: 'flex', flexDirection: 'column',
+              border: '1px solid blue', padding: '5px',
+              width: '130px', gap: '10px'
+            }}>
+              {friendlist?.map((req, index) =>
+              (
+                <div onClick={() => {
+                  setFriendToMsg({ name: req.friendsname, id: req.friendid })
+                  loadmessages({ name: req.friendsname, id: req.friendid })
+                }} style={{ maxWidth: '130px', textWrap: 'wrap', display: 'flex', overflow: 'hidden', border: '2px solid green', cursor: 'pointer' }} key={index} >
+                  {req.friendsname}
 
                 </div>
-
-              </div>
-              <div>
-                <input style={{ width: '85%', marginRight: '10px' }} placeholder='Escreva aqui' />
-                <button>Enviar</button>
-              </div>
+              )
+              )}
 
             </div>
             <div style={{
@@ -779,17 +944,31 @@ export default function Home() {
               border: '1px solid blue', padding: '5px',
               width: '100px', gap: '10px'
             }}>
+              Pedidos de amizade
+              {friendrequests?.map((req, index) =>
+              (<div style={{ display: 'flex', justifyContent: 'space-between', border: '1px solid yellow', width: '100%', height: 'auto', flexDirection: 'column' }} key={index} >
+                {req.namerequest}
+                <div style={{ display: 'flex' }} >
+                  <div onClick={() => {
+                    manageFriendRequest('deny', req.idrequest)
+                  }}>
+                    <DangerousIcon style={{ color: 'red' }} />
+                  </div>
+                  <div onClick={() => {
+                    manageFriendRequest('accept', req.idrequest)
+                  }} >
+                    <CheckIcon style={{ color: 'green' }} />
+                  </div>
 
-              <div>
-                Amigo 1
-              </div>
-              <div>
-                Amigo 2
-              </div>
-              <div>
-                Amigo 3
-              </div>
+
+                </div>
+              </div>)
+              )}
+
+
+
             </div>
+
           </div>
         </div>
       </div>
