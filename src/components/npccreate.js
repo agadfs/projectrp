@@ -194,7 +194,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
     const updatedItems = newNpc.Items.map((item, itemIndex) => {
       if (itemIndex === index) {
         const newQuantity = item.quantity + quantityChange;
-
+        
         if (newQuantity <= 0) {
           return null;
         } else {
@@ -207,7 +207,8 @@ export default function NpcCreate({ userid, sessionid, items }) {
       }
       return item;
     }).filter(item => item !== null);
-    setNewNpc({ ...newNpc, Stats: updatedItems })
+
+     setNewNpc({ ...newNpc, Items: updatedItems }) 
 
 
 
@@ -254,17 +255,16 @@ export default function NpcCreate({ userid, sessionid, items }) {
   return (
     <div>
 
-
-      <div style={{ marginTop: '10px' }} className={styles.rpgdiv5}>
-        <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }}
+      <div style={{ position:'absolute', width:'1510px', display:'flex', maxHeight:'800px', height:'1500px' }} className={styles.rpgdiv5}>
+        <div style={{ width: '100%', marginLeft:'280px', justifyContent: 'center', display: 'flex' }}
           className={styles.medievalsharp} >
           Adicionar NPC</div>
          <form onSubmit={handleSubmit}>
 
-          <div style={{display:'flex', gap:'5px'}} >
-          <label htmlFor="Npcname">Nome:</label><br />
-          <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="Npcname" name="Npcname"
-            value={newNpc.Npcname} onChange={handleChange} required /><br />
+          <div style={{ display: 'flex', gap: '5px' }} >
+            <label htmlFor="Npcname">Nome:</label><br />
+            <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="Npcname" name="Npcname"
+              value={newNpc.Npcname} onChange={handleChange} required /><br />
             <label htmlFor="NpcBook">Para qual livro de rpg é esse npc?:</label><br />
             <select id="NpcBook" name="NpcBook"
               value={newNpc.NpcBook} onChange={handleChange}>
@@ -273,19 +273,19 @@ export default function NpcCreate({ userid, sessionid, items }) {
               <option value="d&d">D&D</option>
 
             </select>
-          <label htmlFor="NpcUrlPhoto">Url da foto do npc:</label><br />
-          <textarea id="NpcUrlPhoto" name="NpcUrlPhoto"
-            value={newNpc.NpcUrlPhoto} onChange={handleChange} /><br />
+            <label htmlFor="NpcUrlPhoto">Url da foto do npc:</label><br />
+            <textarea id="NpcUrlPhoto" name="NpcUrlPhoto"
+              value={newNpc.NpcUrlPhoto} onChange={handleChange} /><br />
 
-          <button onClick={handleSubmit} type="button">Enviar</button>
-          
+            <button onClick={handleSubmit} type="button">Enviar</button>
+
           </div>
 
 
 
 
-          <div className={styles.rpgdiv4} >
-            <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > INVENTARIO DO NPC
+          <div style={{maxHeight:'500px', height:'100%'}} className={styles.rpgdiv4} >
+            <div style={{ width: '100%', height:'50px', position:'relative', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} > INVENTARIO DO NPC
               ({newNpc?.Items?.length} Items)</div>
             <div>
 
@@ -305,7 +305,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
               </select>
             </div>
 
-            <div className={styles.customScrollDiv} style={{ height: 'auto', width: '21vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
+            <div className={styles.customScrollDiv} style={{ height: 'auto', minHeight:'350px', width: '21vw', display: 'flex', overflowX: 'scroll', transform: 'scaleY(-1)' }}>
               <div style={{ minWidth: '1600px', display: 'flex', gap: '25px', flexWrap: 'wrap', transform: 'scaleY(-1)', position: 'relative', bottom: '10px', marginTop: '20px' }} >
                 {newNpc?.Items?.map((item, index) => (
                   <div
@@ -401,13 +401,13 @@ export default function NpcCreate({ userid, sessionid, items }) {
 
 
           <div className={styles.rpgdiv4} style={{
-            height: '100%', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap',
-            flexDirection: 'column'
-          }}>
+            height: '730px', display: 'flex', maxWidth: '100%', gap: '10px', flexWrap: 'wrap',
+            flexDirection: 'column',position:'absolute', bottom:'-5px', right:'800px'
+           }}>
 
 
             <div style={{ display: 'flex', flexDirection: 'column' }} >
-              <h3 className={styles.medievalsharp}>Seus Atributos</h3>
+              <h3 className={styles.medievalsharp}>Atributos do Npc</h3>
               {newNpc?.Stats ?
                 <div style={{ display: 'flex', flexDirection: 'row' }} >
                   <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -1098,7 +1098,7 @@ export default function NpcCreate({ userid, sessionid, items }) {
               </div> : null}
 
           </div>
-          
+
         </form>
       </div>
 

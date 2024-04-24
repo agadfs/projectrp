@@ -84,8 +84,8 @@
 }
 
 .gridItem {
-  width: 58px; 
-  height: 58px; 
+  width: 60px; 
+  height: 60px; 
   background-size: cover; 
   border:1px solid rgba(236, 233, 233, 0.418);
   color: rgba(236, 233, 233, 0.418);

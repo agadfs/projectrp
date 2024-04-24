@@ -10,14 +10,23 @@ import { PiCoinsBold } from 'react-icons/pi';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import NpcCreate from '../components/npccreate';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import ItemGenerator from '../components/itemGenerator';
+import { type } from '@testing-library/user-event/dist/type';
 
 export default function SessionPage() {
+  const [wallocator, setWallLocator] = useState([]);
+  const [wallocatornew, setWallLocatornew] = useState([]);
+  const [selectedItem, setSelectedItem] = useState('');
+  const [selectedItemRarity, setSelectedItemRarity] = useState('');
+  const [selectedItemBook, setSelectedItemBook] = useState('');
+  const [selectedItemLevel, setSelectedItemLevel] = useState('');
   const [buttonAddItem, setButtonAddItem] = useState(false);
   const [buttonInfoSession, setButtonInfoSession] = useState(false);
   const [buttonAddNpc, setButtonAddNpc] = useState(false);
   const [buttonPlaceNpc, setButtonPlaceNpc] = useState(false);
   const [buttonShowMapInfo, setButtonShowMapInfo] = useState(false);
   const [buttonShowInvInfo, setButtonShowInvInfo] = useState(false);
+  const [buttonShowWallTool, setButtonShowWallTool] = useState(false);
   const [cantupdate, setCantUpdate] = useState(false);
   const [images1, setImages1] = useState([]);
   const [images2, setImages2] = useState([]);
@@ -149,6 +158,13 @@ export default function SessionPage() {
 
     })
 
+
+
+  function showWallTool() {
+    setButtonShowMapInfo(false);
+    setButtonShowWallTool(true);
+    setShowGrid(true);
+  }
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * randomStrings.length);
@@ -483,7 +499,8 @@ export default function SessionPage() {
     let playerarray = [];
 
     try {
-      if (data) {
+      if (data && data.join(',') !== playersid.join(',')) {
+
         for (let i = 0; i < data.length; i++) {
 
           const response = await axios.get(`${urlrequest}/users/${data[i]}`, {
@@ -539,6 +556,36 @@ export default function SessionPage() {
       }
     }
   }, [user, playerlocation, npcssession]);
+
+  useEffect(() => {
+    if(user.id){
+      if(map){
+        if(wallocator.length === 0){
+
+          getWalls();
+        }
+      }
+    }
+  },[user, map, wallocator])
+
+  async function getWalls(){
+
+    
+    const response = await axios.get(`${urlrequest}/mapget`, {
+      params: {
+        name: map.name,
+        id: map.id,
+        url: map.url
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'any'
+      }
+    }); 
+    if(response.data){
+      setWallLocator(response.data.walls)
+    }
+}
 
   async function getSession() {
 
@@ -1021,13 +1068,24 @@ export default function SessionPage() {
 
   const handleDragStart = (e, position) => {
     e.dataTransfer.setData('position', position);
+    
   };
+  
 
   const handleDragOver = (e) => {
     e.preventDefault();
   };
 
   const handleDrop = async (e, targetIndex) => {
+
+    const draggedItemType = e.dataTransfer.getData('text/plain');
+   
+    if (draggedItemType === 'wall') {
+      console.log(`Dropped a wall at tile ${targetIndex}`);
+      wallocatornew.push(`${targetIndex}`)
+    } else {
+
+    }
     const newPosition = parseInt(e.dataTransfer.getData('position'));
 
     let updatedPlayerLocations = [...playerlocation];
@@ -1063,19 +1121,132 @@ export default function SessionPage() {
     horizontalMovement = newcolumn - oldcolumn;
     verticalMovement = newrow - oldrow;
 
-    console.log("Vertical movement:", verticalMovement);
-    console.log("Horizontal movement:", horizontalMovement);
+   
 
-    setPlayerLocation(updatedPlayerLocations);
-    updateSession({ PlayersPos: updatedPlayerLocations });
+    
+
+    let proceed = true;
+    let typeblock = '';
+    let blocksmoved = 0;
+    let multiplier = 1;
+    let savenpcfinalgrid = targetIndex;
+   
+    function isPathBlocked(start, end, walls, horizontalMovement, verticalMovement) {
+      
+      console.log(verticalMovement)
+      if(verticalMovement > 0){
+        for(let i = 0; i < verticalMovement+1; i++){
+          let numbercheck = start + (64*i)
+          if(walls.includes(numbercheck.toString())){
+            console.log("Wall found at:", numbercheck);
+            proceed = false;
+            typeblock = 'vertical';
+            blocksmoved = numbercheck;
+            break;
+            
+        }
+        }
+
+      }else if(verticalMovement < 0){
+        for(let i = 0; i < -verticalMovement+1; i++){
+            let numbercheck = start - (64*i); // Subtract for negative movement
+            if(walls.includes(numbercheck.toString())){
+              console.log("Wall found at:", numbercheck);
+              proceed = false;
+              typeblock = 'vertical'
+              blocksmoved = numbercheck;
+              multiplier = -1;
+              break;
+              
+          }
+        }
+      }
+      if(proceed === true){
+        console.log('prosseguir')
+
+        if(horizontalMovement > 0){
+          for(let i = 0; i < horizontalMovement+1; i++){
+            let numbercheck = start + (1*i)
+            if(walls.includes(numbercheck.toString())){
+              console.log("Wall found at:", numbercheck);
+              proceed = false;
+              typeblock = 'horizontal'
+              blocksmoved = numbercheck;
+              break;
+              
+          }
+          }
+  
+        }else if(horizontalMovement < 0){
+          for(let i = 0; i < -horizontalMovement+1; i++){
+              let numbercheck = start - (1*i); // Subtract for negative movement
+              if(walls.includes(numbercheck.toString())){
+                console.log("Wall found at:", numbercheck);
+                proceed = false;
+                typeblock = 'horizontal'
+                blocksmoved = numbercheck;
+                multiplier = -1;
+                break;
+                
+            }
+          }
+        }
+
+      }
+
+    
+    
+     
+    }
+    const check = isPathBlocked(newPosition, updatedPlayerLocations[draggedPlayerIndex].tile, wallocator, horizontalMovement, verticalMovement);
+    if(proceed === true && updatedPlayerLocations[draggedPlayerIndex].npcmap.Isnpc === false){
+      
+
+      setPlayerLocation(updatedPlayerLocations);
+      updateSession({ PlayersPos: updatedPlayerLocations });
+     }else{
+      if(typeblock === 'vertical'){
+       let location =  parseInt(updatedPlayerLocations[draggedPlayerIndex].tile);
+       location = blocksmoved-(64*multiplier);
+        console.log(location);
+        updatedPlayerLocations[draggedPlayerIndex].tile = location;
+        setPlayerLocation(updatedPlayerLocations);
+      updateSession({ PlayersPos: updatedPlayerLocations });
+       
+      }
+      if(typeblock === 'horizontal'){
+       let location = parseInt(updatedPlayerLocations[draggedPlayerIndex].tile) 
+       location = blocksmoved-(1*multiplier);
+        console.log( location);
+        updatedPlayerLocations[draggedPlayerIndex].tile = location;
+        setPlayerLocation(updatedPlayerLocations);
+      updateSession({ PlayersPos: updatedPlayerLocations });
+        
+      }
+    }
+    if(updatedPlayerLocations[draggedPlayerIndex].npcmap.Isnpc === true){
+      updatedPlayerLocations[draggedPlayerIndex].tile = savenpcfinalgrid;
+
+      setPlayerLocation(updatedPlayerLocations);
+      updateSession({ PlayersPos: updatedPlayerLocations });
+     
+    }
+   
   };
 
-  function addmap() {
+
+  async function addmap() {
     let mapsdata = [...mapsarray]
     mapsdata.push({ name: nameselectedmap, url: urlselectedmap, id: user.id, scale: newscale })
     updateSession({ Maps: mapsdata }).then(() => {
       window.location.reload()
     });
+
+    let newmap = { name: nameselectedmap, url: urlselectedmap, id: user.id, scale: newscale, walls: wallocatornew }
+    const response = await axios.post(`${urlrequest}/mapcreate`, newmap);
+    if (response.data) {
+      console.log(response.data)
+    }
 
   }
   function removemap(name) {
@@ -1103,37 +1274,48 @@ export default function SessionPage() {
     }, 100);
 
   }
-  const image = new Image();
+  useEffect(() => {
 
-  image.src = map?.url;
-  image.onload = function () {
-    // Calcula a largura da imagem que seja divisível por 60
-    const width = (Math.ceil(image.width / 60) * 60);
+    if (user.id) {
 
-    // Define a largura da imagem no estado
-    setImageWidth(width);
+      if (imgprev === '' && !isLoading) {
+        const image = new Image();
+        image.src = map?.url;
+        image.onload = function () {
+          // Calcula a largura da imagem que seja divisível por 60
+          let width = (Math.ceil(image.width / 60) * 60);
 
-  };
+          // Define a largura da imagem no estado
+
+          setImageWidth(width);
+        
+        }
+      }
+
+    };
+  }, [imgprev, imageWidth, user, isLoading])
   const checkImageUrlValidity = (url) => {
     return new Promise((resolve, reject) => {
       const img = new Image();
-      img.onload = () => resolve(img.width);
+      img.onload = () => resolve(Math.ceil(img.width / 60) * 60);
       img.onerror = () => reject(false);
       img.src = url;
     });
   };
+
   const handleUrlChange = async (e) => {
     const url = e;
     setUrlSelectedMap(url);
     try {
-      const isValid = await checkImageUrlValidity(url).then(width => {
+      await checkImageUrlValidity(url).then(width => {
         setImageWidth(width);
+        console.log(width)
       });
       setIsUrlValid(true);
     } catch (error) {
       setIsUrlValid(false);
     }
-    setImgPrev(url)
+    setImgPrev(url);
   };
   function HealthBar({ useridfind }) {
 
@@ -1329,8 +1511,25 @@ export default function SessionPage() {
       console.error('Error fetching sessions ', error)
     }
   }
+
+
+  /* AI */
+
+  function generateItem(e) {
+    e.preventDefault();
+
+    const theItem = ItemGenerator(selectedItemRarity, selectedItemBook, selectedItem, selectedItemLevel)
+
+
+    console.log('O item gerado : ', theItem)
+
+  }
+
+
+  /* AI */
+
   return (
-    <div  className={styles.body} >
+    <div className={styles.body} >
       {user?.id === playersid[0] && !isLoading ?
         <div style={{
           top: '10px', left: '0px', zIndex: '9999',
@@ -2565,6 +2764,15 @@ export default function SessionPage() {
                           Adicionar Mapa
                         </span>
                       </button>
+                      <button type='button' onClick={() => {
+
+                        showWallTool()
+                      }} className={styles.pushable}>
+                        <span style={{ fontSize: '10px', width: '116px' }} className={styles.edge}></span>
+                        <span style={{ fontSize: '10px', width: '90px' }} className={styles.front}>
+                          PREMIUM: Spawners, traps, walls
+                        </span>
+                      </button>
 
                     </form>
                   </div>
@@ -2599,7 +2807,8 @@ export default function SessionPage() {
           <div style={{
             backgroundImage: imgprev ? `url('${imgprev}')` : `url('${map?.url}')`,
             backgroundSize: (nameselectedmap ? `${imageWidth * parseFloat(newscale)}px ${imageWidth * parseFloat(newscale)}px` : `${imageWidth * parseFloat(scale)}px ${imageWidth * parseFloat(scale)}px`),
-            backgroundRepeat: 'no-repeat'
+            backgroundRepeat: 'no-repeat',
+
           }} className={styles.mapcontainer}>
             <div className={styles.mapgrid} style={{ position: 'relative' }}>
               {gridItems.map((_, index) => (
@@ -2610,10 +2819,15 @@ export default function SessionPage() {
                     color: showTile ? 'rgba(236, 233, 233, 0.718)' : 'rgba(236, 233, 233, 0)',
                     border: showGrid ? '1px solid rgba(236, 233, 233, 0.718)' : 'none',
 
+                    boxSizing: 'border-box',
+
                   }}
 
                   onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, index)}
+                  onDrop={(e) =>
+                    handleDrop(e, index)
+
+                  }
                 >
                   Tile {index}
                 </div>
@@ -2674,6 +2888,52 @@ export default function SessionPage() {
                       </div>
                     </div>}
                 </div>
+              ))}
+              {wallocator.map((wall, index) => (
+
+                <div
+                  key={index}
+
+                  style={{
+
+                    position: 'absolute',
+                    boxSizing: 'border-box',
+                    top: `calc(${Math.floor(parseInt(wall) / 64)} * (100% / 64))`,
+                    left: `calc(${parseInt(wall) % 64} * (100% / 64))`,
+                    width: '60px', // Adjust as needed
+                    height: '60px', // Adjust as needed
+                    display: imgprev ? 'none' : 'flex',
+                    transition: 'top 1.5s, left 1.5s 1.5s',
+                    backgroundColor: 'black'
+
+                  }}
+
+                >
+                </div>
+
+              ))}
+              {wallocatornew.map((wall, index) => (
+
+                <div
+                  key={index}
+
+                  style={{
+
+                    position: 'absolute',
+                    boxSizing: 'border-box',
+                    top: `calc(${Math.floor(parseInt(wall) / 64)} * (100% / 64))`,
+                    left: `calc(${parseInt(wall) % 64} * (100% / 64))`,
+                    width: '60px', // Adjust as needed
+                    height: '60px', // Adjust as needed
+                    display: !imgprev ? 'none' : 'flex',
+                    transition: 'top 1.5s, left 1.5s 1.5s',
+                    backgroundColor: 'black'
+
+                  }}
+
+                >
+                </div>
+
               ))}
             </div>
           </div>
@@ -2935,7 +3195,7 @@ export default function SessionPage() {
               </div> : null}
           </div>
           {user?.id !== playersid[0] ?
-            <div style={{position: 'fixed', top: '0px',left:'10px', display: buttonShowInvInfo ? 'block' : 'none', zIndex: '9999' }} >
+            <div style={{ position: 'fixed', top: '0px', left: '10px', display: buttonShowInvInfo ? 'block' : 'none', zIndex: '9999' }} >
               {!npcssession.some(npc => npc.ownerId === user.id) ?
                 <div className={styles.rpgdiv5} >
                   <input placeholder='Seu Nome' value={nameuser} onChange={(e) => { setNameUser(e.target.value) }} />
@@ -3240,7 +3500,7 @@ export default function SessionPage() {
                             />
                             ({statsuser.def + statsuserequip.def})
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }} >
+                          <div style={{ display: 'flex', gap: '15px', marginTop: '20px' }} >
 
                             <button type='button' onClick={() => {
                               const updatedUser = { ...statsuser };
@@ -3293,7 +3553,10 @@ export default function SessionPage() {
 
                   </div>
                   {user?.id !== playersid[0] ?
-                    <div style={{ color: 'black', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px' }}>
+                    <div style={{
+                      color: 'black', display: 'flex', justifyContent: 'center', flexDirection: 'column',
+                      alignContent: 'center', width: '100%', alignItems: 'center', gap: '20px', position: 'relative', bottom: '115px', left: '80px'
+                    }}>
                       <div style={{ display: 'flex', gap: '20px' }} >
                         {statsuser.earing?.atk ?
                           <div className={styles.slots} onClick={() => {
@@ -3313,9 +3576,9 @@ export default function SessionPage() {
                               console.log('Item not found!');
                             }
 
-                          }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                            <div> {statsuser.earing?.name} </div>
-                            <img src={statsuser?.earing?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+                          }} style={{ display: 'flex', maxHeight: '120px', flexDirection: 'column' }}>
+
+                            <img src={statsuser?.earing?.url} alt="Gear" style={{ maxWidth: '60px', height: 'auto', alignSelf: 'center' }} />
                             <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                               <div  >
                                 <CloseFullscreenIcon />{statsuser.earing?.atk}
@@ -3325,9 +3588,7 @@ export default function SessionPage() {
                               </div>
 
                             </div>
-                            <div style={{ display: 'flex', alignSelf: 'center' }} >
-                              brinco
-                            </div>
+
                           </div> :
                           <div className={styles.slots} style={{
                             width: '50px', height: '50px',
@@ -3352,8 +3613,8 @@ export default function SessionPage() {
                             }
 
                           }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                            <div> {statsuser.head?.name} </div>
-                            <img src={statsuser?.head?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+
+                            <img src={statsuser?.head?.url} alt="Gear" style={{ maxWidth: '60px', height: 'auto', alignSelf: 'center' }} />
                             <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                               <div  >
                                 <CloseFullscreenIcon />{statsuser.head?.atk}
@@ -3363,9 +3624,7 @@ export default function SessionPage() {
                               </div>
 
                             </div>
-                            <div style={{ display: 'flex', alignSelf: 'center' }} >
-                              Capacete
-                            </div>
+
                           </div> :
                           <div className={styles.slots} style={{
                             width: '50px', height: '50px',
@@ -3397,8 +3656,8 @@ export default function SessionPage() {
                             }
 
                           }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                            <div> {statsuser.lefthand?.name} </div>
-                            <img src={statsuser?.lefthand?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+
+                            <img src={statsuser?.lefthand?.url} alt="Gear" style={{ maxWidth: '60px', height: 'auto', alignSelf: 'center' }} />
                             <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                               <div  >
                                 <CloseFullscreenIcon />{statsuser.lefthand?.atk}
@@ -3408,9 +3667,7 @@ export default function SessionPage() {
                               </div>
 
                             </div>
-                            <div style={{ display: 'flex', alignSelf: 'center' }} >
-                              Mão esquerda
-                            </div>
+
                           </div> :
                           <div className={styles.slots} style={{
                             width: '50px', height: '50px',
@@ -3435,8 +3692,8 @@ export default function SessionPage() {
                             }
 
                           }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                            <div> {statsuser.chest?.name} </div>
-                            <img src={statsuser?.chest?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+
+                            <img src={statsuser?.chest?.url} alt="Gear" style={{ maxWidth: '60px', height: 'auto', alignSelf: 'center' }} />
                             <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                               <div  >
                                 <CloseFullscreenIcon />{statsuser.chest?.atk}
@@ -3446,9 +3703,7 @@ export default function SessionPage() {
                               </div>
 
                             </div>
-                            <div style={{ display: 'flex', alignSelf: 'center' }} >
-                              Tronco
-                            </div>
+
                           </div> :
                           <div className={styles.slots} style={{
                             width: '50px', height: '50px',
@@ -3474,8 +3729,8 @@ export default function SessionPage() {
                             }
 
                           }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                            <div> {statsuser.righthand?.name} </div>
-                            <img src={statsuser?.righthand?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+
+                            <img src={statsuser?.righthand?.url} alt="Gear" style={{ maxWidth: '60px', height: 'auto', alignSelf: 'center' }} />
                             <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                               <div  >
                                 <CloseFullscreenIcon />{statsuser.righthand?.atk}
@@ -3485,9 +3740,7 @@ export default function SessionPage() {
                               </div>
 
                             </div>
-                            <div style={{ display: 'flex', alignSelf: 'center' }} >
-                              Mão direita
-                            </div>
+
                           </div> :
                           <div className={styles.slots} style={{
                             width: '50px', height: '50px',
@@ -3513,8 +3766,8 @@ export default function SessionPage() {
                             }
 
                           }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                            <div> {statsuser.ringleft?.name} </div>
-                            <img src={statsuser?.ringleft?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+
+                            <img src={statsuser?.ringleft?.url} alt="Gear" style={{ maxWidth: '60px', height: 'auto', alignSelf: 'center' }} />
                             <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                               <div  >
                                 <CloseFullscreenIcon />{statsuser.ringleft?.atk}
@@ -3524,9 +3777,7 @@ export default function SessionPage() {
                               </div>
 
                             </div>
-                            <div style={{ display: 'flex', alignSelf: 'center' }} >
-                              Anel esquerdo
-                            </div>
+
                           </div> :
                           <div className={styles.slots} style={{
                             width: '50px', height: '50px',
@@ -3551,8 +3802,8 @@ export default function SessionPage() {
                             }
 
                           }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                            <div> {statsuser.pants?.name} </div>
-                            <img src={statsuser?.pants?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+
+                            <img src={statsuser?.pants?.url} alt="Gear" style={{ maxWidth: '60px', height: 'auto', alignSelf: 'center' }} />
                             <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                               <div  >
                                 <CloseFullscreenIcon />{statsuser.pants?.atk}
@@ -3562,9 +3813,7 @@ export default function SessionPage() {
                               </div>
 
                             </div>
-                            <div style={{ display: 'flex', alignSelf: 'center' }} >
-                              Calça
-                            </div>
+
                           </div> :
                           <div className={styles.slots} style={{
                             width: '50px', height: '50px',
@@ -3590,8 +3839,8 @@ export default function SessionPage() {
                             }
 
                           }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                            <div> {statsuser.ringright?.name} </div>
-                            <img src={statsuser?.ringright?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+
+                            <img src={statsuser?.ringright?.url} alt="Gear" style={{ maxWidth: '60px', height: 'auto', alignSelf: 'center' }} />
                             <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                               <div  >
                                 <CloseFullscreenIcon />{statsuser.ringright?.atk}
@@ -3601,9 +3850,7 @@ export default function SessionPage() {
                               </div>
 
                             </div>
-                            <div style={{ display: 'flex', alignSelf: 'center' }} >
-                              Anel direito
-                            </div>
+
                           </div> :
                           <div className={styles.slots} style={{
                             width: '50px', height: '50px',
@@ -3629,8 +3876,8 @@ export default function SessionPage() {
                             }
 
                           }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                            <div> {statsuser.othersleft?.name} </div>
-                            <img src={statsuser?.othersleft?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+
+                            <img src={statsuser?.othersleft?.url} alt="Gear" style={{ maxWidth: '60px', height: 'auto', alignSelf: 'center' }} />
                             <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                               <div  >
                                 <CloseFullscreenIcon />{statsuser.othersleft?.atk}
@@ -3640,9 +3887,7 @@ export default function SessionPage() {
                               </div>
 
                             </div>
-                            <div style={{ display: 'flex', alignSelf: 'center' }} >
-                              Utensilios esquerdo
-                            </div>
+
                           </div> :
                           <div className={styles.slots} style={{
                             width: '50px', height: '50px',
@@ -3670,8 +3915,8 @@ export default function SessionPage() {
                             }
 
                           }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                            <div> {statsuser.shoes?.name} </div>
-                            <img src={statsuser?.shoes?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+
+                            <img src={statsuser?.shoes?.url} alt="Gear" style={{ maxWidth: '60px', height: 'auto', alignSelf: 'center' }} />
                             <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                               <div  >
                                 <CloseFullscreenIcon />{statsuser.shoes?.atk}
@@ -3681,9 +3926,7 @@ export default function SessionPage() {
                               </div>
 
                             </div>
-                            <div style={{ display: 'flex', alignSelf: 'center' }} >
-                              Sapato
-                            </div>
+
                           </div> :
                           <div className={styles.slots} style={{
                             width: '50px', height: '50px',
@@ -3709,8 +3952,8 @@ export default function SessionPage() {
                             }
 
                           }} style={{ display: 'flex', width: '100%', flexDirection: 'column' }}>
-                            <div> {statsuser.othersright?.name} </div>
-                            <img src={statsuser?.othersright?.url} alt="Gear" style={{ maxWidth: '50px', height: 'auto', alignSelf: 'center' }} />
+
+                            <img src={statsuser?.othersright?.url} alt="Gear" style={{ maxWidth: '60px', height: 'auto', alignSelf: 'center' }} />
                             <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center', width: '100%' }}  >
                               <div  >
                                 <CloseFullscreenIcon />{statsuser.othersright?.atk}
@@ -3720,9 +3963,7 @@ export default function SessionPage() {
                               </div>
 
                             </div>
-                            <div style={{ display: 'flex', alignSelf: 'center' }} >
-                              Utensilios direito
-                            </div>
+
                           </div> :
                           <div className={styles.slots} style={{
                             width: '50px', height: '50px',
@@ -3738,6 +3979,7 @@ export default function SessionPage() {
             </div> : null}
           {user?.id === playersid[0] ?
             <div style={{ marginTop: '10px', zIndex: '9999', position: 'fixed', top: '0px', maxWidth: '1100px', right: '0px', display: buttonAddItem ? 'block' : 'none' }} className={styles.rpgdiv4}>
+
               <h2 style={{ width: '100%', justifyContent: 'center', display: 'flex' }} className={styles.medievalsharp} >Adicionar Item</h2>
               <form style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} onSubmit={handleSubmit}>
                 <label htmlFor="name">Nome:</label><br />
@@ -3775,9 +4017,12 @@ export default function SessionPage() {
                 <label htmlFor="canequip">Pode ser equipado:</label><br />
                 <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="checkbox" id="canequip" name="canequip" checked={formData.canequip} onChange={handleChange} /><br />
                 {formData.canequip ?
-                  <div >
+                  <div style={{
+                    display: 'flex', width: '300px', marginLeft: '400px',
+                    flexDirection: 'column', position: 'relative', right: '400px', bottom: '550px', height: '0px'
+                  }} >
                     <label htmlFor="typewear">Onde é equipavel:</label><br />
-                    <select id="typewear" name="typewear" value={formData.typewear} onChange={handleChange}>
+                    <select style={{ maxHeight: '30px', maxWidth: '150px' }} id="typewear" name="typewear" value={formData.typewear} onChange={handleChange}>
                       <option value="">Selecione uma opção</option>
                       <option value="earing">Earring</option>
                       <option value="head">Head</option>
@@ -3793,42 +4038,31 @@ export default function SessionPage() {
                     </select>
                     <br />
                     <label htmlFor="atk">Ataque:</label><br />
-                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="atk" name="atk" value={formData.atk} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px', maxHeight: '30px' }} type="text" id="atk" name="atk" value={formData.atk} onChange={handleChange} /><br />
 
                     <label htmlFor="def">Defesa:</label><br />
-                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="def" name="def" value={formData.def} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px', maxHeight: '30px' }} type="text" id="def" name="def" value={formData.def} onChange={handleChange} /><br />
 
                     <label htmlFor="strength">Força:</label><br />
-                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="number" id="strength" name="strength" value={formData.strength} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px', maxHeight: '30px' }} type="number" id="strength" name="strength" value={formData.strength} onChange={handleChange} /><br />
 
                     <label htmlFor="dexterity">Destreza:</label><br />
-                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="number" id="dexterity" name="dexterity" value={formData.dexterity} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px', maxHeight: '30px' }} type="number" id="dexterity" name="dexterity" value={formData.dexterity} onChange={handleChange} /><br />
 
                     <label htmlFor="constitution">Constituição:</label><br />
-                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="number" id="constitution" name="constitution" value={formData.constitution} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px', maxHeight: '30px' }} type="number" id="constitution" name="constitution" value={formData.constitution} onChange={handleChange} /><br />
 
                     <label htmlFor="intelligence">Inteligência:</label><br />
-                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="number" id="intelligence" name="intelligence" value={formData.intelligence} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px', maxHeight: '30px' }} type="number" id="intelligence" name="intelligence" value={formData.intelligence} onChange={handleChange} /><br />
 
                     <label htmlFor="wisdom">Sabedoria:</label><br />
-                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="number" id="wisdom" name="wisdom" value={formData.wisdom} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px', maxHeight: '30px' }} type="number" id="wisdom" name="wisdom" value={formData.wisdom} onChange={handleChange} /><br />
 
                     <label htmlFor="charisma">Carisma:</label><br />
-                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="number" id="charisma" name="charisma" value={formData.charisma} onChange={handleChange} /><br />
+                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px', maxHeight: '30px' }} type="number" id="charisma" name="charisma" value={formData.charisma} onChange={handleChange} /><br />
 
 
-                    <p>Caso o equipamento tenha debuff ou buff, escreva o nome e em seguida o valor, por exemplo:
-                      'slow-1' ou 'speed+2' ou 'sabedoria+4' ou 'destreza-1'. ESCREVA SEM ASPAS
-                    </p>
 
-                    <label htmlFor="buff1">Buff ou Debuff 1 :</label><br />
-                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="buff1" name="buff1" value={formData.buff1} onChange={handleChange} /><br />
-
-                    <label htmlFor="buff2">Buff ou Debuff 2:</label><br />
-                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="buff2" name="buff2" value={formData.buff2} onChange={handleChange} /><br />
-
-                    <label htmlFor="buff2">Buff ou Debuff 3:</label><br />
-                    <input style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '150px' }} type="text" id="buff2" name="buff2" value={formData.buff2} onChange={handleChange} /><br />
 
                   </div> : null}
 
@@ -3840,7 +4074,7 @@ export default function SessionPage() {
             </div>
             : null}
           {user?.id === playersid[0] ?
-            <div style={{ display: 'flex', position: 'fixed', top: '0px', right: '300px', zIndex: '9999' }} >
+            <div style={{ display: 'flex', position: 'fixed', top: '0px', left: '300px', zIndex: '9999' }} >
               {buttonAddNpc ?
                 <NpcCreate items={items} userid={user.id} sessionid={sessionid} />
                 : null}
@@ -3873,7 +4107,7 @@ export default function SessionPage() {
                     </div>}
                 </div> : <div> Por favor, faça o login para poder interagir com as sessões </div>}
             </div>}</div>}
-      <div style={{ position: 'fixed', bottom: '0px', width: '100%', zIndex: '9999', display:isLoading ? 'none' : 'flex', height: '50px', gap: '20px', justifyContent: 'center', marginBottom: '50px' }} >
+      <div style={{ position: 'fixed', bottom: '0px', width: '100%', zIndex: '9999', display: isLoading ? 'none' : 'flex', height: '50px', gap: '20px', justifyContent: 'center', marginBottom: '50px' }} >
 
         <button style={{ display: user?.id !== playersid[0] ? 'block' : 'none' }} disabled={user?.id === playersid[0]} onClick={() => {
           setButtonShowInvInfo(!buttonShowInvInfo)
@@ -3892,6 +4126,28 @@ export default function SessionPage() {
             Info mapa
           </span>
         </button>
+        <div style={{ display: buttonShowWallTool ? 'flex' : 'none' }} >
+          <div data-type="wall" draggable onDragStart={(e) => {
+            e.dataTransfer.setData('text/plain', 'wall'); // Set the index as the drag data
+          }}
+            style={{ border: '2px solid red', cursor: 'pointer', backgroundColor: 'black', color: 'white' }} >
+            Parede
+          </div>
+          <div style={{ border: '2px solid red', cursor: 'pointer', backgroundColor: 'black', color: 'white' }}>
+            Trap1
+          </div>
+          <div style={{ border: '2px solid red', cursor: 'pointer', backgroundColor: 'black', color: 'white' }}>
+            Trap2
+          </div>
+          <div style={{ border: '2px solid red', cursor: 'pointer', backgroundColor: 'black', color: 'white' }}>
+            Trap3
+          </div>
+          <div onClick={() => {
+            setButtonShowWallTool(false)
+          }} style={{ border: '2px solid red', cursor: 'pointer', backgroundColor: 'black', color: 'white' }}>
+            Fechar
+          </div>
+        </div>
         <button onClick={() => {
           setButtonInfoSession(!buttonInfoSession)
         }} type='button' className={styles.pushable2}>
