@@ -380,7 +380,7 @@ export default function SessionPage() {
 
     const interval = setInterval(() => {
       if (user.id) {
-        getSession()
+       /*  getSession() */
 
       } else {
 
@@ -663,8 +663,8 @@ export default function SessionPage() {
 
           setTitle(data.title);
           setBookRpg(data.bookrpg);
-          setMapsArray(data.Maps);
           if(nameselectedmap === '' && urlselectedmap === ''){
+            setMapsArray(data.Maps);
             setMap(data.Maps[0]);
             console.log(nameselectedmap)
             setScale(data.Maps[0]?.scale);
