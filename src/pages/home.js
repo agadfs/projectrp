@@ -312,7 +312,7 @@ export default function Home() {
           return true;
         })
         .catch(error => {
-          console.error(`Error loading ${fileType} image:`, error);
+         
           return false;
         });
     };
@@ -332,7 +332,7 @@ export default function Home() {
           return true;
         })
         .catch(error => {
-          console.error(`Error loading ${fileType} image:`, error);
+         
           return false;
         });
     };
@@ -352,7 +352,7 @@ export default function Home() {
           return true;
         })
         .catch(error => {
-          console.error(`Error loading ${fileType} image:`, error);
+         
           return false;
         });
     };
@@ -372,7 +372,7 @@ export default function Home() {
           return true;
         })
         .catch(error => {
-          console.error(`Error loading ${fileType} image:`, error);
+          
           return false;
         });
     };

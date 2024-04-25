@@ -11,11 +11,18 @@ import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import NpcCreate from '../components/npccreate';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import ItemGenerator from '../components/itemGenerator';
-import { type } from '@testing-library/user-event/dist/type';
+
 
 export default function SessionPage() {
+  window.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+  });
   const [wallocator, setWallLocator] = useState([]);
   const [wallocatornew, setWallLocatornew] = useState([]);
+  const [trap1locator, settrap1Locator] = useState([]);
+  const [trap1locatornew, settrap1Locatornew] = useState([]);
+  const [door1locator, setdoor1Locator] = useState([]);
+  const [door1locatornew, setdoor1Locatornew] = useState([]);
   const [selectedItem, setSelectedItem] = useState('');
   const [selectedItemRarity, setSelectedItemRarity] = useState('');
   const [selectedItemBook, setSelectedItemBook] = useState('');
@@ -55,12 +62,15 @@ export default function SessionPage() {
   const [takemana, setTakeMana] = useState('');
   const [scale, setScale] = useState(1);
   const [newscale, setNewScale] = useState(1);
+  const [blockscale, setblockScale] = useState(1);
+  const [blocknewscale, setblockNewScale] = useState(1);
   const [isUrlValid, setIsUrlValid] = useState(false);
   const [urlselectedmap, setUrlSelectedMap] = useState('');
   const [nameselectedmap, setNameSelectedMap] = useState('');
   const [imageWidth, setImageWidth] = useState(null);
+  const [imageHeight, setImageHeight] = useState(null);
 
-  const gridItems = Array.from({ length: 4096 }); /* 64 x 64 */
+  const [gridItems, setGridItems] = useState(Array.from({ length: 4096 }));
   const [titulo, setTitulo] = useState('');
   const { sessionid } = useParams();
   const { user, urlrequest, randomStrings } = useAppContext();
@@ -177,6 +187,7 @@ export default function SessionPage() {
 
   }, []);
 
+
   async function AddPlayerToMap() {
     let pos = playerlocation;
     const response = await axios.get(`${urlrequest}/sessions/${sessionid}`, {
@@ -195,6 +206,7 @@ export default function SessionPage() {
     updateSession({ PlayersPos: pos })
     setTile('')
   }
+
   useEffect(() => {
     const importImages = async () => {
       try {
@@ -210,6 +222,7 @@ export default function SessionPage() {
 
 
     };
+
     const importImages1 = async () => {
 
       try {
@@ -247,12 +260,12 @@ export default function SessionPage() {
           const image = await import(`../components/lefthand/lefthand${i}.png`);
           headImages.push(image.default);
         } catch (pngError) {
-          console.error(`Error importing PNG image lefthand${i}.png:`, pngError);
+       
           try {
             const gifImage = await import(`../components/lefthand/lefthand${i}.gif`);
             headImages.push(gifImage.default);
           } catch (gifError) {
-            console.error(`Error importing GIF image lefthand${i}.gif:`, gifError);
+           
             // Optionally, you can push a default image or null if both imports fail
             headImages.push(null);
           }
@@ -270,12 +283,12 @@ export default function SessionPage() {
           const image = await import(`../components/righthand/righthand${i}.png`);
           headImages.push(image.default);
         } catch (pngError) {
-          console.error(`Error importing PNG image righthand${i}.png:`, pngError);
+      
           try {
             const gifImage = await import(`../components/righthand/righthand${i}.gif`);
             headImages.push(gifImage.default);
           } catch (gifError) {
-            console.error(`Error importing GIF image righthand${i}.gif:`, gifError);
+           
             // Optionally, you can push a default image or null if both imports fail
             headImages.push(null);
           }
@@ -294,12 +307,12 @@ export default function SessionPage() {
           const image = await import(`../components/helmet/helmet${i}.png`);
           headImages.push(image.default);
         } catch (pngError) {
-          console.error(`Error importing PNG image helmet${i}.png:`, pngError);
+       
           try {
             const gifImage = await import(`../components/helmet/helmet${i}.gif`);
             headImages.push(gifImage.default);
           } catch (gifError) {
-            console.error(`Error importing GIF image helmet${i}.gif:`, gifError);
+          
             // Optionally, you can push a default image or null if both imports fail
             headImages.push(null);
           }
@@ -317,12 +330,12 @@ export default function SessionPage() {
           const image = await import(`../components/icons/icons${i}.png`);
           headImages.push(image.default);
         } catch (pngError) {
-          console.error(`Error importing PNG image icons${i}.png:`, pngError);
+        
           try {
             const gifImage = await import(`../components/icons/icons${i}.gif`);
             headImages.push(gifImage.default);
           } catch (gifError) {
-            console.error(`Error importing GIF image icons${i}.gif:`, gifError);
+         
             // Optionally, you can push a default image or null if both imports fail
             headImages.push(null);
           }
@@ -338,12 +351,12 @@ export default function SessionPage() {
           const image = await import(`../components/pet/pet${i}.png`);
           headImages.push(image.default);
         } catch (pngError) {
-          console.error(`Error importing PNG image pet${i}.png:`, pngError);
+         
           try {
             const gifImage = await import(`../components/pet/pet${i}.gif`);
             headImages.push(gifImage.default);
           } catch (gifError) {
-            console.error(`Error importing GIF image pet${i}.gif:`, gifError);
+           
             // Optionally, you can push a default image or null if both imports fail
             headImages.push(null);
           }
@@ -558,19 +571,19 @@ export default function SessionPage() {
   }, [user, playerlocation, npcssession]);
 
   useEffect(() => {
-    if(user.id){
-      if(map){
-        if(wallocator.length === 0){
+    if (user.id) {
+      if (map) {
+        if (wallocator.length === 0) {
 
           getWalls();
         }
       }
     }
-  },[user, map, wallocator])
+  }, [user, map, wallocator])
 
-  async function getWalls(){
+  async function getWalls() {
 
-    
+
     const response = await axios.get(`${urlrequest}/mapget`, {
       params: {
         name: map.name,
@@ -581,11 +594,39 @@ export default function SessionPage() {
         'Content-Type': 'application/json',
         'ngrok-skip-browser-warning': 'any'
       }
-    }); 
-    if(response.data){
+    });
+    if (response.data) {
       setWallLocator(response.data.walls)
     }
-}
+  }
+
+  async function getFullMap() {
+
+    console.log(map.name)
+    console.log(map.id)
+    console.log(map.url)
+    const response = await axios.get(`${urlrequest}/mapget`, {
+      params: {
+        name: map.name,
+        id: map.id,
+        url: map.url
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'any'
+      }
+    });
+   
+    if (response.data) {
+
+      setNewScale(response.data.scale)
+      setUrlSelectedMap(response.data.url)
+      setNameSelectedMap(response.data.name)
+      removemap(map?.name)
+      setWallLocatornew(response.data.walls)
+    }
+  }
+
 
   async function getSession() {
 
@@ -623,8 +664,15 @@ export default function SessionPage() {
           setTitle(data.title);
           setBookRpg(data.bookrpg);
           setMapsArray(data.Maps);
-          setMap(data.Maps[0]);
-          setScale(data.Maps[0]?.scale);
+          if(nameselectedmap === '' && urlselectedmap === ''){
+            setMap(data.Maps[0]);
+            console.log(nameselectedmap)
+            setScale(data.Maps[0]?.scale);
+            setblockScale(data.Maps[0]?.blockscale)
+
+            setblockNewScale(data.Maps[0]?.blockscale)
+            setNewScale(data.Maps[0]?.scale)
+          }
           getPlayers(data.players);
           setShowInfo(true);
           setPlayersid(data.players);
@@ -1068,181 +1116,195 @@ export default function SessionPage() {
 
   const handleDragStart = (e, position) => {
     e.dataTransfer.setData('position', position);
-    
+    console.log(position)
+
   };
-  
+
 
   const handleDragOver = (e) => {
     e.preventDefault();
   };
 
   const handleDrop = async (e, targetIndex) => {
-
+    console.log(targetIndex)
     const draggedItemType = e.dataTransfer.getData('text/plain');
-   
+
     if (draggedItemType === 'wall') {
       console.log(`Dropped a wall at tile ${targetIndex}`);
       wallocatornew.push(`${targetIndex}`)
     } else {
 
-    }
-    const newPosition = parseInt(e.dataTransfer.getData('position'));
 
-    let updatedPlayerLocations = [...playerlocation];
-    const response = await axios.get(`${urlrequest}/sessions/${sessionid}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
+
+      const newPosition = parseInt(e.dataTransfer.getData('position'));
+
+      let updatedPlayerLocations = [...playerlocation];
+      const response = await axios.get(`${urlrequest}/sessions/${sessionid}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
+      if (response.data) {
+        updatedPlayerLocations = response.data.PlayersPos
+
+
       }
-    });
-    if (response.data) {
-      updatedPlayerLocations = response.data.PlayersPos
+      const draggedPlayerIndex = updatedPlayerLocations.findIndex(player => parseInt(player.tile) === parseInt(newPosition));
 
-    }
-    const draggedPlayerIndex = updatedPlayerLocations.findIndex(player => parseInt(player.tile) === parseInt(newPosition));
-
-    if (draggedPlayerIndex !== -1) {
-      updatedPlayerLocations[draggedPlayerIndex].tile = targetIndex;
-    }
+      if (draggedPlayerIndex !== -1) {
+        updatedPlayerLocations[draggedPlayerIndex].tile = targetIndex;
+      }
 
 
-    let verticalMovement;
-    let horizontalMovement;
-    let oldrow;
-    let newrow;
-    let oldcolumn;
-    let newcolumn;
+      let verticalMovement;
+      let horizontalMovement;
+      let oldrow;
+      let newrow;
+      let oldcolumn;
+      let newcolumn;
 
-    oldrow = Math.floor(newPosition / 64);
-    newrow = Math.floor(updatedPlayerLocations[0].tile / 64);
-    oldcolumn = newPosition % 64;
-    newcolumn = updatedPlayerLocations[0].tile % 64;
+      oldrow = Math.floor(newPosition / 64);
+      newrow = Math.floor(updatedPlayerLocations[0].tile / 64);
+      oldcolumn = newPosition % 64;
+      newcolumn = updatedPlayerLocations[0].tile % 64;
 
-    horizontalMovement = newcolumn - oldcolumn;
-    verticalMovement = newrow - oldrow;
+      horizontalMovement = newcolumn - oldcolumn;
+      verticalMovement = newrow - oldrow;
 
-   
 
-    
 
-    let proceed = true;
-    let typeblock = '';
-    let blocksmoved = 0;
-    let multiplier = 1;
-    let savenpcfinalgrid = targetIndex;
-   
-    function isPathBlocked(start, end, walls, horizontalMovement, verticalMovement) {
-      
-      console.log(verticalMovement)
-      if(verticalMovement > 0){
-        for(let i = 0; i < verticalMovement+1; i++){
-          let numbercheck = start + (64*i)
-          if(walls.includes(numbercheck.toString())){
-            console.log("Wall found at:", numbercheck);
-            proceed = false;
-            typeblock = 'vertical';
-            blocksmoved = numbercheck;
-            break;
-            
-        }
-        }
 
-      }else if(verticalMovement < 0){
-        for(let i = 0; i < -verticalMovement+1; i++){
-            let numbercheck = start - (64*i); // Subtract for negative movement
-            if(walls.includes(numbercheck.toString())){
+
+      let proceed = true;
+      let typeblock = '';
+      let blocksmoved = 0;
+      let multiplier = 1;
+      let savenpcfinalgrid = targetIndex;
+
+      function isPathBlocked(start, end, walls, horizontalMovement, verticalMovement) {
+
+
+        if (verticalMovement > 0) {
+          for (let i = 0; i < verticalMovement + 1; i++) {
+            let numbercheck = start + (64 * i)
+            if (walls.includes(numbercheck.toString())) {
+              console.log("Wall found at:", numbercheck);
+              proceed = false;
+              typeblock = 'vertical';
+              blocksmoved = numbercheck;
+              break;
+
+            }
+          }
+
+        } else if (verticalMovement < 0) {
+          for (let i = 0; i < -verticalMovement + 1; i++) {
+            let numbercheck = start - (64 * i); // Subtract for negative movement
+            if (walls.includes(numbercheck.toString())) {
               console.log("Wall found at:", numbercheck);
               proceed = false;
               typeblock = 'vertical'
               blocksmoved = numbercheck;
               multiplier = -1;
               break;
-              
+
+            }
           }
         }
-      }
-      if(proceed === true){
-        console.log('prosseguir')
+        if (proceed === true) {
 
-        if(horizontalMovement > 0){
-          for(let i = 0; i < horizontalMovement+1; i++){
-            let numbercheck = start + (1*i)
-            if(walls.includes(numbercheck.toString())){
-              console.log("Wall found at:", numbercheck);
-              proceed = false;
-              typeblock = 'horizontal'
-              blocksmoved = numbercheck;
-              break;
-              
-          }
-          }
-  
-        }else if(horizontalMovement < 0){
-          for(let i = 0; i < -horizontalMovement+1; i++){
-              let numbercheck = start - (1*i); // Subtract for negative movement
-              if(walls.includes(numbercheck.toString())){
+
+          if (horizontalMovement > 0) {
+            for (let i = 0; i < horizontalMovement + 1; i++) {
+              let numbercheck = (start + (64 * verticalMovement * multiplier)) + (1 * i)
+
+              if (walls.includes(numbercheck.toString())) {
+                console.log("Wall found at:", numbercheck);
+                proceed = false;
+                typeblock = 'horizontal'
+                blocksmoved = numbercheck;
+                break;
+
+              }
+            }
+
+          } else if (horizontalMovement < 0) {
+
+            for (let i = 0; i < -horizontalMovement + 1; i++) {
+              let numbercheck = (start + (64 * verticalMovement * multiplier)) - (1 * i); // Subtract for negative movement
+
+              if (walls.includes(numbercheck.toString())) {
                 console.log("Wall found at:", numbercheck);
                 proceed = false;
                 typeblock = 'horizontal'
                 blocksmoved = numbercheck;
                 multiplier = -1;
                 break;
-                
+
+              }
             }
           }
+
         }
 
+
+
+
       }
+      if (draggedItemType !== 'wall') {
 
-    
-    
-     
-    }
-    const check = isPathBlocked(newPosition, updatedPlayerLocations[draggedPlayerIndex].tile, wallocator, horizontalMovement, verticalMovement);
-    if(proceed === true && updatedPlayerLocations[draggedPlayerIndex].npcmap.Isnpc === false){
-      
+      }
+      const check = isPathBlocked(newPosition, updatedPlayerLocations[draggedPlayerIndex]?.tile, wallocator, horizontalMovement, verticalMovement);
+      if (proceed === true && updatedPlayerLocations[draggedPlayerIndex]?.npcmap?.Isnpc === false) {
 
-      setPlayerLocation(updatedPlayerLocations);
-      updateSession({ PlayersPos: updatedPlayerLocations });
-     }else{
-      if(typeblock === 'vertical'){
-       let location =  parseInt(updatedPlayerLocations[draggedPlayerIndex].tile);
-       location = blocksmoved-(64*multiplier);
-        console.log(location);
-        updatedPlayerLocations[draggedPlayerIndex].tile = location;
+
         setPlayerLocation(updatedPlayerLocations);
-      updateSession({ PlayersPos: updatedPlayerLocations });
-       
-      }
-      if(typeblock === 'horizontal'){
-       let location = parseInt(updatedPlayerLocations[draggedPlayerIndex].tile) 
-       location = blocksmoved-(1*multiplier);
-        console.log( location);
-        updatedPlayerLocations[draggedPlayerIndex].tile = location;
-        setPlayerLocation(updatedPlayerLocations);
-      updateSession({ PlayersPos: updatedPlayerLocations });
-        
-      }
-    }
-    if(updatedPlayerLocations[draggedPlayerIndex].npcmap.Isnpc === true){
-      updatedPlayerLocations[draggedPlayerIndex].tile = savenpcfinalgrid;
+        updateSession({ PlayersPos: updatedPlayerLocations });
+      } else {
+        if (typeblock === 'vertical') {
+          let location = parseInt(updatedPlayerLocations[draggedPlayerIndex].tile);
+          location = blocksmoved - (64 * multiplier);
+          console.log(location);
+          updatedPlayerLocations[draggedPlayerIndex].tile = location;
+          setPlayerLocation(updatedPlayerLocations);
+          updateSession({ PlayersPos: updatedPlayerLocations });
 
-      setPlayerLocation(updatedPlayerLocations);
-      updateSession({ PlayersPos: updatedPlayerLocations });
-     
+        }
+        if (typeblock === 'horizontal') {
+          let location = parseInt(updatedPlayerLocations[draggedPlayerIndex].tile)
+          location = blocksmoved - (1 * multiplier);
+          console.log(location);
+          updatedPlayerLocations[draggedPlayerIndex].tile = location;
+          setPlayerLocation(updatedPlayerLocations);
+          updateSession({ PlayersPos: updatedPlayerLocations });
+
+        }
+      }
+      if (updatedPlayerLocations[draggedPlayerIndex]?.npcmap?.Isnpc === true) {
+        updatedPlayerLocations[draggedPlayerIndex].tile = savenpcfinalgrid;
+
+        setPlayerLocation(updatedPlayerLocations);
+        updateSession({ PlayersPos: updatedPlayerLocations });
+
+      }
+
+
+
     }
-   
+
   };
 
 
   async function addmap() {
     let mapsdata = [...mapsarray]
-    mapsdata.push({ name: nameselectedmap, url: urlselectedmap, id: user.id, scale: newscale })
+    mapsdata.push({ name: nameselectedmap, url: urlselectedmap, id: user.id, scale: newscale, blockscale: blocknewscale })
     updateSession({ Maps: mapsdata }).then(() => {
-      window.location.reload()
+     window.location.reload()
     });
 
-    let newmap = { name: nameselectedmap, url: urlselectedmap, id: user.id, scale: newscale, walls: wallocatornew }
+    let newmap = { name: nameselectedmap, url: urlselectedmap, id: user.id, scale: newscale, walls: wallocatornew, blockscale: blocknewscale }
+    console.log(newmap)
     const response = await axios.post(`${urlrequest}/mapcreate`, newmap);
     if (response.data) {
       console.log(response.data)
@@ -1282,22 +1344,30 @@ export default function SessionPage() {
         const image = new Image();
         image.src = map?.url;
         image.onload = function () {
-          // Calcula a largura da imagem que seja divisível por 60
-          let width = (Math.ceil(image.width / 60) * 60);
+         
+          setImageWidth(image.width);
+          setImageHeight(image.height);
 
-          // Define a largura da imagem no estado
+          const maxtile1 = Math.ceil(image.width / (60 * blocknewscale))
+          const maxtile2 = Math.ceil(image.height / (60 * blocknewscale))
+          
+          const size = maxtile1*maxtile2;
+          console.log(size)
 
-          setImageWidth(width);
-        
+          if(size > 0 && size < 4096){
+
+            setGridItems(Array.from({length: size}))
+          }
+
         }
       }
 
     };
-  }, [imgprev, imageWidth, user, isLoading])
+  }, [imgprev, imageWidth, imageHeight, user, isLoading])
   const checkImageUrlValidity = (url) => {
     return new Promise((resolve, reject) => {
       const img = new Image();
-      img.onload = () => resolve(Math.ceil(img.width / 60) * 60);
+      img.onload = () => resolve({ width: img.width, height: img.height });
       img.onerror = () => reject(false);
       img.src = url;
     });
@@ -1307,9 +1377,11 @@ export default function SessionPage() {
     const url = e;
     setUrlSelectedMap(url);
     try {
-      await checkImageUrlValidity(url).then(width => {
+      await checkImageUrlValidity(url).then(({ width, height }) => {
         setImageWidth(width);
-        console.log(width)
+        setImageHeight(height);
+        const aspectRatio = width / height;
+        console.log('Aspect Ratio:', aspectRatio);
       });
       setIsUrlValid(true);
     } catch (error) {
@@ -2671,6 +2743,17 @@ export default function SessionPage() {
                           ))}
                         </select>
 
+                        <button onClick={() => {
+                          getFullMap()
+                         
+
+
+                        }} className={styles.pushable}>
+                          <span className={styles.edge}></span>
+                          <span className={styles.front}>
+                            Editar Mapa Atual
+                          </span>
+                        </button>
 
                         <button onClick={() => {
                           removemap(map?.name)
@@ -2693,6 +2776,10 @@ export default function SessionPage() {
                         </button>
                         &nbsp;
                         <div> Escala do mapa: {scale}
+                        </div>
+                        &nbsp;
+                        <div> 
+                          Escala dos blocos: {blockscale}
                         </div>
                         <div>
                         </div>
@@ -2728,8 +2815,8 @@ export default function SessionPage() {
                           handleUrlChange(e.target.value)
                         }} />
                       </div>
-                      <div style={{}} >
-                        Escala do mapa:
+                      <div  >
+                        Escala do mapa (Mexa primeiro na escala dos blocos abaixo desse):
                         <input
                           style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
                           value={newscale}
@@ -2741,7 +2828,7 @@ export default function SessionPage() {
                         <div>
                           <input
 
-                            step="0.05"
+                            step="0.01"
                             type="range"
                             min="0.1"
                             max="3"
@@ -2757,11 +2844,63 @@ export default function SessionPage() {
 
                         </div>
 
+
+                      </div>
+                      <div  >
+                        Escala dos blocos da grid:
+                        <input
+                          style={{ borderRadius: '5px', backgroundColor: 'hsl(34, 97%, 31%)', color: 'white', fontWeight: 'bold', maxWidth: '50px' }}
+                          value={blocknewscale}
+                          onChange={(e) => {
+                            setblockNewScale(e.target.value);
+                           
+                            const maxtile1 = Math.ceil(imageWidth / (60 * e.target.value) * newscale)
+                            const maxtile2 = Math.ceil(imageHeight / (60 * e.target.value) * newscale)
+
+                            const size = maxtile1*maxtile2;
+                            console.log(size)
+                            if(size > 0 && size < 4096){
+
+                              setGridItems(Array.from({length: size}))
+                            }
+
+                          }}
+                        />
+                        <div>
+                          <input
+
+                            step="0.01"
+                            type="range"
+                            min="0.1"
+                            max="2"
+                            value={blocknewscale}
+                            onChange={(e) => {
+                              setblockNewScale(e.target.value);
+                            console.log(gridItems)
+                            const maxtile1 = Math.ceil(imageWidth / (60 * e.target.value) * newscale)
+                            const maxtile2 = Math.ceil(imageHeight / (60 * e.target.value) * newscale)
+
+                            const size = maxtile1*maxtile2;
+                            console.log(size)
+                            if(size > 0 && size < 4096){
+
+                              setGridItems(Array.from({length: size}))
+                            }
+
+                            }}
+                            className={styles.slider}
+
+                          />
+
+
+                        </div>
+
+
                       </div>
                       <button disabled={!isUrlValid} className={styles.pushable}>
                         <span style={{ fontSize: '10px', width: '116px' }} className={styles.edge}></span>
                         <span style={{ fontSize: '10px', width: '90px' }} className={styles.front}>
-                          Adicionar Mapa
+                          Adicionar Mapa 
                         </span>
                       </button>
                       <button type='button' onClick={() => {
@@ -2806,11 +2945,15 @@ export default function SessionPage() {
           </div>
           <div style={{
             backgroundImage: imgprev ? `url('${imgprev}')` : `url('${map?.url}')`,
-            backgroundSize: (nameselectedmap ? `${imageWidth * parseFloat(newscale)}px ${imageWidth * parseFloat(newscale)}px` : `${imageWidth * parseFloat(scale)}px ${imageWidth * parseFloat(scale)}px`),
-            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat'
+
 
           }} className={styles.mapcontainer}>
-            <div className={styles.mapgrid} style={{ position: 'relative' }}>
+            <div className={styles.mapgrid} style={{
+              position: 'relative', gridTemplateRows: `repeat(${Math.ceil(imageHeight / (60 * blocknewscale))}, 1fr)`,
+              gridTemplateColumns: `repeat(${Math.ceil(imageWidth / (60 * blocknewscale))}, 1fr)`,
+            }}>
               {gridItems.map((_, index) => (
                 <div
                   key={index}
@@ -2818,8 +2961,10 @@ export default function SessionPage() {
                   style={{
                     color: showTile ? 'rgba(236, 233, 233, 0.718)' : 'rgba(236, 233, 233, 0)',
                     border: showGrid ? '1px solid rgba(236, 233, 233, 0.718)' : 'none',
-
+                    width: `${60 * blocknewscale * newscale}px`,
+                    height: `${60 * blocknewscale * newscale}px`,
                     boxSizing: 'border-box',
+
 
                   }}
 
@@ -2842,12 +2987,13 @@ export default function SessionPage() {
                         position: 'absolute',
                         borderRadius: '50%',
                         position: 'absolute',
-                        top: `calc(${Math.floor(parseInt(player.tile) / 64)} * (100% / 64))`,
-                        left: `calc(${parseInt(player.tile) % 64} * (100% / 64))`,
-                        width: '60px', // Adjust as needed
-                        height: '60px', // Adjust as needed
+                        top: `${Math.floor(parseInt(player.tile) / Math.ceil(imageWidth / (60 * blocknewscale) )) * 60 * blocknewscale * newscale}px`,
+                        left: `${parseInt(player.tile) % Math.ceil(imageWidth / (60 * blocknewscale) ) * 60 * blocknewscale * newscale}px`,
+                       width: `${60 * blocknewscale * newscale}px`,
+                        height: `${60 * blocknewscale * newscale}px`,
                         border: player.npcmap.ownerId === user.id ? '1px solid red' : '1px solid blue',
                         transition: 'top 1.5s, left 1.5s 1.5s',
+                        zIndex: 9999,
                       }}
                       draggable
                       onDragStart={(e) => handleDragStart(e, parseInt(player.tile))}
@@ -2870,10 +3016,10 @@ export default function SessionPage() {
                         backgroundImage: player.npcmap.Isnpc ? `url(${player.npcmap.NpcUrlPhoto})` : null,
                         position: 'absolute',
                         borderRadius: '50%',
-                        top: `calc(${Math.floor(parseInt(player.tile) / 64)} * (100% / 64))`,
-                        left: `calc(${parseInt(player.tile) % 64} * (100% / 64))`,
-                        width: '60px', // Adjust as needed
-                        height: '60px', // Adjust as needed
+                        top: `${Math.floor(parseInt(player.tile) / Math.ceil(imageWidth / (60 * blocknewscale) )) * 60 * blocknewscale * newscale}px`,
+                        left: `${parseInt(player.tile) % Math.ceil(imageWidth / (60 * blocknewscale) ) * 60 * blocknewscale * newscale}px`,
+                       width: `${60 * blocknewscale * newscale}px`,
+                        height: `${60 * blocknewscale * newscale}px`,
                         border: player.npcmap.ownerId === user.id ? '1px solid red' : '1px solid blue',
                         transition: 'top 1.5s, left 1.5s 1.5s',
                       }}
@@ -2898,13 +3044,14 @@ export default function SessionPage() {
 
                     position: 'absolute',
                     boxSizing: 'border-box',
-                    top: `calc(${Math.floor(parseInt(wall) / 64)} * (100% / 64))`,
-                    left: `calc(${parseInt(wall) % 64} * (100% / 64))`,
-                    width: '60px', // Adjust as needed
-                    height: '60px', // Adjust as needed
+                    top: `${Math.floor(parseInt(wall) / Math.ceil(imageWidth / (60 * blocknewscale))) * 60 * blocknewscale * newscale}px`,
+                    left: `${parseInt(wall) % Math.ceil(imageWidth / (60 * blocknewscale)) * 60 * blocknewscale * newscale}px`,
+                    width: `${60 * blocknewscale * newscale}px`,
+                    height: `${60 * blocknewscale * newscale}px`,
                     display: imgprev ? 'none' : 'flex',
                     transition: 'top 1.5s, left 1.5s 1.5s',
-                    backgroundColor: 'black'
+                    backgroundColor: 'rgb(0, 0, 0, 0.5)',
+                    border:'1px solid gray'
 
                   }}
 
@@ -2921,13 +3068,14 @@ export default function SessionPage() {
 
                     position: 'absolute',
                     boxSizing: 'border-box',
-                    top: `calc(${Math.floor(parseInt(wall) / 64)} * (100% / 64))`,
-                    left: `calc(${parseInt(wall) % 64} * (100% / 64))`,
-                    width: '60px', // Adjust as needed
-                    height: '60px', // Adjust as needed
+                    top: `${Math.floor(parseInt(wall) / Math.ceil(imageWidth / (60 * blocknewscale))) * 60 * blocknewscale * newscale}px`,
+                    left: `${parseInt(wall) % Math.ceil(imageWidth / (60 * blocknewscale)) * 60 * blocknewscale * newscale}px`,
+                   width: `${60 * blocknewscale * newscale}px`,
+                    height: `${60 * blocknewscale * newscale}px`,
                     display: !imgprev ? 'none' : 'flex',
                     transition: 'top 1.5s, left 1.5s 1.5s',
-                    backgroundColor: 'black'
+                    backgroundColor: 'rgb(0, 0, 0, 0.5)',
+                    border:'1px solid gray'
 
                   }}
 

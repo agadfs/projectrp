@@ -24,31 +24,7 @@ export const AppProvider = ({ children }) => {
     'Tem interesse em apoiar o projeto? Peça ao dev para abrir um catarse no discord, digamos que ele ainda não tem muita fé que as pessoas iriam gostar!',
   
   ];
-  useEffect(() => {
-
-    const checkUrl = async () => {
-
-      try {
-        const response = await fetch(process.env.REACT_APP_API_URL);
-        if (response) {
-          localStorage.removeItem('newapiserver');
-         if(initialUrlRequest === 'https://projectrp.onrender.com'){
-          window.location.reload()
-         }
-        }
-      } catch (error) {
-       
-        localStorage.setItem('newapiserver', 'https://projectrp.onrender.com');
-        if(initialUrlRequest !== 'https://projectrp.onrender.com'){
-          window.location.reload()
-        }
-
-      }
-
-    };
-
-    checkUrl();
-  }, []);
+ 
   return (
     <AppContext.Provider value={{ user, setUser, urlrequest, seturlrequest,  randomStrings }}>
       {children}
